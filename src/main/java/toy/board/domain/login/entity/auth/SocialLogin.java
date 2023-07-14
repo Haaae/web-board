@@ -1,14 +1,14 @@
-package toy.board.domain.auth;
+package toy.board.domain.login.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import toy.board.BaseEntity;
 
 @Entity
 @Table(catalog = "auth")
 @Getter
-public class SocialLogin {
+public class SocialLogin extends BaseEntity {
 
     @Transient
     private static final int EXTERNAL_ID_LENGTH = 64;
@@ -29,7 +29,4 @@ public class SocialLogin {
 
     @Column(name = "access_token", nullable = false, length = ACCESS_TOKEN_LENGTH)
     private String accessToken;
-
-    @Column(name = "update_date", nullable = false)
-    private LocalDateTime updateDate;
 }

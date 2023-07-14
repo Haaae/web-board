@@ -1,14 +1,14 @@
-package toy.board.domain.auth;
+package toy.board.domain.login.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import toy.board.BaseEntity;
 
 @Entity
 @Table(catalog = "auth")
 @Getter
-public class Login {
+public class Login  extends BaseEntity {
 
     @Transient
     private static final int USER_ID_LENGTH = 20;
@@ -28,7 +28,4 @@ public class Login {
 
     @Column(name = "solt", nullable = false, length = PASSWORD_LENGTH)
     private String solt;
-
-    @Column(name = "update_date", nullable = false)
-    private LocalDateTime updateDate;
 }

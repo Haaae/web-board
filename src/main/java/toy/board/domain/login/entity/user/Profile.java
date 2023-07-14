@@ -1,15 +1,14 @@
-package toy.board.domain.user;
+package toy.board.domain.login.entity.user;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
+import toy.board.BaseEntity;
 
 @Entity
 @Table(catalog = "user")
 @Getter
-public class Profile {
+public class Profile extends BaseEntity {
 
     protected Profile() {
         // 사용자가 입력하지 않았을 때 기본값을 설정
@@ -40,8 +39,4 @@ public class Profile {
 
     @Column(name = "introduction", length = INTRODUCTION_LENGTH, nullable = false)
     private String introduction;
-
-    // datetime은 @MappedSuperclass를 사용해서 리펙토링할 것
-    private LocalDateTime joinDate;
-    private LocalDateTime updateDate;
 }

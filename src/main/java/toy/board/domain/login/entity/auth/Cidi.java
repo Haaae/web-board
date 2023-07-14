@@ -1,12 +1,13 @@
-package toy.board.domain.auth;
+package toy.board.domain.login.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import toy.board.BaseTimeEntity;
 
 @Entity
 @Table(catalog = "auth")
 @Getter
-public class Cidi {
+public class Cidi extends BaseTimeEntity {
 
     @Transient
     private static final int CI_LENGTH = 88;
@@ -20,6 +21,7 @@ public class Cidi {
 
     @Column(name = "ci", length = CI_LENGTH, nullable = false, unique = true)
     private String ci;
+
     @Column(name = "di", length = DI_LENGTH, nullable = false, unique = true)
     private String di;
 }

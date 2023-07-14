@@ -1,18 +1,18 @@
-package toy.board.domain.user;
+package toy.board.domain.login.entity.user;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import toy.board.domain.Agree;
+import toy.board.domain.login.entity.Agree;
 
-import java.time.LocalDateTime;
+import toy.board.BaseEntity;
 
 @Entity
 @Table(catalog = "user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Authentication {
+public class Authentication extends BaseEntity {
     @Transient
     // 암호화된 값을 위해 모든 varchar값의 길이 설정
     private static final int VARCHAR_LENGTH = 128;
@@ -39,8 +39,6 @@ public class Authentication {
     @Enumerated(EnumType.STRING)
     private Nation nation;
 
-    @Column(name = "auth_date")
-    private LocalDateTime authDate;
 
     @Column(name = "gether_agree", nullable = false)
     @Enumerated(EnumType.STRING)

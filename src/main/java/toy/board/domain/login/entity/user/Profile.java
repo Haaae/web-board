@@ -1,13 +1,19 @@
 package toy.board.domain.login.entity.user;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
+import lombok.NoArgsConstructor;
 import toy.board.BaseEntity;
 
 @Entity
 @Table(catalog = "user")
 @Getter
+@AllArgsConstructor
+@Builder
 public class Profile extends BaseEntity {
 
     protected Profile() {
@@ -17,11 +23,11 @@ public class Profile extends BaseEntity {
     }
 
     @Transient
-    private static final int NICKNAME_LENGTH = 12;
-    @Transient
     private static final int IMAGE_URL_LENGTH = 100;
     @Transient
     private static final int INTRODUCTION_LENGTH = 300;
+    @Transient
+    private static final int NICKNAME_LENGTH = 12;
     @Transient
     private static final String DEFAULT_URL = "";  // 수정 필요
     @Transient

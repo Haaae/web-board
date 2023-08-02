@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import toy.board.domain.login.entity.user.LoginType;
 import toy.board.domain.login.entity.user.Member;
-import toy.board.domain.login.repository.LoginRepository;
+import toy.board.domain.login.repository.LocalLoginRepository;
 import toy.board.domain.login.repository.MemberRepository;
 import toy.board.exception.locallogin.NoExistMemberByUsername;
 import toy.board.exception.locallogin.NotMatchLoginType;
@@ -16,7 +16,7 @@ import toy.board.exception.locallogin.NotMatchPassword;
 @RequiredArgsConstructor
 public class LocalLoginService {
 
-    private final LoginRepository loginRepository;
+    private final LocalLoginRepository loginRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 

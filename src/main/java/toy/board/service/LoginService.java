@@ -16,7 +16,6 @@ import toy.board.exception.login.NotMatchPassword;
 @RequiredArgsConstructor
 public class LoginService {
 
-    private final LoginRepository loginRepository;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 

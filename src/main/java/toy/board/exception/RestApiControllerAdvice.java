@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import toy.board.dto.RestResponse;
-import toy.board.exception.login.LocalLoginException;
+import toy.board.exception.login.LoginException;
 
 @RestControllerAdvice
 public class RestApiControllerAdvice {
@@ -21,8 +21,8 @@ public class RestApiControllerAdvice {
      * @param ex
      * @return
      */
-    @ExceptionHandler(LocalLoginException.class)
-    public ResponseEntity<RestResponse> handleLocalLoginException(LocalLoginException ex) {
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<RestResponse> handleLocalLoginException(LoginException ex) {
         HashMap<String, String> errors = createEmptyErrorMap();
         errors.put(ex.getField(), ex.getDefaultMessage());
         return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);

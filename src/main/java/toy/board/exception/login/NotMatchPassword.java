@@ -1,6 +1,6 @@
 package toy.board.exception.login;
 
-public class NotMatchPassword extends LocalLoginException {
+public class NotMatchPassword extends LoginException {
     private static final String RESOURCE = "password";
     private static final String MESSAGE = "비밀번호가 올바르지 않습니다.";
 

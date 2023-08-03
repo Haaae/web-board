@@ -1,6 +1,6 @@
 package toy.board.exception.login;
 
-public class NotMatchLoginType extends LocalLoginException {
+public class NotMatchLoginType extends LoginException {
 
     private static final String RESOURCE = "login type";
 

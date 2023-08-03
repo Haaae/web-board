@@ -1,6 +1,7 @@
 package toy.board.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,10 @@ public class MemberService {
     }
 
     // entity를 처음 가져와야 하는 상황에서는 entity 객체가 없으므로 ById를 사용해야 한다.
-    public Member getReferenceById(Long id) {
-//        memberRepository.getById(member.getId()) 사용하지 않음
-        // getReferenceById()는 메서드 실행 시 DB에 접근하지 않고 프록시 객체를 반환한다.
-        return memberRepository.getReferenceById(id);
+    public Optional<Member> findMember(Long id) {
+        // memberRepository.getById(member.getId()) 사용하지 않음
+        // findMember()는 메서드 실행 시 DB에 접근하지 않고 프록시 객체를 반환한다.
+        return memberRepository.findMemberById(id);
     }
 
     public List<Member> getReferences() {
@@ -29,6 +30,8 @@ public class MemberService {
     }
 
     public void delete(Member member) {
+        // TODO: 2023-08-03 Have to implement detail logic
+        // - member
         memberRepository.delete(member);
     }
 

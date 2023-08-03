@@ -7,4 +7,6 @@ import toy.board.entity.user.Member;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findMemberByUsername(String username);
+
+    Optional<Member> findMemberById(Long id);
 }

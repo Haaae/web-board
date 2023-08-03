@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import toy.board.dto.RestResponse;
-import toy.board.exception.locallogin.LocalLoginException;
+import toy.board.exception.login.LocalLoginException;
 
 @RestControllerAdvice
 public class RestApiControllerAdvice {

@@ -20,8 +20,9 @@ class ProfileTest {
     }
 
     @Test()
-    public void builderHasNotNicknameTest() throws  Exception {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Profile.builder().build());
+    public void throwExceptionWhenBuildHasNotNicknameTest() throws  Exception {
+        assertThrows(IllegalArgumentException.class, () -> Profile.builder().build());
+        assertThrows(IllegalArgumentException.class, () -> new Profile(null, "url", "introduction"));
     }
 
 }

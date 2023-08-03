@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 import toy.board.entity.auth.Cidi;
 import toy.board.entity.auth.Login;
@@ -13,10 +14,8 @@ import toy.board.entity.auth.SocialLogin;
 
 @Entity
 @Getter
-@Table(catalog = "user")
+//@Table(catalog = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Member extends BaseEntity {
 
     @Transient
@@ -54,7 +53,7 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "social_login_id", unique = true)
     private SocialLogin socialLogin;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "login_id", unique = true)
     private Login login;
 
@@ -69,6 +68,21 @@ public class Member extends BaseEntity {
 
         this.login = login;
         login.changeMember(this);
+    }
+
+    @Builder
+    public Member(final String username, final Login login, final Profile profile, final LoginType loginType, final UserRole userRole) {
+        Assert.hasText(username, "username must not be empty");
+        Assert.notNull(login, "login must not be null");
+        Assert.notNull(profile, "profile must not be null");
+        Assert.notNull(loginType, "loginType must not be null");
+        Assert.notNull(userRole, "userRole must not be null");
+
+        changeLogin(login);
+        this.username = username;
+        this.profile = profile;
+        this.loginType = loginType;
+        this.role = userRole;
     }
 }
 

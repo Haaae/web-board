@@ -2,20 +2,17 @@ package toy.board.entity.auth;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 import toy.board.entity.user.Member;
 
 @Entity
-@Table(catalog = "auth")
+//@Table(catalog = "auth")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Login extends BaseEntity {
 
     @Transient
@@ -31,8 +28,15 @@ public class Login extends BaseEntity {
     @Column(name = "password", nullable = false, length = PASSWORD_LENGTH)
     private String password;
 
-    @OneToOne(mappedBy = "localLogin")
+    @OneToOne(mappedBy = "login")
     private Member member;
+
+    @Builder
+    public Login(final String encodedPassword) {
+        Assert.hasText(encodedPassword, "password must be not empty");
+
+        this.password = encodedPassword;
+    }
 
     /**
      * only use in the Member Entity.

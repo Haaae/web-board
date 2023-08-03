@@ -62,14 +62,10 @@ class LoginServiceTest {
 
         Member findMember = Member.builder()
                 .loginType(LoginType.SOCIAL_LOGIN)
-                .login(
-                        Login.builder()
-                                .password(encodedPassword)
-                                .build()
-                )
+                .login(new Login(encodedPassword))
                 .build();
 
-//        doReturn(Optional.of(findMember)).when(memberRepository).findMemberByUsername(anyString());
+//        doReturn(Optional.create(findMember)).when(memberRepository).findMemberByUsername(anyString());
         given(memberRepository.findMemberByUsername(anyString()))
                 .willReturn(Optional.of(findMember));
 
@@ -89,11 +85,7 @@ class LoginServiceTest {
 
         Member findMember = Member.builder()
                 .loginType(LoginType.LOCAL_LOGIN)
-                .login(
-                        Login.builder()
-                                .password(encodedPassword)
-                                .build()
-                )
+                .login(new Login(encodedPassword))
                 .build();
 
         doReturn(Optional.of(findMember)).when(memberRepository).findMemberByUsername(anyString());

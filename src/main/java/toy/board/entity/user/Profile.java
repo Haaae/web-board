@@ -6,13 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 
 import lombok.ToString;
+import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 
 @Entity
-@Table(catalog = "user")
+//@Table(catalog = "user")
 @Getter
 @AllArgsConstructor
-@Builder
 @ToString
 public class Profile extends BaseEntity {
 
@@ -41,10 +41,17 @@ public class Profile extends BaseEntity {
     private String nickname;
 
     @Column(name = "image_url", length = IMAGE_URL_LENGTH, nullable = false)
-    @Builder.Default
     private String imageUrl = DEFAULT_URL;
 
     @Column(name = "introduction", length = INTRODUCTION_LENGTH, nullable = false)
-    @Builder.Default
     private String introduction = DEFAULT_INTRODUCTION;
+
+    @Builder
+    public Profile(final String nickname, final String imageUrl, final String introduction) {
+        Assert.hasText(nickname, "nickname must has text.");
+
+        this.nickname = nickname;
+        this.imageUrl = imageUrl;
+        this.introduction = introduction;
+    }
 }

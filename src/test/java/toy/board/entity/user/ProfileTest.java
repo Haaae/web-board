@@ -1,5 +1,6 @@
 package toy.board.entity.user;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,6 +17,11 @@ class ProfileTest {
         //when
 
         //then
+    }
+
+    @Test()
+    public void builderHasNotNicknameTest() throws  Exception {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Profile.builder().build());
     }
 
 }

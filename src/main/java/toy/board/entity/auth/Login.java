@@ -1,10 +1,7 @@
 package toy.board.entity.auth;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 import toy.board.entity.user.Member;
@@ -13,6 +10,7 @@ import toy.board.entity.user.Member;
 //@Table(catalog = "auth")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(exclude = {"member"})
 public class Login extends BaseEntity {
 
     @Transient
@@ -33,7 +31,7 @@ public class Login extends BaseEntity {
 
     @Builder
     public Login(final String encodedPassword) {
-        Assert.hasText(encodedPassword, "password must be not empty");
+        Assert.hasText(encodedPassword, "password must be not empty. class: Login.class");
 
         this.password = encodedPassword;
     }

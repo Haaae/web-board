@@ -1,11 +1,7 @@
 package toy.board.entity.user;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 import toy.board.entity.auth.Cidi;
@@ -16,6 +12,7 @@ import toy.board.entity.auth.SocialLogin;
 @Getter
 //@Table(catalog = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(exclude = {"login"})
 public class Member extends BaseEntity {
 
     @Transient

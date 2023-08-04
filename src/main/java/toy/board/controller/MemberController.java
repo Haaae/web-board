@@ -5,13 +5,15 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import toy.board.dto.RestResponse;
+import toy.board.dto.login.JoinRequest;
+import toy.board.dto.login.JoinResponse;
 import toy.board.dto.login.LoginRequest;
 import toy.board.entity.user.Member;
-import toy.board.entity.user.UserRole;
 import toy.board.service.LoginService;
 import toy.board.service.MemberService;
 import toy.board.session.SessionConst;
@@ -23,8 +25,12 @@ import java.util.Optional;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
 public class MemberController {
 
-    final MemberService memberService;
-    final LoginService loginService;
+    private static final String LOGIN_SUCCESS = "Login Success";
+    private static final String DELETE_SUCCESS = "Delete Success";
+    private static final String JOIN_SUCCESS = "Join Success";
+
+    private final MemberService memberService;
+    private final LoginService loginService;
 
     // Http Message Body를 객체에 매핑하는 @RequestBody는 객체의 프로퍼티가 하나라도 맞지 않으면 에러가 발생
     // Error Type: MethodArgumentNotValidException.class
@@ -36,7 +42,7 @@ public class MemberController {
     ) {
 
         // valid 실패 시 자동으로 에러 발생하므로 바로 member를 찾는다.
-        Member loginMember = loginService.login(loginRequest.getId(), loginRequest.getPassword());
+        Member loginMember = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
         // 찾은 member를 세션에 넣어준다.
         // 세션이 있으면 반환, 없으면 생성
@@ -47,7 +53,7 @@ public class MemberController {
         return ResponseEntity.ok(
                 RestResponse.builder()
                         .success(true)
-                        .message("로그인 성공")
+                        .message(LOGIN_SUCCESS)
                         .build()
         );
     }
@@ -65,17 +71,15 @@ public class MemberController {
         return ResponseEntity.ok(
                 RestResponse.builder()
                         .success(true)
-                        .message("Delete Success")
+                        .message(DELETE_SUCCESS)
                         .build()
         );
     }
 
-    @PostMapping("/")
-    public String join(JoinRequest signupRequest) {
         /*  회원가입시 필요한 정보
 
             필수 정보
-                - ID(Login.class)
+                - username(Login.class)
                 - Password(Login.class)
                 - Nickname(Profile.class)
 
@@ -83,24 +87,19 @@ public class MemberController {
                 - 본인인증 정보
 
          */
+    @PostMapping
+    public ResponseEntity<RestResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
+        Member member = memberService.join(joinRequest.username(), joinRequest.password(), joinRequest.nickname());
 
-        Member member = Member
-                .builder()
-                .localLogin(
-                        LocalLogin
-                                .builder()
-                                .userId(signupRequest.getId())
-                                .password(
-                                        new BCryptPasswordEncoder().encode(signupRequest.getPassword())
-                                )
+        // TODO : RestRequest 생성 편의 메서드 구현. JoinRequest를 RestRequest.object에 할당해 전달하려면 Map으로 해야하는지 확인
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(
+                        RestResponse.builder()
+                                .success(true)
+                                .message(JOIN_SUCCESS)
+                                .object(JoinResponse.of(member))
                                 .build()
-                )
-                .profile(Profile.builder().nickname(signupRequest.getNickname()).build())
-                .role(UserRole.ADMIN)
-                .build();
-
-        memberRepository.save(member);
-
-        return "";
+        );
     }
 }

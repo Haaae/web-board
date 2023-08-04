@@ -29,7 +29,7 @@ public class Profile extends BaseEntity {
     @Transient
     private static final int NICKNAME_LENGTH = 12;
     @Transient
-    private static final String DEFAULT_URL = "default url";  // 수정 필요
+    private static final String DEFAULT_URL = "default url";  // TODO: 2023-08-03 수정 필요
     @Transient
     private static final String DEFAULT_INTRODUCTION = "default introduction";
 
@@ -51,7 +51,13 @@ public class Profile extends BaseEntity {
         Assert.hasText(nickname, "nickname must has text.");
 
         this.nickname = nickname;
-        this.imageUrl = imageUrl;
-        this.introduction = introduction;
+
+        if (imageUrl != null) {
+            this.imageUrl = imageUrl;
+        }
+
+        if (introduction != null) {
+            this.introduction = introduction;
+        }
     }
 }

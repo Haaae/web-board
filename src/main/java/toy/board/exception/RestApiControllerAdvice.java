@@ -2,6 +2,8 @@ package toy.board.exception;
 
 import java.util.HashMap;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import toy.board.dto.RestResponse;
 import toy.board.exception.login.LoginException;
 
+@Slf4j
 @RestControllerAdvice
 public class RestApiControllerAdvice {
 
@@ -25,10 +28,11 @@ public class RestApiControllerAdvice {
     public ResponseEntity<RestResponse> handleLocalLoginException(LoginException ex) {
         HashMap<String, String> errors = createEmptyErrorMap();
         errors.put(ex.getField(), ex.getDefaultMessage());
+
+        logging(ex.getClass(), ex.getField(), ex.getDefaultMessage());
+
         return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);
     }
-
-
 
     /**
      * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리.
@@ -41,6 +45,15 @@ public class RestApiControllerAdvice {
     public ResponseEntity<RestResponse> handleValidationException(
             MethodArgumentNotValidException ex) {
         HashMap<String, String> errors = mapAllErrorsToMap(ex.getAllErrors());
+
+        ex.getAllErrors().forEach(error ->
+                logging(
+                        error.getClass(),
+                        ((FieldError) error).getField(),
+                        error.getDefaultMessage()
+
+                )
+        );
 
         return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);
     }
@@ -73,5 +86,10 @@ public class RestApiControllerAdvice {
 
     private HashMap<String, String> createEmptyErrorMap() {
         return new HashMap<>();
+    }
+
+    private void logging(final Class clazz, final String field, final String message) {
+        log.info("Occurs exception. exception class: {}, field: {}, error message: {}", clazz, field, message);
+
     }
 }

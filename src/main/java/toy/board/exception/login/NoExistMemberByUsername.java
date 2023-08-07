@@ -1,7 +1,6 @@
 package toy.board.exception.login;
 
 import toy.board.exception.CustomException;
-import toy.board.exception.LoginException;
 
 public class NoExistMemberByUsername extends CustomException implements LoginException {
     private static final String RESOURCE = "username";

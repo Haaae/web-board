@@ -1,6 +1,4 @@
-package toy.board.exception.login;
-
-import lombok.Getter;
+package toy.board.exception;
 
 public interface LoginException {
     static final String FIELD = "login";

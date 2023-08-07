@@ -24,8 +24,8 @@ public class RestApiControllerAdvice {
      * @param ex
      * @return
      */
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<RestResponse> handleLocalLoginException(LoginException ex) {
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<RestResponse> handleLocalLoginException(CustomException ex) {
         HashMap<String, String> errors = createEmptyErrorMap();
         errors.put(ex.getField(), ex.getDefaultMessage());
 

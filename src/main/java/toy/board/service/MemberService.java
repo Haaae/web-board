@@ -66,19 +66,14 @@ public class MemberService {
         // throw custom exception
     }
 
+    public void delete(Long memberId) throws IllegalArgumentException {
+        memberRepository.deleteById(memberId);
+    }
+
     public List<Member> getReferences() {
         return memberRepository.findAll();
     }
 
-    public void delete(Member member) {
-        // TODO: 2023-08-03 Have to implement detail logic
-        // - member
-        memberRepository.delete(member);
-    }
-
-    public void deleteById(Long id) {
-        memberRepository.deleteById(id);
-    }
 
     // update는 변경감지를 통해 수행한다.
 

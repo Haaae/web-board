@@ -15,12 +15,14 @@ import toy.board.dto.login.JoinResponse;
 import toy.board.dto.login.LoginRequest;
 import toy.board.dto.login.WithdrawalRequest;
 import toy.board.entity.user.Member;
+import toy.board.exception.NoExistMemberById;
 import toy.board.exception.NoExistSession;
 import toy.board.exception.NotLoginException;
 import toy.board.service.LoginService;
 import toy.board.service.MemberService;
 import toy.board.session.SessionConst;
 
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -44,6 +46,8 @@ public class MemberController {
             HttpServletRequest request
     ) {
 
+        // TODO: 2023-08-10 test
+
         // valid 실패 시 자동으로 에러 발생하므로 바로 member를 찾는다.
         Member loginMember = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
@@ -51,7 +55,7 @@ public class MemberController {
         // 세션이 있으면 반환, 없으면 생성
         // JESSIONID는 톰캣이 자동으로 발급
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getId());
 
         return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS, null);
     }
@@ -63,23 +67,27 @@ public class MemberController {
     ) {
         String field = "withdrawal";
 
-        // TODO: 2023-08-07 세션 여부, 즉 인증과 인가에 대한 부분을 AOS로 분리하여 공통처리할 것 
+        // TODO: 2023-08-07 세션 여부, 즉 인증과 인가에 대한 부분을 AOS로 분리하여 공통처리할 것
+        // TODO: 2023-08-10 test
+
         // 세션이 존재하는지 확인. 요청에 세션이 없다면 null.
         HttpSession session = request.getSession(false);
 
         // 세션에서 사용자 정보 가져오기. 세션이 null이면 커스텀 예외 throws
         try {
-            Member loginMember = (Member) Objects.requireNonNull(session).getAttribute(SessionConst.LOGIN_MEMBER);
+            Long loginMemberId = (Long) Objects.requireNonNull(session).getAttribute(SessionConst.LOGIN_MEMBER);
 
-            memberService.delete(loginMember);
+            memberService.delete(loginMemberId);
 
-            return RestResponse.createWithResponseEntity(HttpStatus.OK,true, DELETE_SUCCESS, null);
+            return RestResponse.createWithResponseEntity(HttpStatus.OK, true, DELETE_SUCCESS, null);
         } catch (NullPointerException ex) {
             // session이 없는 경우
             throw new NoExistSession(field);
         } catch (IllegalStateException ex) {
             // session에 회원 로그인 정보가 없는 경우
             throw new NotLoginException(field);
+        } catch (IllegalArgumentException ex) {
+            throw new NoExistMemberById(field);
         }
     }
 
@@ -96,6 +104,9 @@ public class MemberController {
      */
     @PostMapping
     public ResponseEntity<RestResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
+
+        // TODO: 2023-08-10 test
+
         Member member = memberService.join(joinRequest.username(), joinRequest.password(), joinRequest.nickname());
 
         // TODO : RestRequest 생성 편의 메서드 구현. JoinRequest를 RestRequest.object에 할당해 전달하려면 Map으로 해야하는지 확인

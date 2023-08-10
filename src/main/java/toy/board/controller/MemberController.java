@@ -3,6 +3,7 @@ package toy.board.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,32 +11,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import toy.board.dto.RestResponse;
-import toy.board.dto.login.JoinRequest;
-import toy.board.dto.login.JoinResponse;
-import toy.board.dto.login.LoginRequest;
-import toy.board.dto.login.WithdrawalRequest;
+import toy.board.dto.login.*;
+import toy.board.dto.user.UsernameExistResponse;
 import toy.board.entity.user.Member;
 import toy.board.exception.NoExistMemberById;
 import toy.board.exception.NoExistSession;
 import toy.board.exception.NotLoginException;
+import toy.board.exception.login.NoExistMemberByUsername;
+import toy.board.repository.MemberRepository;
 import toy.board.service.LoginService;
 import toy.board.service.MemberService;
 import toy.board.session.SessionConst;
 
-import java.util.List;
 import java.util.Objects;
 
 @Controller
 @RequestMapping("/users")
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
 public class MemberController {
 
-    private static final String LOGIN_SUCCESS = "Login Success";
-    private static final String DELETE_SUCCESS = "Delete Success";
-    private static final String JOIN_SUCCESS = "Join Success";
+    private static final String LOGIN_SUCCESS_MESSAGE = "Login Success";
+    private static final String LOGOUT_SUCCESS_MESSAGE = "Logout Success";
+    private static final String DELETE_SUCCESS_MESSAGE = "Delete Success";
+    private static final String JOIN_SUCCESS_MESSAGE = "Join Success";
+    public static final String USER_BY_USERNAME_MESSAGE = "Find User By Username Success";
 
     private final MemberService memberService;
     private final LoginService loginService;
+    private final MemberRepository memberRepository;
 
     // Http Message Body를 객체에 매핑하는 @RequestBody는 객체의 프로퍼티가 하나라도 맞지 않으면 에러가 발생
     // Error Type: MethodArgumentNotValidException.class
@@ -57,7 +60,7 @@ public class MemberController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getId());
 
-        return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS, null);
+        return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS_MESSAGE, null);
     }
 
     @PostMapping("/logout")
@@ -66,7 +69,8 @@ public class MemberController {
 
         try {
             Objects.requireNonNull(request.getSession(false)).invalidate();
-            return RestResponse.createWithResponseEntity(HttpStatus.OK, true, "message", null);
+            return RestResponse.createWithResponseEntity(HttpStatus.OK, true,
+                    LOGOUT_SUCCESS_MESSAGE, null);
         } catch (NullPointerException ex) {
             // session이 없는 경우
             throw new NoExistSession(field);
@@ -92,7 +96,8 @@ public class MemberController {
 
             memberService.delete(loginMemberId);
 
-            return RestResponse.createWithResponseEntity(HttpStatus.OK, true, DELETE_SUCCESS, null);
+            return RestResponse.createWithResponseEntity(HttpStatus.OK, true,
+                    DELETE_SUCCESS_MESSAGE, null);
         } catch (NullPointerException ex) {
             // session이 없는 경우
             throw new NoExistSession(field);
@@ -123,7 +128,18 @@ public class MemberController {
 
         Member member = memberService.join(joinRequest.username(), joinRequest.password(), joinRequest.nickname());
 
-        // TODO : RestRequest 생성 편의 메서드 구현. JoinRequest를 RestRequest.object에 할당해 전달하려면 Map으로 해야하는지 확인
-        return RestResponse.createWithResponseEntity(HttpStatus.CREATED, true, JOIN_SUCCESS, JoinResponse.of(member));
+        return RestResponse.createWithResponseEntity(HttpStatus.CREATED, true, JOIN_SUCCESS_MESSAGE, JoinResponse.of(member));
+    }
+
+    @GetMapping("/usernames/{username}")
+    public ResponseEntity<RestResponse> userByUsername(@PathVariable String username) {
+        Optional<Member> member = memberRepository.findMemberByUsername(username);
+
+        return RestResponse.createWithResponseEntity(
+                HttpStatus.OK,
+                true,
+                USER_BY_USERNAME_MESSAGE,
+                UsernameExistResponse.of(member.orElseThrow(() -> new NoExistMemberByUsername("usernames")))
+        );
     }
 }

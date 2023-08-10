@@ -12,9 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import toy.board.dto.RestResponse;
 import toy.board.dto.login.*;
-import toy.board.dto.user.UsernameExistResponse;
+import toy.board.dto.user.FindUserResponse;
 import toy.board.entity.user.Member;
 import toy.board.exception.NoExistMemberById;
+import toy.board.exception.NoExistMemberByNickname;
 import toy.board.exception.NoExistSession;
 import toy.board.exception.NotLoginException;
 import toy.board.exception.login.NoExistMemberByUsername;
@@ -35,6 +36,7 @@ public class MemberController {
     private static final String DELETE_SUCCESS_MESSAGE = "Delete Success";
     private static final String JOIN_SUCCESS_MESSAGE = "Join Success";
     public static final String USER_BY_USERNAME_MESSAGE = "Find User By Username Success";
+    public static final String USER_BY_NICKNAME_MESSAGE = "Find User By Nick Success";
 
     private final MemberService memberService;
     private final LoginService loginService;
@@ -52,7 +54,8 @@ public class MemberController {
         // TODO: 2023-08-10 test
 
         // valid 실패 시 자동으로 에러 발생하므로 바로 member를 찾는다.
-        Member loginMember = loginService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        Member loginMember = loginService.login(loginRequest.getUsername(),
+                loginRequest.getPassword());
 
         // 찾은 member를 세션에 넣어준다.
         // 세션이 있으면 반환, 없으면 생성
@@ -60,7 +63,8 @@ public class MemberController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getId());
 
-        return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS_MESSAGE, null);
+        return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS_MESSAGE,
+                null);
     }
 
     @PostMapping("/logout")
@@ -92,7 +96,8 @@ public class MemberController {
 
         // 세션에서 사용자 정보 가져오기. 세션이 null이면 커스텀 예외 throws
         try {
-            Long loginMemberId = (Long) Objects.requireNonNull(session).getAttribute(SessionConst.LOGIN_MEMBER);
+            Long loginMemberId = (Long) Objects.requireNonNull(session)
+                    .getAttribute(SessionConst.LOGIN_MEMBER);
 
             memberService.delete(loginMemberId);
 
@@ -126,20 +131,38 @@ public class MemberController {
 
         // TODO: 2023-08-10 test
 
-        Member member = memberService.join(joinRequest.username(), joinRequest.password(), joinRequest.nickname());
+        Member member = memberService.join(joinRequest.username(), joinRequest.password(),
+                joinRequest.nickname());
 
-        return RestResponse.createWithResponseEntity(HttpStatus.CREATED, true, JOIN_SUCCESS_MESSAGE, JoinResponse.of(member));
+        return RestResponse.createWithResponseEntity(HttpStatus.CREATED, true, JOIN_SUCCESS_MESSAGE,
+                JoinResponse.of(member));
     }
 
     @GetMapping("/usernames/{username}")
-    public ResponseEntity<RestResponse> userByUsername(@PathVariable String username) {
+    public ResponseEntity<RestResponse> findUserByUsername(@PathVariable String username) {
+        // TODO: 2023-08-10 test 
         Optional<Member> member = memberRepository.findMemberByUsername(username);
 
         return RestResponse.createWithResponseEntity(
                 HttpStatus.OK,
                 true,
                 USER_BY_USERNAME_MESSAGE,
-                UsernameExistResponse.of(member.orElseThrow(() -> new NoExistMemberByUsername("usernames")))
+                FindUserResponse.of(
+                        member.orElseThrow(() -> new NoExistMemberByUsername("find user by username")))
+        );
+    }
+
+    @GetMapping("/nicknames/{nickname}")
+    public ResponseEntity<RestResponse> findUserByNickname(@PathVariable String nickname) {
+        // TODO: 2023-08-10 test
+        Optional<Member> member = memberRepository.findMemberByNickname(nickname);
+
+        return RestResponse.createWithResponseEntity(
+                HttpStatus.OK,
+                true,
+                USER_BY_NICKNAME_MESSAGE,
+                FindUserResponse.of(
+                        member.orElseThrow(() -> new NoExistMemberByNickname("find user by nickname")))
         );
     }
 }

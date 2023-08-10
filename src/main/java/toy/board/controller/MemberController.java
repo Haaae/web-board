@@ -13,12 +13,15 @@ import toy.board.dto.RestResponse;
 import toy.board.dto.login.JoinRequest;
 import toy.board.dto.login.JoinResponse;
 import toy.board.dto.login.LoginRequest;
+import toy.board.dto.login.WithdrawalRequest;
 import toy.board.entity.user.Member;
+import toy.board.exception.NoExistSession;
+import toy.board.exception.NotLoginException;
 import toy.board.service.LoginService;
 import toy.board.service.MemberService;
 import toy.board.session.SessionConst;
 
-import java.util.Optional;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/users")
@@ -50,56 +53,52 @@ public class MemberController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
 
-        return ResponseEntity.ok(
-                RestResponse.builder()
-                        .success(true)
-                        .message(LOGIN_SUCCESS)
-                        .build()
-        );
+        return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS, null);
     }
 
-    @DeleteMapping("/users/{userid}")
-    public ResponseEntity<RestResponse> withdrawal(@PathVariable Long userid) {
+    @DeleteMapping
+    public ResponseEntity<RestResponse> withdrawal(
+            @RequestBody @Valid WithdrawalRequest withdrawalRequest,
+            HttpServletRequest request
+    ) {
+        String field = "withdrawal";
 
-        // TODO: 2023-08-03 session을 이용해서 구현해야 하는지 확인. 인프런 질문 올려놨음. 만약 그렇지 않고 지금이 맞다면 에러 클래스 생성
-        Optional<Member> member = memberService.findMember(userid);
+        // TODO: 2023-08-07 세션 여부, 즉 인증과 인가에 대한 부분을 AOS로 분리하여 공통처리할 것 
+        // 세션이 존재하는지 확인. 요청에 세션이 없다면 null.
+        HttpSession session = request.getSession(false);
 
-        // MemberService.findmember()는 withdrwal만 사용하는 것이 아니기 때문에 withdrwal()에 종속적인 예외를 발생시키기 어렵다.
-        // 클라이언트 입력 오류로 인한 에러임을 명확히 다루기 위해서는 controller에서 다루는 것이 책임 측면에서 옳다고 판단.
-        member.ifPresentOrElse(memberService::delete, IllegalArgumentException::new);
+        // 세션에서 사용자 정보 가져오기. 세션이 null이면 커스텀 예외 throws
+        try {
+            Member loginMember = (Member) Objects.requireNonNull(session).getAttribute(SessionConst.LOGIN_MEMBER);
 
-        return ResponseEntity.ok(
-                RestResponse.builder()
-                        .success(true)
-                        .message(DELETE_SUCCESS)
-                        .build()
-        );
+            memberService.delete(loginMember);
+
+            return RestResponse.createWithResponseEntity(HttpStatus.OK,true, DELETE_SUCCESS, null);
+        } catch (NullPointerException ex) {
+            // session이 없는 경우
+            throw new NoExistSession(field);
+        } catch (IllegalStateException ex) {
+            // session에 회원 로그인 정보가 없는 경우
+            throw new NotLoginException(field);
+        }
     }
 
-        /*  회원가입시 필요한 정보
+    /*  회원가입시 필요한 정보
 
-            필수 정보
-                - username(Login.class)
-                - Password(Login.class)
-                - Nickname(Profile.class)
+        필수 정보
+            - username(Login.class)
+            - Password(Login.class)
+            - Nickname(Profile.class)
 
-            선택 입력 정보
-                - 본인인증 정보
+        선택 입력 정보
+            - 본인인증 정보
 
-         */
+     */
     @PostMapping
     public ResponseEntity<RestResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
         Member member = memberService.join(joinRequest.username(), joinRequest.password(), joinRequest.nickname());
 
         // TODO : RestRequest 생성 편의 메서드 구현. JoinRequest를 RestRequest.object에 할당해 전달하려면 Map으로 해야하는지 확인
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(
-                        RestResponse.builder()
-                                .success(true)
-                                .message(JOIN_SUCCESS)
-                                .object(JoinResponse.of(member))
-                                .build()
-        );
+        return RestResponse.createWithResponseEntity(HttpStatus.CREATED, true, JOIN_SUCCESS, JoinResponse.of(member));
     }
 }

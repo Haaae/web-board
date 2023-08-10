@@ -46,7 +46,13 @@ public class RestApiControllerAdvice {
             MethodArgumentNotValidException ex) {
         HashMap<String, String> errors = mapAllErrorsToMap(ex.getAllErrors());
 
-        ex.getAllErrors().forEach(error ->
+        logErrors(ex.getAllErrors());
+
+        return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);
+    }
+
+    private void logErrors(List<ObjectError> errors) {
+        errors.forEach(error ->
                 logging(
                         error.getClass(),
                         ((FieldError) error).getField(),
@@ -54,8 +60,6 @@ public class RestApiControllerAdvice {
 
                 )
         );
-
-        return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);
     }
 
     private HashMap<String, String> mapAllErrorsToMap(List<ObjectError> allErrors) {
@@ -89,7 +93,6 @@ public class RestApiControllerAdvice {
     }
 
     private void logging(final Class clazz, final String field, final String message) {
-        log.info("Occurs exception. exception class: {}, field: {}, error message: {}", clazz, field, message);
-
+        log.info("=== Occurs exception. exception class: {}, field: {}, error message: {} ===", clazz, field, message);
     }
 }

@@ -56,7 +56,7 @@ class LoginServiceTest {
 
     @DisplayName("멤버의 로그인 타입이 로컬로그인이 아님")
     @Test
-    public void not_match_member_login_type() throws  Exception {
+    public void not_match_member_login_type() throws Exception {
         Member findMember = createMember(LoginType.SOCIAL_LOGIN);
 
 //        doReturn(Optional.create(findMember)).when(memberRepository).findMemberByUsername(anyString());

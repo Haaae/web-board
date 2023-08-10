@@ -60,6 +60,19 @@ public class MemberController {
         return RestResponse.createWithResponseEntity(HttpStatus.OK, true, LOGIN_SUCCESS, null);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<RestResponse> logout(HttpServletRequest request) {
+        String field = "logout";
+
+        try {
+            Objects.requireNonNull(request.getSession(false)).invalidate();
+            return RestResponse.createWithResponseEntity(HttpStatus.OK, true, "message", null);
+        } catch (NullPointerException ex) {
+            // session이 없는 경우
+            throw new NoExistSession(field);
+        }
+    }
+
     @DeleteMapping
     public ResponseEntity<RestResponse> withdrawal(
             @RequestBody @Valid WithdrawalRequest withdrawalRequest,
@@ -67,7 +80,7 @@ public class MemberController {
     ) {
         String field = "withdrawal";
 
-        // TODO: 2023-08-07 세션 여부, 즉 인증과 인가에 대한 부분을 AOS로 분리하여 공통처리할 것
+        // TODO: 2023-08-07 세션 여부, 즉 인증과 인가에 대한 부분을 AOS(혹은 필터)로 분리하여 공통처리할 것
         // TODO: 2023-08-10 test
 
         // 세션이 존재하는지 확인. 요청에 세션이 없다면 null.
@@ -87,6 +100,7 @@ public class MemberController {
             // session에 회원 로그인 정보가 없는 경우
             throw new NotLoginException(field);
         } catch (IllegalArgumentException ex) {
+            // memberId에 맞는 회원이 db에서 조회되지 않을 경우
             throw new NoExistMemberById(field);
         }
     }

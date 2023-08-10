@@ -28,7 +28,7 @@ public class LoginService {
         Optional<Member> findMember = memberRepository.findMemberByUsername(username);
         return findMember
                 .map(member -> validateLoginTypeAndPassword(password, member))
-                .orElseThrow(NoExistMemberByUsername::new);
+                .orElseThrow(() -> new NoExistMemberByUsername("login"));
     }
 
     private Member validateLoginTypeAndPassword(String password, Member member) {

@@ -19,11 +19,9 @@ import toy.board.entity.user.LoginType;
 import toy.board.entity.user.Member;
 import toy.board.entity.user.Profile;
 import toy.board.entity.user.UserRole;
+import toy.board.exception.BusinessException;
 import toy.board.repository.LoginRepository;
 import toy.board.repository.MemberRepository;
-import toy.board.exception.login.NoExistMemberByUsername;
-import toy.board.exception.login.NotMatchLoginType;
-import toy.board.exception.login.NotMatchPassword;
 import toy.board.service.LoginService;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +48,7 @@ class LoginServiceTest {
         doReturn(findMember).when(memberRepository).findMemberByUsername(anyString());
 
         //then
-        assertThrows(NoExistMemberByUsername.class,
+        assertThrows(BusinessException.class,
                 () -> loginService.login(username, password));
     }
 
@@ -64,7 +62,7 @@ class LoginServiceTest {
                 .willReturn(Optional.of(findMember));
 
         //then
-        assertThrows(NotMatchLoginType.class, () -> loginService.login(username, password));
+        assertThrows(BusinessException.class, () -> loginService.login(username, password));
     }
 
     @DisplayName("패스워드 불일치")
@@ -77,7 +75,7 @@ class LoginServiceTest {
         String wrongPassword = "not match password";
 
         //then
-        assertThrows(NotMatchPassword.class, () -> loginService.login(username, wrongPassword));
+        assertThrows(BusinessException.class, () -> loginService.login(username, wrongPassword));
     }
 
     private Member createMember(LoginType loginType) {

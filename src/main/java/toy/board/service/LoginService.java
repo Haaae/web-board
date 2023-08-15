@@ -6,10 +6,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import toy.board.entity.user.LoginType;
 import toy.board.entity.user.Member;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
 import toy.board.repository.MemberRepository;
-import toy.board.exception.login.NoExistMemberByUsername;
-import toy.board.exception.login.NotMatchLoginType;
-import toy.board.exception.login.NotMatchPassword;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +27,16 @@ public class LoginService {
         Optional<Member> findMember = memberRepository.findMemberByUsername(username);
         return findMember
                 .map(member -> validateLoginTypeAndPassword(password, member))
-                .orElseThrow(() -> new NoExistMemberByUsername("login"));
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 
     private Member validateLoginTypeAndPassword(String password, Member member) {
         if (isLoginTypeNotMatch(member)) {
-            throw new NotMatchLoginType();
+            throw new BusinessException(ExceptionCode.NOT_MATCH_LOGIN_TYPE);
         }
 
         if (isPasswordNotMatch(password, member)) {
-            throw new NotMatchPassword();
+            throw new BusinessException(ExceptionCode.NOT_MATCH_PASSWORD);
         }
 
         return member;

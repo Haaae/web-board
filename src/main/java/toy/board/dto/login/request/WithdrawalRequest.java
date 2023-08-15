@@ -1,4 +1,4 @@
-package toy.board.dto.login;
+package toy.board.dto.login.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

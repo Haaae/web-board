@@ -1,98 +1,90 @@
 package toy.board.exception;
 
-import java.util.HashMap;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import toy.board.dto.RestResponse;
-import toy.board.exception.login.LoginException;
+import toy.board.dto.ErrorResponse;
 
 @Slf4j
 @RestControllerAdvice
 public class RestApiControllerAdvice {
 
-    private static final String VALIDATION_EXCEPTION_MESSAGE = "유효한 데이터가 아닙니다. 타입, 길이 등의 제약사항을 확인바랍니다.";
-
-    /**
-     * controller에서 오류가 발생했을 때, 발생한 오류의 클래스타입에 따라 오류 처리 지정
-     * @param ex
-     * @return
-     */
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<RestResponse> handleLocalLoginException(CustomException ex) {
-        HashMap<String, String> errors = createEmptyErrorMap();
-        errors.put(ex.getField(), ex.getDefaultMessage());
-
-        logging(ex.getClass(), ex.getField(), ex.getDefaultMessage());
-
-        return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);
-    }
-
     /**
      * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리.
      * Bean Validation 중 발생한 오류는 자동으로 BindingReslut에 담기므로
      * BindingResult의 모든 필드에러를 RestResponse.object로 반환
-     * @param ex
+     * @param e
      * @return
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<RestResponse> handleValidationException(
-            MethodArgumentNotValidException ex) {
-        HashMap<String, String> errors = mapAllErrorsToMap(ex.getAllErrors());
+    public ResponseEntity<ErrorResponse> handleValidationException(
+            MethodArgumentNotValidException e) {
+        ExceptionCode errorCode = ExceptionCode.INVALID_INPUT_VALUE;
 
-        logErrors(ex.getAllErrors());
+        logAll(e);
+        String message = buildMessage(e);
 
-        return createBadRequestResponseEntityWithErrorsAndMessage(errors, VALIDATION_EXCEPTION_MESSAGE);
-    }
-
-    private void logErrors(List<ObjectError> errors) {
-        errors.forEach(error ->
-                logging(
-                        error.getClass(),
-                        ((FieldError) error).getField(),
-                        error.getDefaultMessage()
-
-                )
+        return new ResponseEntity<>(
+                new ErrorResponse(errorCode.getCode(), message),
+                HttpStatus.valueOf(errorCode.getStatus())
         );
     }
 
-    private HashMap<String, String> mapAllErrorsToMap(List<ObjectError> allErrors) {
-        HashMap<String, String> errors = createEmptyErrorMap();
+    /**
+     * controller에서 오류가 발생했을 때, 발생한 오류의 클래스타입에 따라 오류 처리 지정
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessLogicException(BusinessException e) {
+        ExceptionCode code = e.getCode();
 
-        allErrors.forEach(error ->
-                errors.put(
-                        ((FieldError) error).getField(),
-                        error.getDefaultMessage()
-                )
-        );
+        logging(e.getClass().getSimpleName(), code.getCode(), code.getDescription());
 
-        return errors;
-    }
-
-    private ResponseEntity<RestResponse> createBadRequestResponseEntityWithErrorsAndMessage(
-            HashMap<String, String> errors,
-            String message
-    ) {
-        return ResponseEntity.badRequest().body(
-                RestResponse.builder()
-                        .success(false)
-                        .message(message)
-                        .object(errors)
-                        .build()
+        return new ResponseEntity<>(
+                new ErrorResponse(code.getCode(), code.getDescription()),
+                HttpStatus.valueOf(code.getStatus())
         );
     }
 
-    private HashMap<String, String> createEmptyErrorMap() {
-        return new HashMap<>();
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+        ExceptionCode code = ExceptionCode.INTERNAL_SERVER_ERROR;
+
+        logging(e.getClass().getSimpleName(), code.getCode(), code.getDescription());
+
+        ErrorResponse response = new ErrorResponse(code.getCode(), e.getMessage());
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(code.getStatus()));
     }
 
-    private void logging(final Class clazz, final String field, final String message) {
-        log.info("=== Occurs exception. exception class: {}, field: {}, error message: {} ===", clazz, field, message);
+    private void logAll(MethodArgumentNotValidException e) {
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            logging(fieldError.getObjectName(), fieldError.getField(),
+                    fieldError.getDefaultMessage());
+        }
+    }
+
+    private String buildMessage(MethodArgumentNotValidException e) {
+        BindingResult bindingResult = e.getBindingResult();
+        StringBuilder builder = new StringBuilder();
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            builder.append("[");
+            builder.append(fieldError.getField());
+            builder.append("](은)는 ");
+            builder.append(fieldError.getDefaultMessage());
+            builder.append(". ");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        return builder.toString();
+    }
+
+    private void logging(final String className, final String field, final String message) {
+        log.info("=== Occurs exception. exception class: {}, field: {}, error message: {} ===", className, field, message);
     }
 }

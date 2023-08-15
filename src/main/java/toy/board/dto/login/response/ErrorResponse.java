@@ -1,4 +1,4 @@
-package toy.board.dto.login;
+package toy.board.dto.login.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

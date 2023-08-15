@@ -1,13 +1,14 @@
 package toy.board.config;
 
+import jakarta.annotation.PostConstruct;
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 public class EmailConfig {
 
     @Value("${spring.mail.host}")
@@ -40,8 +41,21 @@ public class EmailConfig {
     @Value("${spring.mail.properties.mail.smtp.write-timeout}")
     private int writeTimeout;
 
+    @PostConstruct
+    public void init() {
+//        System.out.println("==================================================");
+//        System.out.println("==================================================");
+//        System.out.println("host = " + host);
+//        System.out.println("port = " + port);
+//        System.out.println("username = " + username);
+//        System.out.println("==================================================");
+//        System.out.println("==================================================");
+
+    }
+
     @Bean
     public JavaMailSender javaMailSender() {
+
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(host);
         mailSender.setPort(port);

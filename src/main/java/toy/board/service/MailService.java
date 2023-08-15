@@ -7,7 +7,8 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import toy.board.exception.UnableToSendEmail;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,7 +25,7 @@ public class MailService {
         } catch (MailException e) {
             log.debug("MailService.sendEmail exception occur toEmail: {}, " +
                     "title: {}, text: {}", toEMail, title, text);
-            throw new UnableToSendEmail("email");
+            throw new BusinessException(ExceptionCode.UNABLE_TO_SEND_EMAIL);
         }
 
     }

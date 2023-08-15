@@ -11,7 +11,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findMemberById(Long id);
 
-    // TODO: 2023-08-10 test 
+    // TODO: 2023-08-10 test
     @Query("select m from Member m where m.profile.nickname = :nickname")
     Optional<Member> findMemberByNickname(String nickname);
 }

@@ -36,6 +36,4 @@ public class RedisService {
     public void deleteValues(String key){
         redisTemplate.delete(key);
     }
-
-
 }

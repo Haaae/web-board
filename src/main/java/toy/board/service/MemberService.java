@@ -1,9 +1,14 @@
 package toy.board.service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,27 +17,28 @@ import toy.board.entity.user.LoginType;
 import toy.board.entity.user.Member;
 import toy.board.entity.user.Profile;
 import toy.board.entity.user.UserRole;
-import toy.board.exception.login.NoExistMemberByUsername;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
 import toy.board.repository.MemberRepository;
 
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final MailService mailService;
+    private final RedisService redisService;
+
+    @Value("${spring.mail.properties.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
+    private final String REDIS_PREFIX = "AuthCode";
+    private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
 
     public Member save(Member member) {
         return memberRepository.save(member);
-    }
-
-    // entity를 처음 가져와야 하는 상황에서는 entity 객체가 없으므로 ById를 사용해야 한다.
-    public Optional<Member> findMemberById(Long id) {
-        // memberRepository.getById(member.getId()) 사용하지 않음
-        // findMember()는 메서드 실행 시 DB에 접근하지 않고 프록시 객체를 반환한다.
-        return memberRepository.findMemberById(id);
-
     }
 
     /*
@@ -42,10 +48,9 @@ public class MemberService {
     public Member join(String username, String password, String nickname) {
 
         // username 중복 검사
-        validateUsernameDuplication(username);
-
+        validationDuplicateUsername(username);
         // nickname 중복 검사
-        validateNicknameDuplication(nickname);
+        validateDuplicateNickname(nickname);
 
         // Create entity
         Profile profile = Profile.builder().nickname(nickname).build();
@@ -58,28 +63,63 @@ public class MemberService {
         return member;
     }
 
-
-    private void validateUsernameDuplication(String username) {
-        // throw custom exception
-
-
+    public void sendCodeToEmail(final String email) {
+        validateDuplicateEmail(email);
+        String authCode = createAuthCode();
+        mailService.sendMail(email, EMAIL_TITLE, authCode);
+        // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
+        redisService.setValues(REDIS_PREFIX + email, authCode, authCodeExpirationMillis);
     }
 
-    private void validateNicknameDuplication(String nickname) {
-        // throw custom exception
-    }
-
-    public void delete(Long memberId) throws IllegalArgumentException {
-        memberRepository.deleteById(memberId);
-
-
+    public boolean verifiedCode(final String email, final String authCode) {
+        validateDuplicateEmail(email);
+        return redisService.deleteIfExistAndSame(REDIS_PREFIX + email, authCode);
     }
 
     public List<Member> getReferences() {
         return memberRepository.findAll();
     }
 
-    // update는 변경감지를 통해 수행한다.
 
-    // CRUD
+    private String createAuthCode() {
+        int length = 6;
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                builder.append(random.nextInt(10));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            log.debug("=== MemberService.createCode() exception occur ===");
+            throw new BusinessException(ExceptionCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void validateDuplicateEmail(final String email) {
+        Optional<Member> member = memberRepository.findMemberByUsername(email);
+        if (member.isPresent()) {
+            log.debug("=== MemberServiceImpl.validateDuplicateEmail exception occur email: {} ===", email);
+            throw new BusinessException(ExceptionCode.DUPLICATE_USERNAME);
+        }
+    }
+
+    private void validationDuplicateUsername(final String username) {
+        Optional<Member> member = memberRepository.findMemberByUsername(username);
+
+        if (member.isPresent()) {
+            log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), username);
+            throw new BusinessException(ExceptionCode.DUPLICATE_USERNAME);
+        }
+    }
+
+    private void validateDuplicateNickname(final String nickname) {
+        Optional<Member> member = memberRepository.findMemberByNickname(nickname);
+
+        if (member.isPresent()) {
+            log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), nickname);
+            throw new BusinessException(ExceptionCode.DUPLICATE_NICKNAME);
+        }
+    }
+
 }

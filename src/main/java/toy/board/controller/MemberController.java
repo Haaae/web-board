@@ -22,7 +22,7 @@ import toy.board.dto.user.FindUserResponse;
 import toy.board.entity.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.repository.MemberRepository;
+import toy.board.repository.member.MemberRepository;
 import toy.board.service.LoginService;
 import toy.board.service.MemberService;
 import toy.board.session.SessionConst;

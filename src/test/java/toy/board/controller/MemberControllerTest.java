@@ -27,7 +27,6 @@ class MemberControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @Test
     public void join_success() throws Exception {
         //given
@@ -47,6 +46,4 @@ class MemberControllerTest {
 
                 .andDo(MockMvcResultHandlers.print());
     }
-
-
 }

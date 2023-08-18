@@ -11,9 +11,13 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@EnableTransactionManagement // @Transaction을 사용하기 위함
 public class RedisConfig {
     private RedisConnectionFactory redisConnectionFactory;
 
@@ -40,6 +44,9 @@ public class RedisConfig {
 
     @PostConstruct
     public void init() {
+        System.out.println("host = " + host);
+        System.out.println("port = " + port);
+
         this.redisConnectionFactory = new LettuceConnectionFactory(host, port);
     }
 
@@ -59,5 +66,14 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());
         return template;
+    }
+
+    /*
+    redis에 @Transaction 어노테이션을 사용하기 위함
+    잘못 사용하면 전체 데이터 롤백된다.
+     */
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new JpaTransactionManager();
     }
 }

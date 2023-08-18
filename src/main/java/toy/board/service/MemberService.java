@@ -39,6 +39,7 @@ public class MemberService {
     DB 중복 검사에 관한 글
     : https://www.inflearn.com/questions/59250/%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94-unique-index-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%80%EC%9E%A5%EC%97%90-%EB%8C%80%ED%95%B4%EC%84%9C-%EC%A7%88%EB%AC%B8%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4
      */
+    @Transactional
     public Member join(String username, String password, String nickname) {
 
         // username 중복 검사
@@ -65,6 +66,7 @@ public class MemberService {
         redisService.setValues(REDIS_PREFIX + email, authCode, authCodeExpirationMillis);
     }
 
+    @Transactional
     public boolean verifiedCode(final String email, final String authCode) {
         validateDuplicateUsername(email);
         return redisService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);

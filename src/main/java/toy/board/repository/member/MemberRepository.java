@@ -1,11 +1,12 @@
-package toy.board.repository;
+package toy.board.repository.member;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import toy.board.entity.user.Member;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberQueryRepository {
 
     Optional<Member> findMemberByUsername(String username);
 
@@ -13,5 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // TODO: 2023-08-10 test
     @Query("select m from Member m where m.profile.nickname = :nickname")
-    Optional<Member> findMemberByNickname(String nickname);
+    Optional<Member> findMemberByNickname(@Param("nickname")String nickname);
+
+    boolean existsByUsername(String username);
 }

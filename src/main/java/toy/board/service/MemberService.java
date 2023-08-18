@@ -2,8 +2,6 @@ package toy.board.service;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.List;
-import java.util.Optional;
 
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,7 @@ import toy.board.entity.user.Profile;
 import toy.board.entity.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.repository.MemberRepository;
+import toy.board.repository.member.MemberRepository;
 
 @Transactional(readOnly = true)
 @Service
@@ -37,10 +35,6 @@ public class MemberService {
     private final String REDIS_PREFIX = "AuthCode";
     private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
 
-    public Member save(Member member) {
-        return memberRepository.save(member);
-    }
-
     /*
     DB 중복 검사에 관한 글
     : https://www.inflearn.com/questions/59250/%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94-unique-index-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EC%A0%80%EC%9E%A5%EC%97%90-%EB%8C%80%ED%95%B4%EC%84%9C-%EC%A7%88%EB%AC%B8%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4
@@ -48,7 +42,7 @@ public class MemberService {
     public Member join(String username, String password, String nickname) {
 
         // username 중복 검사
-        validationDuplicateUsername(username);
+        validateDuplicateUsername(username);
         // nickname 중복 검사
         validateDuplicateNickname(nickname);
 
@@ -64,7 +58,7 @@ public class MemberService {
     }
 
     public void sendCodeToEmail(final String email) {
-        validateDuplicateEmail(email);
+        validateDuplicateUsername(email);
         String authCode = createAuthCode();
         mailService.sendMail(email, EMAIL_TITLE, authCode);
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
@@ -72,14 +66,9 @@ public class MemberService {
     }
 
     public boolean verifiedCode(final String email, final String authCode) {
-        validateDuplicateEmail(email);
-        return redisService.deleteIfExistAndSame(REDIS_PREFIX + email, authCode);
+        validateDuplicateUsername(email);
+        return redisService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
     }
-
-    public List<Member> getReferences() {
-        return memberRepository.findAll();
-    }
-
 
     private String createAuthCode() {
         int length = 6;
@@ -96,27 +85,15 @@ public class MemberService {
         }
     }
 
-    private void validateDuplicateEmail(final String email) {
-        Optional<Member> member = memberRepository.findMemberByUsername(email);
-        if (member.isPresent()) {
-            log.debug("=== MemberServiceImpl.validateDuplicateEmail exception occur email: {} ===", email);
-            throw new BusinessException(ExceptionCode.DUPLICATE_USERNAME);
-        }
-    }
-
-    private void validationDuplicateUsername(final String username) {
-        Optional<Member> member = memberRepository.findMemberByUsername(username);
-
-        if (member.isPresent()) {
+    private void validateDuplicateUsername(final String username) {
+        if (memberRepository.existsByUsername(username)) {
             log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), username);
             throw new BusinessException(ExceptionCode.DUPLICATE_USERNAME);
         }
     }
 
     private void validateDuplicateNickname(final String nickname) {
-        Optional<Member> member = memberRepository.findMemberByNickname(nickname);
-
-        if (member.isPresent()) {
+        if (memberRepository.existsByNickname(nickname)) {
             log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), nickname);
             throw new BusinessException(ExceptionCode.DUPLICATE_NICKNAME);
         }

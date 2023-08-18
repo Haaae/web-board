@@ -4,14 +4,16 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import toy.board.entity.user.LoginType;
 import toy.board.entity.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.repository.MemberRepository;
+import toy.board.repository.member.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class LoginService {
 
     private final MemberRepository memberRepository;
@@ -21,7 +23,7 @@ public class LoginService {
      * member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      * @param username
      * @param password
-     * @return
+     * @return NotNull
      */
     public Member login(String username, String password) {
         Optional<Member> findMember = memberRepository.findMemberByUsername(username);

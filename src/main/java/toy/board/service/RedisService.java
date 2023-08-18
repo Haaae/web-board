@@ -1,16 +1,15 @@
 package toy.board.service;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.repository.RedisRepository;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@Transactional(readOnly = true)
 public class RedisService {
 
     private final RedisRepository redisRepository;
@@ -22,7 +21,7 @@ public class RedisService {
      * @return return true if values exist in DB and same to parameter with delete it.
      */
     @Transactional
-    public boolean deleteIfExistAndSame(final String key, final String values) {
+    public boolean deleteIfValueExistAndEqualTo(final String key, final String values) {
         boolean isDeleted = false;
         Optional<String> findValues = redisRepository.getValues(key);
 
@@ -31,6 +30,11 @@ public class RedisService {
         }
 
         return isDeleted;
+    }
+
+    @Transactional
+    public void setValues(final String key, final String value, final Long expiredTime) {
+        redisRepository.setValues(key, value, expiredTime);
     }
 
     private boolean isEquals(final String values, final Optional<String> findValues) {

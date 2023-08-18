@@ -1,4 +1,4 @@
-package toy.board.domain.login.service;
+package toy.board.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -21,8 +21,7 @@ import toy.board.entity.user.Profile;
 import toy.board.entity.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.repository.LoginRepository;
-import toy.board.repository.MemberRepository;
-import toy.board.service.LoginService;
+import toy.board.repository.member.MemberRepository;
 
 @ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
@@ -43,7 +42,7 @@ class LoginServiceTest {
 
     @DisplayName("입력한 아이디와 일치하는 멤버가 없음")
     @Test
-    public void member_no_exist_test() throws Exception {
+    public void login_member_no_exist_test() throws Exception {
         Optional<Member> findMember = Optional.ofNullable(null);
         doReturn(findMember).when(memberRepository).findMemberByUsername(anyString());
 
@@ -54,7 +53,7 @@ class LoginServiceTest {
 
     @DisplayName("멤버의 로그인 타입이 로컬로그인이 아님")
     @Test
-    public void not_match_member_login_type() throws Exception {
+    public void login_not_match_member_login_type() throws Exception {
         Member findMember = createMember(LoginType.SOCIAL_LOGIN);
 
 //        doReturn(Optional.create(findMember)).when(memberRepository).findMemberByUsername(anyString());

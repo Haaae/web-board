@@ -44,9 +44,6 @@ public class RedisConfig {
 
     @PostConstruct
     public void init() {
-        System.out.println("host = " + host);
-        System.out.println("port = " + port);
-
         this.redisConnectionFactory = new LettuceConnectionFactory(host, port);
     }
 

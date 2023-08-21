@@ -1,4 +1,4 @@
-package toy.board.domain.login.entity.user;
+package toy.board.entity.user;
 
 import static org.assertj.core.api.Assertions.*;
 

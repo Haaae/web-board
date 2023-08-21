@@ -9,7 +9,6 @@ import toy.board.entity.Agree;
 import toy.board.entity.BaseEntity;
 
 @Entity
-@Table(catalog = "user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Authentication extends BaseEntity {

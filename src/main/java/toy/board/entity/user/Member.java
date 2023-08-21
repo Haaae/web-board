@@ -10,7 +10,6 @@ import toy.board.entity.auth.SocialLogin;
 
 @Entity
 @Getter
-//@Table(catalog = "user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"login"})
 public class Member extends BaseEntity {
@@ -38,7 +37,11 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.PERSIST,
+            orphanRemoval = true
+    )
     @JoinColumn(name = "profile_id", nullable = false, unique = true)
     private Profile profile;
 
@@ -50,7 +53,11 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "social_login_id", unique = true)
     private SocialLogin socialLogin;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToOne(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.PERSIST,
+            orphanRemoval = true
+    )
     @JoinColumn(name = "login_id", unique = true)
     private Login login;
 

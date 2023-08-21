@@ -5,7 +5,6 @@ import lombok.Getter;
 import toy.board.entity.BaseTimeEntity;
 
 @Entity
-@Table(catalog = "auth")
 @Getter
 public class Cidi extends BaseTimeEntity {
 

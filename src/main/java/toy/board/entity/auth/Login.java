@@ -7,16 +7,13 @@ import toy.board.entity.BaseEntity;
 import toy.board.entity.user.Member;
 
 @Entity
-//@Table(catalog = "auth")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"member"})
 public class Login extends BaseEntity {
 
     @Transient
-    private static final int SOLT_LENGTH = 128;
-    @Transient
-    private static final int PASSWORD_LENGTH = 128;
+    private static final int PASSWORD_LENGTH = 20;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +40,4 @@ public class Login extends BaseEntity {
     public void changeMember(Member member) {
         this.member = member;
     }
-
-//    @Column(name = "solt", nullable = false, length = SOLT_LENGTH)
-//    private String solt;
 }

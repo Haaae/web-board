@@ -27,7 +27,7 @@ public class Profile extends BaseEntity {
     @Transient
     private static final int INTRODUCTION_LENGTH = 300;
     @Transient
-    private static final int NICKNAME_LENGTH = 12;
+    private static final int NICKNAME_LENGTH = 8;
     @Transient
     private static final String DEFAULT_URL = "default url";  // TODO: 2023-08-03 수정 필요
     @Transient

@@ -122,7 +122,6 @@ public class MemberController {
 
     @GetMapping("/usernames/{username}")
     public ResponseEntity<FindUserResponse> findUserByUsername(@PathVariable String username) {
-        // TODO: 2023-08-10 test 
         Optional<Member> member = memberRepository.findMemberByUsername(username);
 
         return ResponseEntity.ok(
@@ -133,7 +132,6 @@ public class MemberController {
 
     @GetMapping("/nicknames/{nickname}")
     public ResponseEntity<FindUserResponse> findUserByNickname(@PathVariable String nickname) {
-        // TODO: 2023-08-10 test
         Optional<Member> member = memberRepository.findMemberByNickname(nickname);
 
         return ResponseEntity.ok(

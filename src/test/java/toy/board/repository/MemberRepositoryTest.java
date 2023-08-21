@@ -141,7 +141,7 @@ class MemberRepositoryTest {
     }
 
     @DisplayName("username으로 member 존재여부 확인 - 성공")
-
+    @Test
     public void exists_member_by_username_fail() throws  Exception {
         //given
         String wrong_input = "adsfasdf";

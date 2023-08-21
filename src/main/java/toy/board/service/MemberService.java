@@ -3,6 +3,7 @@ package toy.board.service;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,19 @@ public class MemberService {
     private long authCodeExpirationMillis;
     private final String REDIS_PREFIX = "AuthCode";
     private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
+
+    /**
+     * member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서 항상 exception이 발생하므로 return된 member는 항상 not null이다.
+     * @param username
+     * @param password
+     * @return NotNull
+     */
+    public Member login(String username, String password) {
+        Optional<Member> findMember = memberRepository.findMemberByUsername(username);
+        return findMember
+                .map(member -> validateLoginTypeAndPassword(password, member))
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+    }
 
     /*
     DB 중복 검사에 관한 글
@@ -99,6 +113,36 @@ public class MemberService {
             log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), nickname);
             throw new BusinessException(ExceptionCode.DUPLICATE_NICKNAME);
         }
+    }
+
+    public void withdrawal(Long loginMemberId, String password) {
+        Optional<Member> findMember = memberRepository.findMemberById(loginMemberId);
+
+        findMember
+                .map(member -> validateLoginTypeAndPassword(password, member))
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+
+        memberRepository.deleteById(loginMemberId);
+    }
+
+    private Member validateLoginTypeAndPassword(String password, Member member) {
+        if (isLoginTypeNotMatch(member)) {
+            throw new BusinessException(ExceptionCode.NOT_MATCH_LOGIN_TYPE);
+        }
+
+        if (isPasswordNotMatch(password, member)) {
+            throw new BusinessException(ExceptionCode.NOT_MATCH_PASSWORD);
+        }
+
+        return member;
+    }
+
+    private boolean isPasswordNotMatch(String password, Member member) {
+        return !passwordEncoder.matches(password, member.getLogin().getPassword());
+    }
+
+    private boolean isLoginTypeNotMatch(Member member) {
+        return member.getLoginType() != LoginType.LOCAL_LOGIN;
     }
 
 }

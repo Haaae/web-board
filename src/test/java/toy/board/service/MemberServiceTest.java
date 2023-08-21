@@ -22,6 +22,8 @@ import toy.board.exception.ExceptionCode;
 import toy.board.repository.member.MemberRepository;
 
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
@@ -49,6 +51,55 @@ class MemberServiceTest {
     Login login;
     Profile profile;
 
+    @DisplayName("입력한 아이디와 일치하는 멤버가 없음")
+    @Test
+    public void login_member_no_exist_test() throws Exception {
+        Optional<Member> findMember = Optional.ofNullable(null);
+        doReturn(findMember).when(memberRepository).findMemberByUsername(anyString());
+
+        //then
+        assertThrows(BusinessException.class,
+                () -> memberService.login(username, password));
+    }
+
+    @DisplayName("멤버의 로그인 타입이 로컬로그인이 아님")
+    @Test
+    public void login_not_match_member_login_type() throws Exception {
+        Member findMember = createMember(LoginType.SOCIAL_LOGIN);
+
+//        doReturn(Optional.create(findMember)).when(memberRepository).findMemberByUsername(anyString());
+        given(memberRepository.findMemberByUsername(anyString()))
+                .willReturn(Optional.of(findMember));
+
+        //then
+        assertThrows(BusinessException.class, () -> memberService.login(username, password));
+    }
+
+    @DisplayName("패스워드 불일치")
+    @Test
+    public void not_match_password() throws  Exception {
+        Member findMember = createMember(LoginType.LOCAL_LOGIN);
+        doReturn(Optional.of(findMember)).when(memberRepository).findMemberByUsername(anyString());
+
+        //when
+        String wrongPassword = "not match password";
+
+        //then
+        assertThrows(BusinessException.class, () -> memberService.login(username, wrongPassword));
+    }
+
+    private Member createMember(LoginType loginType) {
+        return Member.builder()
+                .username(username)
+                .profile(
+                        Profile.builder().nickname(nickname).build()
+                )
+                .loginType(loginType)
+                .userRole(UserRole.USER)
+                .login(new Login(password))
+                .build();
+    }
+
     @BeforeEach
     void init() {
         this.profile = Profile.builder().nickname(nickname).build();
@@ -65,7 +116,6 @@ class MemberServiceTest {
 
         given(passwordEncoder.encode(anyString())).willReturn(password);
     }
-
 
     // join
     // - 중복 검사가 잘 이루어지는가

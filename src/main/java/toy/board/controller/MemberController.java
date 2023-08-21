@@ -23,9 +23,8 @@ import toy.board.entity.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.member.MemberRepository;
-import toy.board.service.LoginService;
 import toy.board.service.MemberService;
-import toy.board.session.SessionConst;
+import toy.board.constant.SessionConst;
 
 import java.util.Objects;
 
@@ -35,7 +34,6 @@ import java.util.Objects;
 public class MemberController {
 
     private final MemberService memberService;
-    private final LoginService loginService;
     private final MemberRepository memberRepository;
 
     // Http Message Body를 객체에 매핑하는 @RequestBody는 객체의 프로퍼티가 하나라도 맞지 않으면 에러가 발생
@@ -46,15 +44,11 @@ public class MemberController {
             // TODO: 2023-08-02 DTO인 loginRequest의 어노테이션 유효성 검증 로직 구현
             HttpServletRequest request
     ) {
-
-        // TODO: 2023-08-10 test
-
         // valid 실패 시 자동으로 에러 발생하므로 바로 member를 찾는다.
-        Member loginMember = loginService.login(loginRequest.getUsername(),
-                loginRequest.getPassword());
+        Member loginMember = memberService.login(loginRequest.username(),
+                loginRequest.password());
 
-        // 찾은 member를 세션에 넣어준다.
-        // 세션이 있으면 반환, 없으면 생성
+        // 찾은 member를 세션에 넣어준다. 세션이 있으면 반환, 없으면 생성.
         // JESSIONID는 톰캣이 자동으로 발급
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getId());
@@ -93,18 +87,18 @@ public class MemberController {
             Long loginMemberId = (Long) Objects.requireNonNull(session)
                     .getAttribute(SessionConst.LOGIN_MEMBER);
 
-            memberRepository.deleteById(loginMemberId);
+            memberService.withdrawal(loginMemberId, withdrawalRequest.password());
 
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NullPointerException ex) {
+        } catch (NullPointerException e) {
             // session이 없는 경우
             // TODO: 2023-08-15 인증 로직 AOP로 분리
             throw new BusinessException(ExceptionCode.SESSION_NOT_EXISTS);
-        } catch (IllegalStateException ex) {
+        } catch (IllegalStateException e) {
             // session에 회원 로그인 정보가 없는 경우
             // TODO: 2023-08-15 인증 로직 AOP로 분리
             throw new BusinessException(ExceptionCode.NOT_LOGIN_USER);
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException e) {
             // memberId에 맞는 회원이 db에서 조회되지 않을 경우
             throw new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND);
         }
@@ -123,7 +117,6 @@ public class MemberController {
      */
     @PostMapping
     public ResponseEntity<JoinResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
-        // TODO: 2023-08-10 test
         Member member = memberService.join(joinRequest.username(), joinRequest.password(),
                 joinRequest.nickname());
 

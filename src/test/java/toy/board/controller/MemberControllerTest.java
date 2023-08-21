@@ -14,8 +14,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 import toy.board.dto.login.request.JoinRequest;
 import toy.board.dto.login.request.LoginRequest;
+import toy.board.dto.login.request.WithdrawalRequest;
 import toy.board.entity.auth.Login;
 import toy.board.entity.user.LoginType;
 import toy.board.entity.user.Member;
@@ -24,11 +26,12 @@ import toy.board.entity.user.UserRole;
 import toy.board.repository.member.MemberRepository;
 import toy.board.constant.SessionConst;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 // 사용하려면 security test 라이브러리 등록해야 함
 
-
+@Transactional
 @ExtendWith(MockitoExtension.class) // Mockito와 같은 확장 기능을 테스트에 통합시켜주는 어노테이션
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc // controller뿐만 아니라 service와 repository 등의 컴포넌트도 mock으로 올린다.
@@ -42,18 +45,109 @@ class MemberControllerTest {
     private MemberRepository memberRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
-    private MockHttpSession session = new MockHttpSession();
+    private final MockHttpSession session = new MockHttpSession();
     private final ObjectMapper mapper = new ObjectMapper();
     private final String PREFIX_URL = "/users";
     private final String JOIN_URL = PREFIX_URL;
     private final String LOGOUT_URL = PREFIX_URL + "/logout";
     private final String LOGIN_URL = PREFIX_URL + "/login";
+    private final String WITHDRAWAL_URL = PREFIX_URL;
+
+    @DisplayName("회원탈퇴 성공")
+    @Test
+    public void withdrawal_success() throws  Exception {
+        // given
+        String username = "alsrbtls88@gmail.com";
+        LoginType loginType = LoginType.LOCAL_LOGIN;
+        UserRole userRole = UserRole.USER;
+        String password = "password1!";
+        String encodedPassword = passwordEncoder.encode(password);
+        String nickname = "asdasdfas";
+
+        Login login = new Login(encodedPassword);
+        Profile profile = Profile.builder().nickname(nickname).build();
+        Member member = new Member(username, login, profile, loginType, userRole);
+
+        memberRepository.save(member);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
+
+        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(password);
+        String content = mapper.writeValueAsString(withdrawalRequest);
+
+        // then
+        mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
+                        .session(session)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+
+                .andExpect(MockMvcResultMatchers.status().isOk())
+
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @DisplayName("회원탈퇴 실패: 세션에 저장된 id에 해당하는 객체가 없는 경우")
+    @Test
+    public void withdrawal_fail_cause_not_found() throws  Exception {
+        // given
+        String password = "password1!";
+
+        session.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
+
+        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(password);
+        String content = mapper.writeValueAsString(withdrawalRequest);
+
+        // then
+        mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
+                        .session(session)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @DisplayName("회원탈퇴 실패: 객체의 비밀번호와 입력 비밀번호가 다를 경우")
+    @Test
+    public void withdrawal_fail_cause_wrong_password() throws  Exception {
+        // given
+        String username = "alsrbtls88@gmail.com";
+        LoginType loginType = LoginType.LOCAL_LOGIN;
+        UserRole userRole = UserRole.USER;
+        String password = "password1!";
+        String encodedPassword = passwordEncoder.encode(password);
+        String nickname = "asdfasdfas";
+        String wrongPassword = "wrong password";
+
+        Login login = new Login(encodedPassword);
+        Profile profile = Profile.builder().nickname(nickname).build();
+        Member member = new Member(username, login, profile, loginType, userRole);
+
+        memberRepository.save(member);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
+
+        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(wrongPassword);
+        String content = mapper.writeValueAsString(withdrawalRequest);
+
+        // then
+        mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
+                        .session(session)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+
+                .andDo(MockMvcResultHandlers.print());
+    }
 
     @DisplayName("login 성공: 요청한 로그인 정보와 동일한 member 객체가 존재할 경우")
     @Test
     public void login_success() throws  Exception {
         // given
-        String username = "username@gmail.com";
+        String username = "username1@gmail.com";
         LoginType loginType = LoginType.LOCAL_LOGIN;
         UserRole userRole = UserRole.USER;
         String password = "password1!";

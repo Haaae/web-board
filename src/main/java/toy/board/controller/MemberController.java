@@ -98,9 +98,6 @@ public class MemberController {
             // session에 회원 로그인 정보가 없는 경우
             // TODO: 2023-08-15 인증 로직 AOP로 분리
             throw new BusinessException(ExceptionCode.NOT_LOGIN_USER);
-        } catch (IllegalArgumentException e) {
-            // memberId에 맞는 회원이 db에서 조회되지 않을 경우
-            throw new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND);
         }
     }
 
@@ -153,9 +150,9 @@ public class MemberController {
     }
 
     @GetMapping("/emails/verifications")
-    public ResponseEntity verificationEmail(@RequestBody @Valid EmailVerificationRequest request) {
+    public ResponseEntity<EmailVerificationResponse> verificationEmail(@RequestBody @Valid EmailVerificationRequest request) {
         boolean result = memberService.verifiedCode(request.email(), request.authCode());
 
-        return ResponseEntity.status(HttpStatus.OK).body(EmailVerificationResponse.of(result));
+        return ResponseEntity.ok(EmailVerificationResponse.of(result));
     }
 }

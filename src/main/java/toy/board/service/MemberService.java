@@ -86,6 +86,19 @@ public class MemberService {
         return redisService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
     }
 
+    @Transactional
+    public void withdrawal(Long loginMemberId, String password) {
+        Optional<Member> findMember = memberRepository.findMemberById(loginMemberId);
+
+        if (findMember.isEmpty()) {
+            throw new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND);
+        }
+
+        findMember.ifPresent(member -> validatePassword(password, member));
+
+        memberRepository.deleteById(loginMemberId);
+    }
+
     private String createAuthCode() {
         int length = 6;
         try {
@@ -115,26 +128,20 @@ public class MemberService {
         }
     }
 
-    public void withdrawal(Long loginMemberId, String password) {
-        Optional<Member> findMember = memberRepository.findMemberById(loginMemberId);
-
-        findMember
-                .map(member -> validateLoginTypeAndPassword(password, member))
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-
-        memberRepository.deleteById(loginMemberId);
-    }
-
     private Member validateLoginTypeAndPassword(String password, Member member) {
         if (isLoginTypeNotMatch(member)) {
             throw new BusinessException(ExceptionCode.NOT_MATCH_LOGIN_TYPE);
         }
 
+        validatePassword(password, member);
+
+        return member;
+    }
+
+    private void validatePassword(String password, Member member) {
         if (isPasswordNotMatch(password, member)) {
             throw new BusinessException(ExceptionCode.NOT_MATCH_PASSWORD);
         }
-
-        return member;
     }
 
     private boolean isPasswordNotMatch(String password, Member member) {
@@ -144,5 +151,4 @@ public class MemberService {
     private boolean isLoginTypeNotMatch(Member member) {
         return member.getLoginType() != LoginType.LOCAL_LOGIN;
     }
-
 }

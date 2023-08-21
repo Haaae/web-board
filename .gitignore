@@ -52,5 +52,5 @@ out/
 .idea/
 
 ###application.yml
-*.yml 
+*.yml
 src/main/generated

@@ -6,7 +6,6 @@ import lombok.Getter;
 import toy.board.entity.BaseEntity;
 
 @Entity
-@Table(catalog = "auth")
 @Getter
 public class SocialLogin extends BaseEntity {
 

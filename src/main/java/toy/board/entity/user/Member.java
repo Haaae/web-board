@@ -15,7 +15,7 @@ import toy.board.entity.auth.SocialLogin;
 public class Member extends BaseEntity {
 
     @Transient
-    private static final int USER_ID_LENGTH = 20;
+    private static final int USER_ID_LENGTH = 50;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

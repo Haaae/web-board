@@ -3,11 +3,12 @@ package toy.board.dto.login.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record SendEmailVerificationRequest(
-        @Email
+        @Email(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
         @NotBlank
-        @Max(value = 20)
+        @Size(max = 50)
         String email
 ) {
 

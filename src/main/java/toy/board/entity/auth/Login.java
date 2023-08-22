@@ -13,7 +13,7 @@ import toy.board.entity.user.Member;
 public class Login extends BaseEntity {
 
     @Transient
-    private static final int PASSWORD_LENGTH = 20;
+    private static final int PASSWORD_LENGTH = 60;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

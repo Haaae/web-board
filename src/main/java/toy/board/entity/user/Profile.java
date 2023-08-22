@@ -10,7 +10,6 @@ import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 
 @Entity
-//@Table(catalog = "user")
 @Getter
 @AllArgsConstructor
 @ToString

@@ -58,15 +58,9 @@ public class MemberController {
 
     @PostMapping("/logout")
     public ResponseEntity logout(HttpServletRequest request) {
-        String field = "logout";
 
-        try {
             Objects.requireNonNull(request.getSession(false)).invalidate();
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NullPointerException ex) {
-            // session이 없는 경우
-            throw new BusinessException(ExceptionCode.SESSION_NOT_EXISTS);
-        }
     }
 
     @DeleteMapping
@@ -74,31 +68,16 @@ public class MemberController {
             @RequestBody @Valid WithdrawalRequest withdrawalRequest,
             HttpServletRequest request
     ) {
-        String field = "withdrawal";
 
-        // TODO: 2023-08-07 세션 여부, 즉 인증과 인가에 대한 부분을 AOS(혹은 필터)로 분리하여 공통처리할 것
-        // TODO: 2023-08-10 test
-
-        // 세션이 존재하는지 확인. 요청에 세션이 없다면 null.
         HttpSession session = request.getSession(false);
 
         // 세션에서 사용자 정보 가져오기. 세션이 null이면 커스텀 예외 throws
-        try {
             Long loginMemberId = (Long) Objects.requireNonNull(session)
                     .getAttribute(SessionConst.LOGIN_MEMBER);
 
             memberService.withdrawal(loginMemberId, withdrawalRequest.password());
 
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NullPointerException e) {
-            // session이 없는 경우
-            // TODO: 2023-08-15 인증 로직 AOP로 분리
-            throw new BusinessException(ExceptionCode.SESSION_NOT_EXISTS);
-        } catch (IllegalStateException e) {
-            // session에 회원 로그인 정보가 없는 경우
-            // TODO: 2023-08-15 인증 로직 AOP로 분리
-            throw new BusinessException(ExceptionCode.NOT_LOGIN_USER);
-        }
     }
 
     /*  회원가입시 필요한 정보

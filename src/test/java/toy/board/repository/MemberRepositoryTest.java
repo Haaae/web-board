@@ -42,9 +42,9 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void init() {
-        this.profile = Profile.builder().nickname(nickname).build();
+        this.profile = Profile.builder(nickname).build();
         this.login = new Login(password);
-        this.member = new Member(username, login, profile, loginType, userRole);
+        this.member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
 
         member.changeLogin(login);
         memberRepository.save(member);

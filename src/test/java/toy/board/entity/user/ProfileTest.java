@@ -10,7 +10,7 @@ class ProfileTest {
     @Test
     public void defaultFieldTest() throws  Exception {
         //given
-        Profile profile = Profile.builder().nickname("nickname").build();
+        Profile profile = Profile.builder("nickname").build();
 
         System.out.println("profile = " + profile);
 
@@ -18,11 +18,4 @@ class ProfileTest {
 
         //then
     }
-
-    @Test()
-    public void throwExceptionWhenBuildHasNotNicknameTest() throws  Exception {
-        assertThrows(IllegalArgumentException.class, () -> Profile.builder().build());
-        assertThrows(IllegalArgumentException.class, () -> new Profile(null, "url", "introduction"));
-    }
-
 }

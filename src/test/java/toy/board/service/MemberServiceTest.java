@@ -89,22 +89,22 @@ class MemberServiceTest {
     }
 
     private Member createMember(LoginType loginType) {
-        return Member.builder()
-                .username(username)
-                .profile(
-                        Profile.builder().nickname(nickname).build()
-                )
-                .loginType(loginType)
-                .userRole(UserRole.USER)
-                .login(new Login(password))
-                .build();
+        Member member = Member.builder(
+                username,
+                new Login(password),
+                Profile.builder(nickname).build(),
+                loginType,
+                UserRole.USER
+        ).build();
+        member.changeLogin(login);
+        return member;
     }
 
     @BeforeEach
     void init() {
-        this.profile = Profile.builder().nickname(nickname).build();
+        this.profile = Profile.builder(nickname).build();
         this.login = new Login(password);
-        this.member = new Member(username, login, profile, loginType, userRole);
+        this.member = Member.builder(username, login, profile, loginType, userRole).build();
 
         member.changeLogin(login);
         memberRepository.save(member);

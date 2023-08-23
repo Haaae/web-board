@@ -7,11 +7,16 @@ import toy.board.entity.BaseEntity;
 import toy.board.entity.auth.Cidi;
 import toy.board.entity.auth.Login;
 import toy.board.entity.auth.SocialLogin;
+import toy.board.entity.post.Post;
+
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @ToString(exclude = {"login"})
+@Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 
     @Transient
@@ -28,6 +33,9 @@ public class Member extends BaseEntity {
      */
     @Column(name = "username", length = USER_ID_LENGTH, nullable = false, unique = true)
     private String username;
+
+    @OneToMany(mappedBy = "member")
+    private List<Post> posts;
 
     @Column(name = "login_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -74,19 +82,19 @@ public class Member extends BaseEntity {
         login.changeMember(this);
     }
 
-    @Builder
-    public Member(final String username, final Login login, final Profile profile, final LoginType loginType, final UserRole userRole) {
-        Assert.hasText(username, "username must not be empty");
-        Assert.notNull(login, "login must not be null");
-        Assert.notNull(profile, "profile must not be null");
-        Assert.notNull(loginType, "loginType must not be null");
-        Assert.notNull(userRole, "userRole must not be null");
+    public static MemberBuilder builder(
+            final String username,
+            final Login login,
+            final Profile profile,
+            final LoginType loginType,
+            final UserRole userRole) {
 
-        changeLogin(login);
-        this.username = username;
-        this.profile = profile;
-        this.loginType = loginType;
-        this.role = userRole;
+        return innerBuilder()
+                .username(username)
+                .login(login)
+                .profile(profile)
+                .loginType(loginType)
+                .role(userRole);
     }
 }
 

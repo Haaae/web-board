@@ -65,8 +65,9 @@ class MemberControllerTest {
         String nickname = "asdas";
 
         Login login = new Login(encodedPassword);
-        Profile profile = Profile.builder().nickname(nickname).build();
-        Member member = new Member(username, login, profile, loginType, userRole);
+        Profile profile = Profile.builder(nickname).build();
+        Member member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
+        member.changeLogin(login);
 
         memberRepository.save(member);
         session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
@@ -122,8 +123,8 @@ class MemberControllerTest {
         String wrongPassword = "wrong password";
 
         Login login = new Login(encodedPassword);
-        Profile profile = Profile.builder().nickname(nickname).build();
-        Member member = new Member(username, login, profile, loginType, userRole);
+        Profile profile = Profile.builder(nickname).build();
+        Member member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
 
         memberRepository.save(member);
         session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
@@ -155,8 +156,9 @@ class MemberControllerTest {
         String nickname = "nickme2";
 
         Login login = new Login(encodedPassword);
-        Profile profile = Profile.builder().nickname(nickname).build();
-        Member member = new Member(username, login, profile, loginType, userRole);
+        Profile profile = Profile.builder(nickname).build();
+        Member member = Member.builder(username, login, profile, loginType, userRole).build();
+        member.changeLogin(login);
 
         memberRepository.save(member);
 
@@ -184,8 +186,8 @@ class MemberControllerTest {
         String nickname = "nicame1";
 
         Login login = new Login(password);
-        Profile profile = Profile.builder().nickname(nickname).build();
-        Member member = new Member(username, login, profile, loginType, userRole);
+        Profile profile = Profile.builder(nickname).build();
+        Member member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
 
         memberRepository.save(member);
 

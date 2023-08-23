@@ -13,6 +13,7 @@ import toy.board.entity.BaseEntity;
 @Getter
 @AllArgsConstructor
 @ToString
+@Builder(builderMethodName = "innerBuilder")
 public class Profile extends BaseEntity {
 
     protected Profile() {
@@ -40,23 +41,16 @@ public class Profile extends BaseEntity {
     private String nickname;
 
     @Column(name = "image_url", length = IMAGE_URL_LENGTH, nullable = false)
+    @Builder.Default
     private String imageUrl = DEFAULT_URL;
 
     @Column(name = "introduction", length = INTRODUCTION_LENGTH, nullable = false)
+    @Builder.Default
     private String introduction = DEFAULT_INTRODUCTION;
 
-    @Builder
-    public Profile(final String nickname, final String imageUrl, final String introduction) {
-        Assert.hasText(nickname, "nickname must has text.");
+    public static ProfileBuilder builder(final String nickname) {
+        ProfileBuilder builder = Profile.innerBuilder();
 
-        this.nickname = nickname;
-
-        if (imageUrl != null) {
-            this.imageUrl = imageUrl;
-        }
-
-        if (introduction != null) {
-            this.introduction = introduction;
-        }
+        return builder.nickname(nickname);
     }
 }

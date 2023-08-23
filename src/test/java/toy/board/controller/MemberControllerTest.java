@@ -62,7 +62,7 @@ class MemberControllerTest {
         UserRole userRole = UserRole.USER;
         String password = "password1!";
         String encodedPassword = passwordEncoder.encode(password);
-        String nickname = "asdasdfas";
+        String nickname = "asdas";
 
         Login login = new Login(encodedPassword);
         Profile profile = Profile.builder().nickname(nickname).build();
@@ -118,7 +118,7 @@ class MemberControllerTest {
         UserRole userRole = UserRole.USER;
         String password = "password1!";
         String encodedPassword = passwordEncoder.encode(password);
-        String nickname = "asdfasdfas";
+        String nickname = "asfas";
         String wrongPassword = "wrong password";
 
         Login login = new Login(encodedPassword);
@@ -152,7 +152,7 @@ class MemberControllerTest {
         UserRole userRole = UserRole.USER;
         String password = "password1!";
         String encodedPassword = passwordEncoder.encode(password);
-        String nickname = "nickname2";
+        String nickname = "nickme2";
 
         Login login = new Login(encodedPassword);
         Profile profile = Profile.builder().nickname(nickname).build();
@@ -181,7 +181,7 @@ class MemberControllerTest {
         LoginType loginType = LoginType.LOCAL_LOGIN;
         UserRole userRole = UserRole.USER;
         String password = "password1!";
-        String nickname = "nickname1";
+        String nickname = "nicame1";
 
         Login login = new Login(password);
         Profile profile = Profile.builder().nickname(nickname).build();

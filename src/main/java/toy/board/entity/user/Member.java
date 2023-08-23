@@ -2,7 +2,6 @@ package toy.board.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.util.Assert;
 import toy.board.entity.BaseEntity;
 import toy.board.entity.auth.Cidi;
 import toy.board.entity.auth.Login;
@@ -15,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@ToString(exclude = {"login"})
+@ToString(exclude = {"login", "posts"})
 @Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 

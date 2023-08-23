@@ -18,8 +18,7 @@ import java.util.List;
 @Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 
-    @Transient
-    private static final int USER_ID_LENGTH = 50;
+    public static final int USER_ID_LENGTH = 50;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

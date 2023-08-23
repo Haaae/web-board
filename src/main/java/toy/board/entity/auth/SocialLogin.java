@@ -9,10 +9,8 @@ import toy.board.entity.BaseEntity;
 @Getter
 public class SocialLogin extends BaseEntity {
 
-    @Transient
-    private static final int EXTERNAL_ID_LENGTH = 64;
-    @Transient
-    private static final int ACCESS_TOKEN_LENGTH = 256;
+    public static final int EXTERNAL_ID_LENGTH = 64;
+    public static final int ACCESS_TOKEN_LENGTH = 256;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

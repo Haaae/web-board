@@ -12,9 +12,8 @@ import toy.board.entity.BaseEntity;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Authentication extends BaseEntity {
-    @Transient
     // 암호화된 값을 위해 모든 varchar값의 길이 설정
-    private static final int VARCHAR_LENGTH = 128;
+    public static final int VARCHAR_LENGTH = 128;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

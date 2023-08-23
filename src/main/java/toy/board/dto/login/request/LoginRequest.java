@@ -1,11 +1,12 @@
 package toy.board.dto.login.request;
 
 import jakarta.validation.constraints.*;
+import toy.board.entity.user.Member;
 
 public record LoginRequest(
         @Email(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
         @NotBlank
-        @Size(max = 50)
+        @Size(max = Member.USER_ID_LENGTH)
         String username,
 
         @NotBlank

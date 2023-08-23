@@ -21,15 +21,10 @@ public class Profile extends BaseEntity {
         this.introduction = DEFAULT_INTRODUCTION;
     }
 
-    @Transient
-    private static final int IMAGE_URL_LENGTH = 100;
-    @Transient
-    private static final int INTRODUCTION_LENGTH = 300;
-    @Transient
-    private static final int NICKNAME_LENGTH = 8;
-    @Transient
+    public static final int IMAGE_URL_LENGTH = 100;
+    public static final int INTRODUCTION_LENGTH = 300;
+    public static final int NICKNAME_LENGTH = 8;
     private static final String DEFAULT_URL = "default url";  // TODO: 2023-08-03 수정 필요
-    @Transient
     private static final String DEFAULT_INTRODUCTION = "default introduction";
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,10 +8,8 @@ import toy.board.entity.BaseTimeEntity;
 @Getter
 public class Cidi extends BaseTimeEntity {
 
-    @Transient
-    private static final int CI_LENGTH = 88;
-    @Transient
-    private static final int DI_LENGTH = 64;
+    public static final int CI_LENGTH = 88;
+    public static final int DI_LENGTH = 64;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

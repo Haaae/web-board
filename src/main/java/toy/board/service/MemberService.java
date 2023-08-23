@@ -62,9 +62,10 @@ public class MemberService {
         validateDuplicateNickname(nickname);
 
         // Create entity
-        Profile profile = Profile.builder().nickname(nickname).build();
+        Profile profile = Profile.builder(nickname).build();
         Login login = new Login(passwordEncoder.encode(password));
-        Member member = new Member(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER);
+        Member member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
+        member.changeLogin(login);
 
         // save. cascade로 인해 member만 저장해도 profile과 login이 저장된다.
         // TODO: 동시성 문제는 DataIntegrityViolationException을 ControllerAdvice에서 공통 처리한다.

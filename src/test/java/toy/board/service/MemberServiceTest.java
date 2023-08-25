@@ -10,11 +10,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import toy.board.entity.auth.Login;
-import toy.board.entity.user.LoginType;
-import toy.board.entity.user.Member;
-import toy.board.entity.user.Profile;
-import toy.board.entity.user.UserRole;
+import toy.board.domain.auth.Login;
+import toy.board.domain.user.LoginType;
+import toy.board.domain.user.Member;
+import toy.board.domain.user.Profile;
+import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.member.MemberRepository;
@@ -38,8 +38,6 @@ class MemberServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-
-
     String username = "name";
     LoginType loginType = LoginType.LOCAL_LOGIN;
     UserRole userRole = UserRole.USER;
@@ -48,6 +46,23 @@ class MemberServiceTest {
     Member member;
     Login login;
     Profile profile;
+
+    @BeforeEach
+    void init() {
+        this.profile = Profile.builder(nickname).build();
+        this.login = new Login(password);
+        this.member = Member.builder(username, login, profile, loginType, userRole).build();
+
+        member.changeLogin(login);
+        memberRepository.save(member);
+        given(memberRepository.save(any())).willReturn(member);
+        given(memberRepository.existsByUsername(eq(username))).willReturn(false);
+        given(memberRepository.existsByUsername(eq("wrong input"))).willReturn(true);
+        given(memberRepository.existsByNickname(eq(nickname))).willReturn(false);
+        given(memberRepository.existsByNickname(eq("wrong input"))).willReturn(true);
+
+        given(passwordEncoder.encode(anyString())).willReturn(password);
+    }
 
     @DisplayName("입력한 아이디와 일치하는 멤버가 없음")
     @Test
@@ -96,23 +111,6 @@ class MemberServiceTest {
         ).build();
         member.changeLogin(login);
         return member;
-    }
-
-    @BeforeEach
-    void init() {
-        this.profile = Profile.builder(nickname).build();
-        this.login = new Login(password);
-        this.member = Member.builder(username, login, profile, loginType, userRole).build();
-
-        member.changeLogin(login);
-        memberRepository.save(member);
-        given(memberRepository.save(any())).willReturn(member);
-        given(memberRepository.existsByUsername(eq(username))).willReturn(false);
-        given(memberRepository.existsByUsername(eq("wrong input"))).willReturn(true);
-        given(memberRepository.existsByNickname(eq(nickname))).willReturn(false);
-        given(memberRepository.existsByNickname(eq("wrong input"))).willReturn(true);
-
-        given(passwordEncoder.encode(anyString())).willReturn(password);
     }
 
     // join

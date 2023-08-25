@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.entity.auth.Login;
-import toy.board.entity.user.LoginType;
-import toy.board.entity.user.Member;
-import toy.board.entity.user.Profile;
-import toy.board.entity.user.UserRole;
+import toy.board.domain.auth.Login;
+import toy.board.domain.user.LoginType;
+import toy.board.domain.user.Member;
+import toy.board.domain.user.Profile;
+import toy.board.domain.user.UserRole;
 import toy.board.repository.member.MemberRepository;
 
 @ExtendWith(SpringExtension.class)

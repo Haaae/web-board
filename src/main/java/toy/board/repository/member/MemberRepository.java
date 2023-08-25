@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import toy.board.entity.user.Member;
+import toy.board.domain.user.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberQueryRepository {
 

@@ -3,7 +3,7 @@ package toy.board.repository.member;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
-import static toy.board.entity.user.QMember.member;
+import static toy.board.domain.user.QMember.member;
 
 @RequiredArgsConstructor
 public class MemberRepositoryImpl implements MemberQueryRepository {

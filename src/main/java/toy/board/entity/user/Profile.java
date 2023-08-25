@@ -1,6 +1,7 @@
 package toy.board.entity.user;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import toy.board.entity.BaseEntity;
 
 @Entity
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @Builder(builderMethodName = "innerBuilder")
 public class Profile extends BaseEntity {

@@ -1,20 +1,18 @@
 package toy.board.entity.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import toy.board.entity.BaseEntity;
 import toy.board.entity.auth.Cidi;
 import toy.board.entity.auth.Login;
 import toy.board.entity.auth.SocialLogin;
-import toy.board.entity.post.Post;
-
-import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@ToString(exclude = {"login", "posts"})
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(exclude = {"login"})
 @Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 
@@ -22,7 +20,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id", nullable = false)
+    @Column(name = "member_id", nullable = false,  updatable = false)
     private Long id;
 
     /**
@@ -32,14 +30,11 @@ public class Member extends BaseEntity {
     @Column(name = "username", length = USER_ID_LENGTH, nullable = false, unique = true)
     private String username;
 
-    @OneToMany(mappedBy = "member")
-    private List<Post> posts;
-
-    @Column(name = "login_type", nullable = false)
+    @Column(name = "login_type", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
-    @Column(name = "user_role", nullable = false)
+    @Column(name = "user_role", nullable = false, updatable = false)
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -48,7 +43,7 @@ public class Member extends BaseEntity {
             cascade = CascadeType.PERSIST,
             orphanRemoval = true
     )
-    @JoinColumn(name = "profile_id", nullable = false, unique = true)
+    @JoinColumn(name = "profile_id", nullable = false, unique = true, updatable = false)
     private Profile profile;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -71,15 +66,6 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "cidi_id", unique = true)
     private Cidi cidi;
 
-    public void changeLogin(Login login) {
-        if (login == null) {
-            throw new IllegalArgumentException("login is NULL.");
-        }
-
-        this.login = login;
-        login.changeMember(this);
-    }
-
     public static MemberBuilder builder(
             final String username,
             final Login login,
@@ -93,6 +79,15 @@ public class Member extends BaseEntity {
                 .profile(profile)
                 .loginType(loginType)
                 .role(userRole);
+    }
+
+    public void changeLogin(@NotNull final Login login) {
+        if (login == null) {
+            throw new IllegalArgumentException("Login must not be NULL." + this.getClass());
+        }
+
+        this.login = login;
+        login.changeMember(this);
     }
 }
 

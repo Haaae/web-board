@@ -12,11 +12,6 @@ import java.util.UUID;
 @Configuration
 public class SpringConfig {
 
-    @Bean
-    JPAQueryFactory jpaQueryFactory(EntityManager em) {
-        return new JPAQueryFactory(em);
-    }
-
     // @CreateBy, @LastModifiedBy를 위한 사용자 전달 함수
     @Bean
     public AuditorAware<String> auditorProvider() {

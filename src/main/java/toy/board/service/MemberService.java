@@ -18,7 +18,7 @@ import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.repository.member.MemberRepository;
+import toy.board.repository.user.MemberRepository;
 
 @Transactional(readOnly = true)
 @Service

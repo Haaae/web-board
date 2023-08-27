@@ -1,4 +1,4 @@
-package toy.board.repository.member;
+package toy.board.repository.user;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +12,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberQue
 
     Optional<Member> findMemberById(Long id);
 
-    // TODO: 2023-08-10 test
     @Query("select m from Member m where m.profile.nickname = :nickname")
     Optional<Member> findMemberByNickname(@Param("nickname")String nickname);
 

@@ -1,4 +1,4 @@
-package toy.board.repository.member;
+package toy.board.repository.user;
 
 public interface MemberQueryRepository {
 

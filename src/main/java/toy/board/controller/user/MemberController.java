@@ -22,11 +22,13 @@ import toy.board.controller.user.dto.response.FindUserResponse;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.repository.member.MemberRepository;
+import toy.board.repository.user.MemberRepository;
 import toy.board.service.MemberService;
 import toy.board.constant.SessionConst;
 
 import java.util.Objects;
+
+// TODO: 2023-08-25 dto가 서비스에서 만들어져서 넘어오도록 한다. 모든 데이터의 전달에 dto를 사용할 필요는 없다.
 
 @Controller
 @RequestMapping("/users")

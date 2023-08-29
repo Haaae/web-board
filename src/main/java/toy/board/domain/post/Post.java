@@ -1,6 +1,7 @@
 package toy.board.domain.post;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.util.StringUtils;
@@ -31,20 +32,24 @@ public class Post extends BaseDeleteEntity {
     @Column(name = "hits", nullable = false)
     private Long hits;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false, updatable = false)
-    private Member member;
+    @Column(name = "writer_id") // 작성자가 탈퇴할 경우 null로 변경해야 한다.
+    private Long writerId;
+
+    @Column(name = "writer")    // 작성자가 탈퇴할 경우 null로 변경해야 한다.
+    private String writer;
 
     /**
      * 양방향 관계인 Member에 대해 자동으로 양방향 매핑을 수행한다.
      */
-    public Post(@NotNull final Member member, final String title, final String content) {
+    public Post(
+            @NotNull final Long writerId,
+            @NotNull final String writer,
+            @NotBlank final String title,
+            @NotBlank final String content
+    ) {
 
-        if (member == null) {
-            throw new IllegalArgumentException("Member must not be null. field: " + this.getClass());
-        }
-
-        this.member = member;
+        this.writerId = writerId;
+        this.writer = writer;
         this.title = title;
         this.content = content;
         this.hits = 0L;

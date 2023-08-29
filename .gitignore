@@ -54,3 +54,4 @@ out/
 ###application.yml
 *.yml
 src/main/generated
+MyTest.java

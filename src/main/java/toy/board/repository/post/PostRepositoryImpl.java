@@ -39,7 +39,7 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport implements Po
     }
 
     @Override
-    public Optional<PostDto> findPostDtoById(Long postId) {
+    public Optional<PostDto> getPostDtoById(Long postId) {
         return Optional.ofNullable(
                 select(getPostDtoConstructorExpression())
                         .from(post)

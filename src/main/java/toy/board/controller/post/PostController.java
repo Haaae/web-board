@@ -1,5 +1,8 @@
 package toy.board.controller.post;
 
+import jakarta.websocket.server.PathParam;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -9,7 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import toy.board.controller.post.dto.PostListDto;
+import toy.board.controller.post.dto.PostDto;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
+import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.service.CommentService;
 import toy.board.service.PostService;
@@ -22,13 +28,14 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     // read
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<PostListDto>> getPosts(Pageable pageable) {
-        Page<PostListDto> page = postRepository.findAllPost(pageable);
+    public ResponseEntity<Page<PostDto>> getPosts(Pageable pageable) {
+        Page<PostDto> page = postRepository.findAllPost(pageable);
 
         return ResponseEntity.ok(page);
     }
@@ -39,14 +46,19 @@ public class PostController {
 //        return ResponseEntity.ok(comments);
 //    } === 필요한가? ===
 
-//    @GetMapping("/{postId}")
-//    public ResponseEntity<PostDetailDto> getPostDetail(@PathParam("postId") Long postId) {
-//        PostDetailDto postDetail = postService.getPostDetail(postId);
-//        return ResponseEntity.ok(postDetail);
-//    }
-//
-//    // create
-//
+    @GetMapping("/{postId}")
+    public ResponseEntity<Map<String, Object>> getPostDetail(@PathParam("postId") Long postId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("postDto",
+                postRepository.getPostDtoById(postId).orElseThrow(
+                        () -> new BusinessException(ExceptionCode.POST_NOT_FOUND)
+                ));
+        map.put("commentDtos", commentRepository.getCommentDtosByPostId(postId));
+        return ResponseEntity.ok(map);
+    }
+
+    // create
+
 //    @PostMapping
 //    public ResponseEntity<Long> createPost(
 //            @RequestBody PostCreationRequest postCreationRequest,

@@ -9,5 +9,5 @@ public interface PostQueryRepository {
 
     Page<PostDto> findAllPost(Pageable pageable);
 
-    Optional<PostDto> findPostDtoById(Long postId);
+    Optional<PostDto> getPostDtoById(Long postId);
 }

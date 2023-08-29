@@ -5,5 +5,5 @@ import toy.board.controller.post.dto.CommentDto;
 
 public interface CommentQueryRepository {
 
-    List<CommentDto> findCommentsConvertedToDtoUsingPostId(Long postId);
+    List<CommentDto> getCommentDtosByPostId(Long postId);
 }

@@ -17,7 +17,7 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
     }
 
     @Override
-    public List<CommentDto> findCommentsConvertedToDtoUsingPostId(Long postId) {
+    public List<CommentDto> getCommentDtosByPostId(Long postId) {
         return getComments(postId).stream().map(this::convertToDto).toList();
     }
 

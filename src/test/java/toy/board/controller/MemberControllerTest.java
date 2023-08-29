@@ -23,7 +23,7 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-import toy.board.repository.member.MemberRepository;
+import toy.board.repository.user.MemberRepository;
 import toy.board.constant.SessionConst;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

@@ -3,15 +3,12 @@ package toy.board.repository.post;
 import static org.assertj.core.api.Assertions.*;
 import static toy.board.domain.post.QComment.comment;
 import static toy.board.domain.post.QPost.post;
-import static toy.board.domain.user.QMember.member;
-import static toy.board.domain.user.QProfile.profile;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import java.util.Arrays;
 import java.util.List;
-import org.assertj.core.api.Assertions;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.controller.post.dto.PostListDto;
+import toy.board.controller.post.dto.PostDto;
 import toy.board.domain.auth.Login;
 import toy.board.domain.post.Post;
-import toy.board.domain.post.QPost;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
@@ -64,7 +60,12 @@ class PostRepositoryTest {
             em.persist(member);
 
             for (int j = 0; j < postNum; j++) {
-                Post post = new Post(member, titlePrefix.append(j).toString(), "content");
+                Post post = new Post(
+                        member.getId(),
+                        member.getProfile().getNickname(),
+                        titlePrefix.append(j).toString(),
+                        "content"
+                );
 
                 em.persist(post);
             }
@@ -80,8 +81,6 @@ class PostRepositoryTest {
         List<Tuple> posts = queryFactory
                 .select(post, comment.count())
                 .from(post)
-                .leftJoin(post.member, member).fetchJoin()
-                .leftJoin(member.profile, profile).fetchJoin()
                 .leftJoin(comment).on(comment.post.eq(post)).groupBy(post)
                 .fetch();
 
@@ -90,10 +89,9 @@ class PostRepositoryTest {
             Post post = postAndCommentCount.get(0, Post.class);
             Long commentCount = postAndCommentCount.get(1, Long.class);
 
-            System.out.println("post.getMember().getId() = " + post.getMember().getId());
+            System.out.println("post.getWriterId() = " + post.getWriterId());
             System.out.println(
-                    "post.getMember().getProfile().getNickname() = " + post.getMember().getProfile()
-                            .getNickname());
+                    "post.getWriter() = " + post.getWriter());
             System.out.println("commentCount = " + commentCount);
         }
     
@@ -107,13 +105,14 @@ class PostRepositoryTest {
         PageRequest pageable = PageRequest.of(1, 10);
 
         //when
-        Page<PostListDto> page = postRepository.findAllPost(pageable);
+        Page<PostDto> page = postRepository.findAllPost(pageable);
 
-        for (PostListDto postListDto : page.getContent()) {
+        for (PostDto postListDto : page.getContent()) {
             System.out.println("=================================================================");
             System.out.println("postListDto = " + postListDto);
             System.out.println("postListDto.writer = " + postListDto.writer());
             System.out.println("postListDto.writerId = " + postListDto.writerId());
+            System.out.println("postListDto.isModified() = " + postListDto.isModified());
         }
 
         //then
@@ -125,5 +124,4 @@ class PostRepositoryTest {
         System.out.println("==============================================");
         System.out.println("page = " + page);
     }
-
 }

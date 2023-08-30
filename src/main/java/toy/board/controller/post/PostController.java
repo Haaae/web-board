@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
+import toy.board.controller.post.dto.CommentCreationRequest;
 import toy.board.controller.post.dto.PostCreationRequest;
 import toy.board.controller.post.dto.PostDto;
 import toy.board.exception.BusinessException;
@@ -63,7 +64,7 @@ public class PostController {
         return ResponseEntity.ok(map);
     }
 
-    // create
+    // createComment
 
     @PostMapping
     public ResponseEntity<Long> createPost(
@@ -81,22 +82,23 @@ public class PostController {
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
         // 이렇게 dto말고 long 객체로 보내면 어케 되는지 확인
     }
-//
-//    @PostMapping("/{postId}/comments")
-//    public ResponseEntity createComment(
-//            @RequestBody CommentCreationRequest commentCreationRequest,
-//            HttpServletRequest request
-//    ) {
-//        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
-//        Long commentId = commentService.create(
-//                commentCreationRequest.content(),
-//                commentCreationRequest.type(),
-//                commentCreationRequest.bundleId(),
-//                memberId
-//        );
-//
-//        return new ResponseEntity<>(commentId, HttpStatus.CREATED);
-//    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Long> createComment(
+            @RequestBody CommentCreationRequest commentCreationRequest,
+            HttpServletRequest request
+    ) {
+        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        Long commentId = commentService.create(
+                commentCreationRequest.content(),
+                commentCreationRequest.type(),
+                commentCreationRequest.parentId(),
+                commentCreationRequest.postId(),
+                memberId
+        );
+
+        return new ResponseEntity<>(commentId, HttpStatus.CREATED);
+    }
 //
 //    // update
 //

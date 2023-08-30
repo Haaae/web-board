@@ -1,8 +1,5 @@
 package toy.board.service;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

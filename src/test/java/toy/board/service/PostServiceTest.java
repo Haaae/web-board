@@ -23,7 +23,7 @@ class PostServiceTest {
 
     @DisplayName("post create의 반환값이 정상적으로 반환됨")
     @Test
-    public void PostServiceTest() throws  Exception {
+    public void postCreateReturnValue() throws Exception {
         //given
         Member member = MemberTest.create();
         em.persist(member);
@@ -36,6 +36,4 @@ class PostServiceTest {
         assertThat(postId).isNotNull();
         assertThat(postId).isEqualTo(post.getId());
     }
-
-
 }

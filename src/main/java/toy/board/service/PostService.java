@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Post;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.profile.ProfileRepository;
 
@@ -21,6 +22,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final ProfileRepository profileRepository;
+    private final CommentRepository commentRepository;
 
     public Long update(String content, Long postId, Long memberId) {
 
@@ -41,5 +43,13 @@ public class PostService {
         postRepository.save(post);
 
         return post.getId();
+    }
+
+    public void delete(Long postId, Long memberId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+        post.validateRight(memberId);
+        commentRepository.deleteCommentsByPost(post);
+        postRepository.deleteById(postId);
     }
 }

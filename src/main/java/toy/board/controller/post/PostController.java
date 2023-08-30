@@ -12,12 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import toy.board.constant.SessionConst;
 import toy.board.controller.post.dto.*;
 import toy.board.exception.BusinessException;
@@ -127,7 +122,7 @@ public class PostController {
             HttpServletRequest request
 
     ) {
-
+        // TODO: 2023-08-30 작성자와 다른 memberId 수정 안되는지 확인
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
         Long updatedCommentId = commentService.update(
                 commentId, commentUpdateDto.content(), memberId
@@ -136,20 +131,18 @@ public class PostController {
         return ResponseEntity.ok(updatedCommentId);
     }
 
-//    // delete
-//
-//    @DeleteMapping("/{postId}")
-//    public ResponseEntity deletePost(
-//            @PathVariable("postId") Long postId,
-//            HttpServletRequest request
-//    ) {
-//
-//        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
-//
-//        postService.delete(postId, memberId);
-//
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
+    // delete
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity deletePost(
+            @PathVariable("postId") Long postId,
+            HttpServletRequest request
+    ) {
+        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        postService.delete(postId, memberId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
 //
 //    @DeleteMapping("/{postId}/comments/{commentId}")
 //    public ResponseEntity deleteComment(

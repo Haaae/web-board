@@ -1,5 +1,6 @@
 package toy.board.controller.post;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,11 +8,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import toy.board.constant.SessionConst;
+import toy.board.controller.post.dto.PostCreationRequest;
 import toy.board.controller.post.dto.PostDto;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
@@ -59,22 +65,22 @@ public class PostController {
 
     // create
 
-//    @PostMapping
-//    public ResponseEntity<Long> createPost(
-//            @RequestBody PostCreationRequest postCreationRequest,
-//            HttpServletRequest request
-//    ) {
-//
-//        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
-//        Long postId = postService.create(
-//                postCreationRequest.title(),
-//                postCreationRequest.content(),
-//                memberId
-//        );
-//
-//        return new ResponseEntity<>(postId, HttpStatus.CREATED);
-//        // 이렇게 dto말고 long 객체로 보내면 어케 되는지 확인
-//    }
+    @PostMapping
+    public ResponseEntity<Long> createPost(
+            @RequestBody PostCreationRequest postCreationRequest,
+            HttpServletRequest request
+    ) {
+
+        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        Long postId = postService.create(
+                postCreationRequest.title(),
+                postCreationRequest.content(),
+                memberId
+        );
+
+        return new ResponseEntity<>(postId, HttpStatus.CREATED);
+        // 이렇게 dto말고 long 객체로 보내면 어케 되는지 확인
+    }
 //
 //    @PostMapping("/{postId}/comments")
 //    public ResponseEntity createComment(

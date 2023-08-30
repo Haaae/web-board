@@ -1,7 +1,5 @@
 package toy.board.domain.post;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +17,8 @@ class CommentTypeTest {
         CommentType replyType = CommentType.REPLY;
 
         //then
-        Comment comment = commentType.create(post, memberId, post.getWriter(), content, null);
-        Comment comment2 = replyType.create(post, memberId, post.getWriter(), content, comment);
+        Comment comment = commentType.createComment(post, memberId, post.getWriter(), content, null);
+        Comment comment2 = replyType.createComment(post, memberId, post.getWriter(), content, comment);
 
         System.out.println("comment = " + comment);
         System.out.println("comment2 = " + comment2);

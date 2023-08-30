@@ -80,7 +80,7 @@ class MemberServiceTest {
     public void login_not_match_member_login_type() throws Exception {
         Member findMember = createMember(LoginType.SOCIAL_LOGIN);
 
-//        doReturn(Optional.create(findMember)).when(memberRepository).findMemberByUsername(anyString());
+//        doReturn(Optional.createComment(findMember)).when(memberRepository).findMemberByUsername(anyString());
         given(memberRepository.findMemberByUsername(anyString()))
                 .willReturn(Optional.of(findMember));
 

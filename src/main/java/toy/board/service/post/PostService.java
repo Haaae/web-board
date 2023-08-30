@@ -21,12 +21,10 @@ public class PostService {
     private final ProfileRepository profileRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public Long update(final String content, final Long postId, final Long memberId) {
-
         Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
-
         post.update(content, memberId);
-
         return post.getId();
     }
 
@@ -34,11 +32,8 @@ public class PostService {
     public Long create(final String title, final String content, final Long memberId) {
         String nickname = profileRepository.findNicknameByMemberId(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-
         Post post = new Post(memberId, nickname, title, content);
-
         postRepository.save(post);
-
         return post.getId();
     }
 

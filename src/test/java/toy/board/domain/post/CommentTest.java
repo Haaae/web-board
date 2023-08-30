@@ -38,7 +38,8 @@ class CommentTest {
                 member.getId(),
                 member.getProfile().getNickname(),
                 "content",
-                CommentType.COMMENT
+                CommentType.COMMENT,
+                null
         );
 
         em.persist(member);
@@ -61,6 +62,28 @@ class CommentTest {
         Post findSecondPost = em.find(Post.class, post.getId());
 
         assertThat(findSecondPost).isNotNull();
+    }
+
+
+    @DisplayName("타입에 따른 생성자 구분으로 자동 양방향 매핑")
+    @Test
+    public void CommentTypeTest() throws  Exception {
+        //given
+        Post post = PostTest.create();
+        String content = "content";
+        long memberId = 1L;
+        //when
+        CommentType commentType = CommentType.COMMENT;
+        CommentType replyType = CommentType.REPLY;
+
+        //then
+        Comment parent = new Comment(post, memberId, post.getWriter(), content, commentType, null);
+        Comment reply = new Comment(post, memberId, post.getWriter(), content, replyType, parent);
+
+        System.out.println("parent = " + parent);
+        System.out.println("reply = " + reply);
+        assertThat(parent.getReplies().contains(reply)).isTrue();
+        assertThat(reply.getParent().equals(parent)).isTrue();
     }
 
     // 댓글만 불러오면 댓글에 대한 게시물이 불러오지 않는다. - 단방향일 때 확인 필요

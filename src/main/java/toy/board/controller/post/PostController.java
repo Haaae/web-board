@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import toy.board.constant.SessionConst;
 import toy.board.controller.post.dto.CommentCreationRequest;
 import toy.board.controller.post.dto.PostCreationRequest;
 import toy.board.controller.post.dto.PostDto;
+import toy.board.controller.post.dto.PostUpdateDto;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
@@ -86,6 +89,7 @@ public class PostController {
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Long> createComment(
             @RequestBody CommentCreationRequest commentCreationRequest,
+            @PathVariable Long postId,
             HttpServletRequest request
     ) {
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
@@ -93,39 +97,35 @@ public class PostController {
                 commentCreationRequest.content(),
                 commentCreationRequest.type(),
                 commentCreationRequest.parentId(),
-                commentCreationRequest.postId(),
+                postId,
                 memberId
         );
 
         return new ResponseEntity<>(commentId, HttpStatus.CREATED);
     }
-//
-//    // update
-//
-//    @PatchMapping("/{postId}")
-//    public ResponseEntity updatePost(
-//            @RequestBody PostUpdateDto postUpdateDto,
-//            @PathParam("postId") Long postId,
-//            HttpServletRequest request
-//    ) {
-//
-//        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
-//
-//        PostUpdateCommand postUpdateCommand = new PostUpdateCommand(
-//                postUpdateDto.content(),
-//                postId,
-//                memberId    // 필요한가? 필요하다. 세션의 멤버와 작성자를 대조해봐야 함
-//        );
-//
-//        Long updatedPostId = PostService.update(postUpdateCommand);
-//
-//        return ResponseEntity.ok(updatedPostId);
-//    }
+
+    // update
+
+    @PatchMapping("/{postId}")
+    public ResponseEntity<Long> updatePost(
+            @RequestBody PostUpdateDto postUpdateDto,
+            @PathVariable Long postId,
+            HttpServletRequest request
+    ) {
+        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        Long updatedPostId = postService.update(
+                postUpdateDto.content(),
+                postId,
+                memberId
+        );
+
+        return ResponseEntity.ok(updatedPostId);
+    }
 //
 //    @PatchMapping("/{postId}/comments/{commentId}")
 //    public ResponseEntity updateComment(
-////            @PathParam("postId") Long postId,
-//            @PathParam("commentId") Long commentId,
+////            @PathVariable("postId") Long postId,
+//            @PathVariable("commentId") Long commentId,
 //            @RequestBody CommentUpdateDto commentUpdateDto,
 //            HttpServletRequest request
 //
@@ -144,7 +144,7 @@ public class PostController {
 //
 //    @DeleteMapping("/{postId}")
 //    public ResponseEntity deletePost(
-//            @PathParam("postId") Long postId,
+//            @PathVariable("postId") Long postId,
 //            HttpServletRequest request
 //    ) {
 //
@@ -157,8 +157,8 @@ public class PostController {
 //
 //    @DeleteMapping("/{postId}/comments/{commentId}")
 //    public ResponseEntity deleteComment(
-////            @PathParam("postId") Long postId,
-//            @PathParam("commentId") Long commentId,
+////            @PathVariable("postId") Long postId,
+//            @PathVariable("commentId") Long commentId,
 //            HttpServletRequest request
 //    ) {
 //

@@ -1,6 +1,8 @@
 package toy.board.service;
 
 import java.util.Optional;
+import java.util.function.Consumer;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,16 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final ProfileRepository profileRepository;
+
+    public Long update(String content, Long postId, Long memberId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+
+        post.update(content, memberId);
+
+        return post.getId();
+    }
 
     @Transactional
     public Long create(String title, String content, Long memberId) {

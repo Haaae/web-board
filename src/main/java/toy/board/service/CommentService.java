@@ -22,17 +22,19 @@ public class CommentService {
     private final PostRepository postRepository;
 
     public Long create(String content, CommentType type, Long parentId, Long postId, Long memberId) {
-        Optional<Post> post = postRepository.findById(postId);
-        Optional<String> nickname = profileRepository.findNicknameByMemberId(memberId);
-        Optional<Comment> parentComment = commentRepository.findById(parentId);
+        Post post = postRepository
+                .findById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
 
-        Comment comment = type.createComment(
-                post.orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND)),
-                memberId,
-                nickname.orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND)),
-                content,
-                parentComment.orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND))
-        );
+        String nickname = profileRepository
+                .findNicknameByMemberId(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+
+        Comment parentComment = commentRepository
+                .findById(parentId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+
+        Comment comment = type.createComment(post, memberId, nickname, content, parentComment);
 
         commentRepository.save(comment);
 

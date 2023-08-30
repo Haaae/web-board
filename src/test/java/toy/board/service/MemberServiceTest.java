@@ -21,6 +21,7 @@ import toy.board.repository.user.MemberRepository;
 
 
 import java.util.Optional;
+import toy.board.service.member.MemberService;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;

@@ -1,4 +1,4 @@
-package toy.board.service;
+package toy.board.service.member;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -19,6 +19,8 @@ import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
+import toy.board.service.redis.RedisService;
+import toy.board.service.mail.MailService;
 
 @Transactional(readOnly = true)
 @Service

@@ -1,7 +1,6 @@
 package toy.board.controller.post;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.websocket.server.PathParam;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AccessLevel;
@@ -19,8 +18,8 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
-import toy.board.service.CommentService;
-import toy.board.service.PostService;
+import toy.board.service.comment.CommentService;
+import toy.board.service.post.PostService;
 
 @Controller
 @RequestMapping("/posts")

@@ -23,7 +23,7 @@ import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
-import toy.board.service.MemberService;
+import toy.board.service.member.MemberService;
 import toy.board.constant.SessionConst;
 
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package toy.board.service;
+package toy.board.service.redis;
 
 import java.util.Optional;
 import lombok.AccessLevel;

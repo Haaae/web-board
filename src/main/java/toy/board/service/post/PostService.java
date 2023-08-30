@@ -1,4 +1,4 @@
-package toy.board.service;
+package toy.board.service.post;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

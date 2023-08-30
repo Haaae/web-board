@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
+import toy.board.service.post.PostService;
 
 @SpringBootTest
 @Transactional

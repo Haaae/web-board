@@ -10,13 +10,4 @@ public enum CommentType {
     public static CommentType from(String s) {
         return CommentType.valueOf(s.toUpperCase());
     }
-
-    public Comment createComment(Post post, Long writerId, String writer, String content, Comment parentComment) {
-
-        if (this == COMMENT) {
-            return new Comment(post, writerId, writer, content, this);
-        }
-
-        return new Comment(post, writerId, writer, content, parentComment);
-    }
 }

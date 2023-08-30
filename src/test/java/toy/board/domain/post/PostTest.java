@@ -17,4 +17,8 @@ class PostTest {
         //then
     }
 
+    public static Post create() {
+        return new Post(1L, "writer", "title", "content");
+    }
+
 }

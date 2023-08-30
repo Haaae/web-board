@@ -15,7 +15,10 @@ public enum ExceptionCode {
     ACCOUNT_NOT_FOUND(404, "ACCOUNT-004", "계정을 찾을 수 없음"),
     ROLE_NOT_EXISTS(403, "ACCOUNT-005", "권한 부족"),
     SESSION_NOT_EXISTS(401, "ACCOUNT-006", "세션이 존재하지 않음"),
-    POST_NOT_FOUND(404, "POST-001", "게시물을 찾을 수 없음");
+
+    POST_NOT_FOUND(404, "POST-001", "게시물을 찾을 수 없음"),
+
+    COMMENT_NOT_FOUND(404, "COMENT-001", "댓글을 찾을 수 없음");
 
     private final int status;
     private final String code;

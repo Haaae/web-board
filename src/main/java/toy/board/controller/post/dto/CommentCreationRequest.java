@@ -12,9 +12,7 @@ public record CommentCreationRequest(
         String content,
         @NotNull
         CommentType type,
-        Long parentId,
-        @NotNull
-        Long postId
+        Long parentId
 ) {
 
 }

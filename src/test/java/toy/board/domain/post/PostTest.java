@@ -8,7 +8,6 @@ class PostTest {
     @DisplayName("")
     @Test
     public void notNull() throws Exception {
-        Post post = new Post(null, null, null);
 
 
         //given

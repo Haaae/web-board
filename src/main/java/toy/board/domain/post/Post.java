@@ -7,6 +7,10 @@ import lombok.*;
 import org.springframework.util.StringUtils;
 import toy.board.domain.BaseDeleteEntity;
 import toy.board.domain.user.Member;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
+
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -55,13 +59,15 @@ public class Post extends BaseDeleteEntity {
         this.hits = 0L;
     }
 
-    public boolean update(final String content) {
-        if (!StringUtils.hasText(content)) {
-            return false;
-        }
-
+    public void update(@NotBlank final String content, final Long memberId) {
+        validateRight(memberId);
         this.content = content;
-        return true;
+    }
+
+    private void validateRight(Long memberId) {
+        if (!memberId.equals(this.writerId)) {
+            throw new BusinessException(ExceptionCode.POST_NOT_WRITER);
+        }
     }
 
     public long increaseHits() {

@@ -72,25 +72,25 @@ public class Comment extends BaseDeleteEntity {
         }
     }
 
-    public void update(@NotBlank final String content, Long writerId) {
+    public void update(@NotBlank final String content, final Long writerId) {
         validateRight(writerId);
         this.content = content;
     }
-    private void receiveReply(Comment reply) {
+    private void receiveReply(final Comment reply) {
         validateType(reply);
         this.replies.add(reply);
         reply.parent = this;
     }
 
-    private void validateType(Comment reply) {
-        if (this.type != CommentType.COMMENT || reply.type != CommentType.REPLY) {
-            throw new BusinessException(ExceptionCode.COMMENT_INVALID_TYPE);
+    public void validateRight(final Long writerId) {
+        if (!writerId.equals(this.wtiterId)) {
+            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
         }
     }
 
-    private void validateRight(Long writerId) {
-        if (!writerId.equals(this.wtiterId)) {
-            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
+    private void validateType(final Comment reply) {
+        if (this.type != CommentType.COMMENT || reply.type != CommentType.REPLY) {
+            throw new BusinessException(ExceptionCode.COMMENT_INVALID_TYPE);
         }
     }
 }

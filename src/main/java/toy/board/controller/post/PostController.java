@@ -36,7 +36,7 @@ public class PostController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<PostDto>> getPosts(Pageable pageable) {
+    public ResponseEntity<Page<PostDto>> getPosts(final Pageable pageable) {
         Page<PostDto> page = postRepository.findAllPost(pageable);
 
         return ResponseEntity.ok(page);
@@ -49,7 +49,7 @@ public class PostController {
 //    } === 필요한가? ===
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Map<String, Object>> getPostDetail(@PathVariable("postId") Long postId) {
+    public ResponseEntity<Map<String, Object>> getPostDetail(@PathVariable("postId") final Long postId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("postDto",
                 postRepository.getPostDtoById(postId).orElseThrow(
@@ -63,8 +63,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Long> createPost(
-            @RequestBody PostCreationRequest postCreationRequest,
-            HttpServletRequest request
+            @RequestBody final PostCreationRequest postCreationRequest,
+            final HttpServletRequest request
     ) {
 
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
@@ -80,9 +80,9 @@ public class PostController {
 
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Long> createComment(
-            @RequestBody CommentCreationRequest commentCreationRequest,
-            @PathVariable("postId") Long postId,
-            HttpServletRequest request
+            @RequestBody final CommentCreationRequest commentCreationRequest,
+            @PathVariable("postId") final Long postId,
+            final HttpServletRequest request
     ) {
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
         Long commentId = commentService.create(
@@ -100,9 +100,9 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     public ResponseEntity<Long> updatePost(
-            @RequestBody PostUpdateDto postUpdateDto,
-            @PathVariable("postId") Long postId,
-            HttpServletRequest request
+            @RequestBody final PostUpdateDto postUpdateDto,
+            @PathVariable("postId") final Long postId,
+            final HttpServletRequest request
     ) {
         // TODO: 2023-08-30 작성자와 다른 memberId 수정 안되는지 확인
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
@@ -117,9 +117,9 @@ public class PostController {
 
     @PatchMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Long> updateComment(
-            @PathVariable("commentId") Long commentId,
-            @RequestBody CommentUpdateDto commentUpdateDto,
-            HttpServletRequest request
+            @PathVariable("commentId") final Long commentId,
+            @RequestBody final CommentUpdateDto commentUpdateDto,
+            final HttpServletRequest request
 
     ) {
         // TODO: 2023-08-30 작성자와 다른 memberId 수정 안되는지 확인
@@ -135,28 +135,25 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     public ResponseEntity deletePost(
-            @PathVariable("postId") Long postId,
-            HttpServletRequest request
+            @PathVariable("postId") final Long postId,
+            final HttpServletRequest request
     ) {
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
         postService.delete(postId, memberId);
 
         return new ResponseEntity(HttpStatus.OK);
     }
-//
-//    @DeleteMapping("/{postId}/comments/{commentId}")
-//    public ResponseEntity deleteComment(
-////            @PathVariable("postId") Long postId,
-//            @PathVariable("commentId") Long commentId,
-//            HttpServletRequest request
-//    ) {
-//
-//        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
-//
-//        commentService.delete(commentId, memberId);
-//
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity deleteComment(
+            @PathVariable("commentId") final Long commentId,
+            final HttpServletRequest request
+    ) {
+        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        commentService.delete(commentId, memberId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
 
 /*
 myposts, mycomment 같이 mypage에 필요한 데이터는 MyController에서 한 번에 전달하는 것이 좋지 않을까?

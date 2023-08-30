@@ -21,7 +21,8 @@ public class CommentService {
     private final ProfileRepository profileRepository;
     private final PostRepository postRepository;
 
-    public Long create(String content, CommentType type, Long parentId, Long postId, Long memberId) {
+    public Long create(final String content, final CommentType type,
+                       final Long parentId, final Long postId, final Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
 
@@ -38,7 +39,7 @@ public class CommentService {
         return comment.getId();
     }
 
-    public Long update(Long commentId, String content, Long memberId) {
+    public Long update(final Long commentId, final String content, final Long memberId) {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
@@ -46,5 +47,12 @@ public class CommentService {
         comment.update(content, memberId);
 
         return commentId;
+    }
+
+    public void delete(Long commentId, Long memberId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+        comment.validateRight(memberId);
+        commentRepository.deleteById(comment.getId());
     }
 }

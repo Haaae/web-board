@@ -5,20 +5,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
+
+import lombok.*;
 import toy.board.domain.BaseDeleteEntity;
-import toy.board.domain.user.Member;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = true)
+@ToString(exclude = {"replies"})
 public class Comment extends BaseDeleteEntity {
 
     public static final int CONTENT_LENGTH = 1000;
@@ -59,7 +57,8 @@ public class Comment extends BaseDeleteEntity {
             @NotNull final Long writerId,
             @NotBlank final String writer,
             @NotNull final String content,
-            @NotNull final CommentType type
+            @NotNull final CommentType type,
+            final Comment parent
     ) {
 
         this.post = post;
@@ -67,54 +66,31 @@ public class Comment extends BaseDeleteEntity {
         this.writer = writer;
         this.content = content;
         this.type = type;
-    }
 
-    public Comment(
-            @NotNull final Post post,
-            @NotNull final Long writerId,
-            @NotBlank final String writer,
-            @NotNull final String content,
-            @NotNull final Comment comment
-    ) {
-        this(post, writerId, writer, content, CommentType.REPLY);
-        comment.leaveReply(this);
-    }
-
-    public boolean update(final String content) {
-        if (!StringUtils.hasText(content)) {
-            return false;
+        if (type == CommentType.REPLY) {
+            parent.receiveReply(this);
         }
+    }
 
+    public void update(@NotBlank final String content, Long writerId) {
+        validateRight(writerId);
         this.content = content;
-        return true;
     }
-
-    public void leaveReply(Comment reply) {
-        if (areTypesCorrectThisAnd(reply)) {
-            throw new IllegalArgumentException("주어진 댓글과 대댓글의 타입이 올바르지 않습니다.");
-        }
-
-        if (hasComment(reply)) {
-            throw new IllegalArgumentException("대댓글이 이미 다른 댓글에 포섭되어 있습니다.");
-        }
-
-        if (isNew(reply)) {
-            throw new IllegalArgumentException("댓글이 이미 해당 대댓글을 포함하고 있습니다.");
-        }
-
+    private void receiveReply(Comment reply) {
+        validateType(reply);
         this.replies.add(reply);
         reply.parent = this;
     }
 
-    private boolean isNew(Comment reply) {
-        return this.replies.contains(reply);
+    private void validateType(Comment reply) {
+        if (this.type != CommentType.COMMENT || reply.type != CommentType.REPLY) {
+            throw new BusinessException(ExceptionCode.COMMENT_INVALID_TYPE);
+        }
     }
 
-    private static boolean hasComment(Comment reply) {
-        return reply.parent != null;
-    }
-
-    private boolean areTypesCorrectThisAnd(Comment reply) {
-        return this.type != CommentType.COMMENT || reply.type != CommentType.REPLY;
+    private void validateRight(Long writerId) {
+        if (!writerId.equals(this.wtiterId)) {
+            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
+        }
     }
 }

@@ -32,14 +32,14 @@ public class LoginInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private void validate(HttpServletRequest request) {
+    private void validate(final HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
             throw new BusinessException(ExceptionCode.UNAUTHORIZED);
         }
     }
 
-    private boolean isRequestDoesNotNeedCheck(HttpServletRequest request) {
+    private boolean isRequestDoesNotNeedCheck(final HttpServletRequest request) {
         String method = request.getMethod();
         String url = getRequestURLWithNoDomain(request);
         return isUrlToGetPostList(method, url)
@@ -47,19 +47,19 @@ public class LoginInterceptor implements HandlerInterceptor {
                 || isUrlToJoin(method, url);
     }
 
-    private boolean isUrlToJoin(String method, String url) {
+    private boolean isUrlToJoin(final String method, final String url) {
         return method.equals(POST) && url.equals("/users");
     }
 
-    private boolean isUrlToGetParticularPost(String method, String url) {
+    private boolean isUrlToGetParticularPost(final String method, final  String url) {
         return method.equals(GET) && url.matches(REGEX_PATICULAR_POST);
     }
 
-    private boolean isUrlToGetPostList(String method, String url) {
+    private boolean isUrlToGetPostList(final String method, final String url) {
         return method.equals(GET) && url.equals(URL_POST_LIST);
     }
 
-    private String getRequestURLWithNoDomain(HttpServletRequest request) {
+    private String getRequestURLWithNoDomain(final HttpServletRequest request) {
         StringBuffer url = request.getRequestURL();
         return url.substring(url.indexOf(URL_SLICE, URL_FROM_INDEX));
     }

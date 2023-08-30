@@ -17,7 +17,7 @@ public class MailService {
 
     private final JavaMailSender mailSender;
 
-    public void sendMail(String toEMail, String title, String text) {
+    public void sendMail(final String toEMail, final String title, final String text) {
         SimpleMailMessage emailForm = createEmailForm(toEMail, title, text);
 
         try {
@@ -30,7 +30,7 @@ public class MailService {
 
     }
 
-    private SimpleMailMessage createEmailForm(String toEmail, String title, String text) {
+    private SimpleMailMessage createEmailForm(final String toEmail, final String title, final String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(toEmail);
         message.setSubject(title);

@@ -22,7 +22,7 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport implements Po
     }
 
     @Override
-    public Page<PostDto> findAllPost(Pageable pageable) {
+    public Page<PostDto> findAllPost(final Pageable pageable) {
         return applyPagination(pageable,
                 contentQuery -> contentQuery
                         .select(getPostDtoConstructorExpression())
@@ -39,7 +39,7 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport implements Po
     }
 
     @Override
-    public Optional<PostDto> getPostDtoById(Long postId) {
+    public Optional<PostDto> getPostDtoById(final Long postId) {
         return Optional.ofNullable(
                 select(getPostDtoConstructorExpression())
                         .from(post)

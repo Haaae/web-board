@@ -42,7 +42,7 @@ public abstract class Querydsl4RepositorySupport {
     }
 
     @Autowired
-    public void setEntityManager(EntityManager entityManager) {
+    public void setEntityManager(final EntityManager entityManager) {
         Assert.notNull(entityManager, "EntityManager must not be null!");
 
         JpaEntityInformation entityInformation =
@@ -74,7 +74,7 @@ public abstract class Querydsl4RepositorySupport {
         return entityManager;
     }
 
-    protected <T> JPAQuery<T> select(Expression<T> expr) {
+    protected <T> JPAQuery<T> select(final Expression<T> expr) {
         return getQueryFactory().select(expr);
     }
 
@@ -82,17 +82,18 @@ public abstract class Querydsl4RepositorySupport {
         return getQueryFactory().selectFrom(from);
     }
 
-    protected <T> Page<T> applyPagination(Pageable pageable,
-            Function<JPAQueryFactory, JPAQuery> contentQuery) {
+    protected <T> Page<T> applyPagination(final Pageable pageable,
+                                          final Function<JPAQueryFactory, JPAQuery> contentQuery) {
         JPAQuery jpaQuery = contentQuery.apply(getQueryFactory());
         List<T> content = getQuerydsl().applyPagination(pageable, jpaQuery).fetch();
         return PageableExecutionUtils.getPage(content, pageable,
                 jpaQuery::fetchCount);
     }
 
-    protected <T> Page<T> applyPagination(Pageable pageable,
-            Function<JPAQueryFactory, JPAQuery> contentQuery, Function<JPAQueryFactory,
-            JPAQuery<Long>> countQuery) {
+    protected <T> Page<T> applyPagination(final Pageable pageable,
+                                          final Function<JPAQueryFactory, JPAQuery> contentQuery,
+                                          final Function<JPAQueryFactory,
+                                                  JPAQuery<Long>> countQuery) {
         JPAQuery jpaContentQuery = contentQuery.apply(getQueryFactory());
         List<T> content = getQuerydsl().applyPagination(pageable, jpaContentQuery).fetch();
 

@@ -49,7 +49,7 @@ public class CommentService {
         return commentId;
     }
 
-    public void delete(Long commentId, Long memberId) {
+    public void delete(final Long commentId, final Long memberId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
         comment.validateRight(memberId);

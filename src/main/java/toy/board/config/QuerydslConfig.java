@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class QuerydslConfig {
 
     @Bean
-    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
+    public JPAQueryFactory jpaQueryFactory(final EntityManager em) {
         return new JPAQueryFactory(em);
     }
 }

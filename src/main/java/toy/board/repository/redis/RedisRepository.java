@@ -1,4 +1,4 @@
-package toy.board.repository;
+package toy.board.repository.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;

@@ -58,7 +58,7 @@ public class Post extends BaseDeleteEntity {
         this.content = content;
     }
 
-    public void validateRight(Long writerId) {
+    public void validateRight(final Long writerId) {
         if (!writerId.equals(this.writerId)) {
             throw new BusinessException(ExceptionCode.POST_NOT_WRITER);
         }

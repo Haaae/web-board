@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentQueryRepository {
 
-    void deleteCommentsByPost(Post post);
+    void deleteCommentsByPost(final Post post);
 }

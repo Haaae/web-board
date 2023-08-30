@@ -1,4 +1,4 @@
-package toy.board.repository;
+package toy.board.repository.socialLogin;
 
 public interface SocialLoginRepository {
 }

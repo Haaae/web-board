@@ -36,7 +36,7 @@ public class Login extends BaseEntity {
      * only use in the Member Entity.
      * @param member
      */
-    public void changeMember(Member member) {
+    public void changeMember(final Member member) {
         this.member = member;
     }
 }

@@ -42,9 +42,8 @@ public class MemberController {
     // Error Type: MethodArgumentNotValidException.class
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @RequestBody @Valid LoginRequest loginRequest,
-            // TODO: 2023-08-02 DTO인 loginRequest의 어노테이션 유효성 검증 로직 구현
-            HttpServletRequest request
+            @RequestBody @Valid final LoginRequest loginRequest,
+            final HttpServletRequest request
     ) {
         // valid 실패 시 자동으로 에러 발생하므로 바로 member를 찾는다.
         Member loginMember = memberService.login(loginRequest.username(),
@@ -59,16 +58,16 @@ public class MemberController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request) {
+    public ResponseEntity logout(final HttpServletRequest request) {
 
-            Objects.requireNonNull(request.getSession(false)).invalidate();
-            return new ResponseEntity<>(HttpStatus.OK);
+        Objects.requireNonNull(request.getSession(false)).invalidate();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity withdrawal(
-            @RequestBody @Valid WithdrawalRequest withdrawalRequest,
-            HttpServletRequest request
+            @RequestBody @Valid final WithdrawalRequest withdrawalRequest,
+            final HttpServletRequest request
     ) {
 
         HttpSession session = request.getSession(false);
@@ -94,7 +93,7 @@ public class MemberController {
 
      */
     @PostMapping
-    public ResponseEntity<JoinResponse> join(@RequestBody @Valid JoinRequest joinRequest) {
+    public ResponseEntity<JoinResponse> join(@RequestBody @Valid final JoinRequest joinRequest) {
         Member member = memberService.join(joinRequest.username(), joinRequest.password(),
                 joinRequest.nickname());
 
@@ -102,7 +101,7 @@ public class MemberController {
     }
 
     @GetMapping("/usernames/{username}")
-    public ResponseEntity<FindUserResponse> findUserByUsername(@PathVariable String username) {
+    public ResponseEntity<FindUserResponse> findUserByUsername(@PathVariable final String username) {
         Optional<Member> member = memberRepository.findMemberByUsername(username);
 
         return ResponseEntity.ok(
@@ -112,7 +111,7 @@ public class MemberController {
     }
 
     @GetMapping("/nicknames/{nickname}")
-    public ResponseEntity<FindUserResponse> findUserByNickname(@PathVariable String nickname) {
+    public ResponseEntity<FindUserResponse> findUserByNickname(@PathVariable final String nickname) {
         Optional<Member> member = memberRepository.findMemberByNickname(nickname);
 
         return ResponseEntity.ok(
@@ -122,14 +121,14 @@ public class MemberController {
     }
 
     @PostMapping("/emails/verification-requests")
-    public ResponseEntity sendMessage(@RequestBody @Valid SendEmailVerificationRequest request) {
+    public ResponseEntity sendMessage(@RequestBody @Valid final SendEmailVerificationRequest request) {
         memberService.sendCodeToEmail(request.email());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/emails/verifications")
-    public ResponseEntity<EmailVerificationResponse> verificationEmail(@RequestBody @Valid EmailVerificationRequest request) {
+    public ResponseEntity<EmailVerificationResponse> verificationEmail(@RequestBody @Valid final EmailVerificationRequest request) {
         boolean result = memberService.verifiedCode(request.email(), request.authCode());
 
         return ResponseEntity.ok(EmailVerificationResponse.of(result));

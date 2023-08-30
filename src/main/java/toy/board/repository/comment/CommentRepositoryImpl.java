@@ -17,11 +17,11 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
     }
 
     @Override
-    public List<CommentDto> getCommentDtosByPostId(Long postId) {
+    public List<CommentDto> getCommentDtosByPostId(final Long postId) {
         return getComments(postId).stream().map(this::convertToDto).toList();
     }
 
-    private List<Comment> getComments(Long postId) {
+    private List<Comment> getComments(final Long postId) {
         QComment reply = new QComment("reply");
         return selectFrom(comment)
                 .leftJoin(comment.replies, reply).fetchJoin()
@@ -33,7 +33,7 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
                 .fetch();
     }
 
-    private CommentDto convertToDto(Comment comment) {
+    private CommentDto convertToDto(final Comment comment) {
         CommentDto commentDto = new CommentDto(
                 comment.getId(),
                 comment.getWtiterId(),

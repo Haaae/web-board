@@ -24,8 +24,7 @@ public class PostService {
 
     public Long update(String content, Long postId, Long memberId) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
 
         post.update(content, memberId);
 
@@ -34,11 +33,10 @@ public class PostService {
 
     @Transactional
     public Long create(String title, String content, Long memberId) {
-        Optional<String> nickname = profileRepository.findNicknameByMemberId(memberId);
+        String nickname = profileRepository.findNicknameByMemberId(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
-        Post post = new Post(memberId,
-                nickname.orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)),
-                title, content);
+        Post post = new Post(memberId, nickname, title, content);
 
         postRepository.save(post);
 

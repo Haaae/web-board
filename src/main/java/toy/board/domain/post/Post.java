@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.util.StringUtils;
 import toy.board.domain.BaseDeleteEntity;
-import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
@@ -16,7 +14,6 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"member"})
 public class Post extends BaseDeleteEntity {
 
     public static final int TITLE_MAX_LENGTH = 10000;
@@ -42,9 +39,6 @@ public class Post extends BaseDeleteEntity {
     @Column(name = "writer")    // 작성자가 탈퇴할 경우 null로 변경해야 한다.
     private String writer;
 
-    /**
-     * 양방향 관계인 Member에 대해 자동으로 양방향 매핑을 수행한다.
-     */
     public Post(
             @NotNull final Long writerId,
             @NotNull final String writer,
@@ -59,13 +53,13 @@ public class Post extends BaseDeleteEntity {
         this.hits = 0L;
     }
 
-    public void update(@NotBlank final String content, final Long memberId) {
-        validateRight(memberId);
+    public void update(@NotBlank final String content, final Long writerId) {
+        validateRight(writerId);
         this.content = content;
     }
 
-    private void validateRight(Long memberId) {
-        if (!memberId.equals(this.writerId)) {
+    public void validateRight(Long writerId) {
+        if (!writerId.equals(this.writerId)) {
             throw new BusinessException(ExceptionCode.POST_NOT_WRITER);
         }
     }

@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
-import toy.board.controller.post.dto.CommentCreationRequest;
-import toy.board.controller.post.dto.PostCreationRequest;
-import toy.board.controller.post.dto.PostDto;
-import toy.board.controller.post.dto.PostUpdateDto;
+import toy.board.controller.post.dto.*;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
@@ -57,7 +54,7 @@ public class PostController {
 //    } === 필요한가? ===
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Map<String, Object>> getPostDetail(@PathParam("postId") Long postId) {
+    public ResponseEntity<Map<String, Object>> getPostDetail(@PathVariable("postId") Long postId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("postDto",
                 postRepository.getPostDtoById(postId).orElseThrow(
@@ -89,7 +86,7 @@ public class PostController {
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Long> createComment(
             @RequestBody CommentCreationRequest commentCreationRequest,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             HttpServletRequest request
     ) {
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
@@ -109,9 +106,10 @@ public class PostController {
     @PatchMapping("/{postId}")
     public ResponseEntity<Long> updatePost(
             @RequestBody PostUpdateDto postUpdateDto,
-            @PathVariable Long postId,
+            @PathVariable("postId") Long postId,
             HttpServletRequest request
     ) {
+        // TODO: 2023-08-30 작성자와 다른 memberId 수정 안되는지 확인
         Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
         Long updatedPostId = postService.update(
                 postUpdateDto.content(),
@@ -121,25 +119,23 @@ public class PostController {
 
         return ResponseEntity.ok(updatedPostId);
     }
-//
-//    @PatchMapping("/{postId}/comments/{commentId}")
-//    public ResponseEntity updateComment(
-////            @PathVariable("postId") Long postId,
-//            @PathVariable("commentId") Long commentId,
-//            @RequestBody CommentUpdateDto commentUpdateDto,
-//            HttpServletRequest request
-//
-//    ) {
-//
-//        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
-//
-//        Long updatedCommentId = commentService.update(
-//                commentId, commentUpdateDto.content(), memberId
-//        );
-//
-//        return ResponseEntity.ok(updatedCommentId);
-//    }
-//
+
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Long> updateComment(
+            @PathVariable("commentId") Long commentId,
+            @RequestBody CommentUpdateDto commentUpdateDto,
+            HttpServletRequest request
+
+    ) {
+
+        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        Long updatedCommentId = commentService.update(
+                commentId, commentUpdateDto.content(), memberId
+        );
+
+        return ResponseEntity.ok(updatedCommentId);
+    }
+
 //    // delete
 //
 //    @DeleteMapping("/{postId}")

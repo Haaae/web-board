@@ -22,22 +22,29 @@ public class CommentService {
     private final PostRepository postRepository;
 
     public Long create(String content, CommentType type, Long parentId, Long postId, Long memberId) {
-        Post post = postRepository
-                .findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
 
-        String nickname = profileRepository
-                .findNicknameByMemberId(memberId)
+        String nickname = profileRepository.findNicknameByMemberId(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
-        Comment parentComment = commentRepository
-                .findById(parentId)
+        Comment parentComment = commentRepository.findById(parentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
 
-        Comment comment = type.createComment(post, memberId, nickname, content, parentComment);
+        Comment comment = new Comment(post, memberId, nickname, content, type, parentComment);
 
         commentRepository.save(comment);
 
         return comment.getId();
+    }
+
+    public Long update(Long commentId, String content, Long memberId) {
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+
+        comment.update(content, memberId);
+
+        return commentId;
     }
 }

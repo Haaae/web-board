@@ -4,6 +4,7 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
@@ -15,12 +16,14 @@ import toy.board.repository.profile.ProfileRepository;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@Transactional(readOnly = true)
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final ProfileRepository profileRepository;
     private final PostRepository postRepository;
 
+    @Transactional
     public Long create(final String content, final CommentType type,
                        final Long parentId, final Long postId, final Long memberId) {
         Post post = postRepository.findById(postId)
@@ -39,6 +42,7 @@ public class CommentService {
         return comment.getId();
     }
 
+    @Transactional
     public Long update(final Long commentId, final String content, final Long memberId) {
 
         Comment comment = commentRepository.findById(commentId)
@@ -49,6 +53,7 @@ public class CommentService {
         return commentId;
     }
 
+    @Transactional
     public void delete(final Long commentId, final Long memberId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));

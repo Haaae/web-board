@@ -1,15 +1,14 @@
 package toy.board.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import toy.board.domain.post.Post;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
 
@@ -31,11 +30,11 @@ class PostServiceTest {
         em.flush(); em.clear();
         //when
         Long postId = postService.create("title", "content", member.getId());
-
+        Post post = em.find(Post.class, postId);
         //then
         System.out.println("postId = " + postId);
         assertThat(postId).isNotNull();
-        assertThat(postId).isEqualTo(1);
+        assertThat(postId).isEqualTo(post.getId());
     }
 
 

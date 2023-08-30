@@ -45,6 +45,7 @@ public class PostService {
         return post.getId();
     }
 
+    @Transactional
     public void delete(final Long postId, final Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));

@@ -17,6 +17,7 @@ public enum ExceptionCode {
     SESSION_NOT_EXISTS(401, "ACCOUNT-006", "세션이 존재하지 않음"),
 
     POST_NOT_FOUND(404, "POST-001", "게시물을 찾을 수 없음"),
+    POST_NOT_WRITER(403, "POST-01", "게시물의 작성자가 아님"),
 
     COMMENT_NOT_FOUND(404, "COMMENT-001", "댓글을 찾을 수 없음");
 

@@ -11,7 +11,7 @@ public enum CommentType {
         return CommentType.valueOf(s.toUpperCase());
     }
 
-    public Comment create(Post post, Long writerId, String writer, String content, Comment parentComment) {
+    public Comment createComment(Post post, Long writerId, String writer, String content, Comment parentComment) {
 
         if (this == COMMENT) {
             return new Comment(post, writerId, writer, content, this);

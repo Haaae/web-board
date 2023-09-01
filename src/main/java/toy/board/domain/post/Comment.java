@@ -60,26 +60,22 @@ public class Comment extends BaseDeleteEntity {
             @NotNull final CommentType type,
             final Comment parent
     ) {
-
         this.post = post;
         this.wtiterId = writerId;
         this.writer = writer;
         this.content = content;
         this.type = type;
 
+        validate(parent);
+
         if (type == CommentType.REPLY) {
-            parent.receiveReply(this);
+            this.leaveReply(parent);
         }
     }
 
     public void update(@NotBlank final String content, final Long writerId) {
         validateRight(writerId);
         this.content = content;
-    }
-    private void receiveReply(final Comment reply) {
-        validateType(reply);
-        this.replies.add(reply);
-        reply.parent = this;
     }
 
     public void validateRight(final Long writerId) {
@@ -88,9 +84,22 @@ public class Comment extends BaseDeleteEntity {
         }
     }
 
-    private void validateType(final Comment reply) {
-        if (this.type != CommentType.COMMENT || reply.type != CommentType.REPLY) {
-            throw new BusinessException(ExceptionCode.COMMENT_INVALID_TYPE);
+    private void leaveReply(final Comment parent) {
+        this.parent = parent;
+        parent.replies.add(this);
+    }
+
+    private void validate(final Comment parent) {
+        if (this.type == CommentType.COMMENT && parent != null) {
+            throw new BusinessException(ExceptionCode.COMMENT_CAN_NOT_HAVE_PARENT);
+        }
+
+        if (this.type == CommentType.REPLY && parent == null) {
+            throw new BusinessException(ExceptionCode.NULL_COMMENT);
+        }
+
+        if (this.type == CommentType.REPLY && parent.type == CommentType.REPLY) {
+            throw new BusinessException(ExceptionCode.INVALID_COMMENT_TYPE);
         }
     }
 }

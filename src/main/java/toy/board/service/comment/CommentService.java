@@ -1,5 +1,6 @@
 package toy.board.service.comment;
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,20 +25,19 @@ public class CommentService {
 
     @Transactional
     public Long create(final String content, final CommentType type,
-                       final Long parentId, final Long postId, final Long memberId) {
+            final Optional<Long> parentId, final Long postId, final Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
-
         String nickname = profileRepository.findNicknameByMemberId(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-
-        Comment parentComment = commentRepository.findById(parentId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+        Comment parentComment = parentId.map(p ->
+                commentRepository.findById(p)
+                        .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND))
+        ).orElse(null);
 
         Comment comment = new Comment(post, memberId, nickname, content, type, parentComment);
 
         commentRepository.save(comment);
-
         return comment.getId();
     }
 

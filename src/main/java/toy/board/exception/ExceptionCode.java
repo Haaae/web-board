@@ -21,7 +21,9 @@ public enum ExceptionCode {
 
     COMMENT_NOT_FOUND(404, "COMMENT-001", "댓글을 찾을 수 없음"),
     COMMENT_NOT_WRITER(403, "COMMENT-002", "댓글의 작성자가 아님"),
-    COMMENT_INVALID_TYPE(404, "COMMENT-003", "유효하지 않은 댓글 타입");
+    INVALID_COMMENT_TYPE(404, "COMMENT-003", "유효하지 않은 댓글 타입"),
+    NULL_COMMENT(404, "COMMENT-004","댓글이 NULL임"),
+    COMMENT_CAN_NOT_HAVE_PARENT(404, "COMMENT-005", "Comment 타입의 댓글이 부모 댓글을 가질 수 없음");
 
     private final int status;
     private final String code;

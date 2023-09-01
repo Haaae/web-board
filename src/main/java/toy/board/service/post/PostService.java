@@ -23,7 +23,8 @@ public class PostService {
 
     @Transactional
     public Long update(final String content, final Long postId, final Long memberId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
         post.update(content, memberId);
         return post.getId();
     }

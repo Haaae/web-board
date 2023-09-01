@@ -3,6 +3,7 @@ package toy.board.controller.post;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -87,7 +88,7 @@ public class PostController {
         Long commentId = commentService.create(
                 commentCreationRequest.content(),
                 commentCreationRequest.type(),
-                commentCreationRequest.parentId(),
+                Optional.ofNullable(commentCreationRequest.parentId()),
                 postId,
                 memberId
         );

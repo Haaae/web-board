@@ -4,10 +4,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,7 +40,10 @@ public class PostController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<PostDto>> getPosts(final Pageable pageable) {
+    public ResponseEntity<Page<PostDto>> getPosts(
+            @PageableDefault(size = 5, page = 0, sort = "createdDate")
+            Pageable pageable
+    ) {
         Page<PostDto> page = postRepository.findAllPost(pageable);
 
         return ResponseEntity.ok(page);
@@ -62,29 +69,29 @@ public class PostController {
     // createComment
 
     @PostMapping
-    public ResponseEntity<Long> createPost(
-            @RequestBody final PostCreationRequest postCreationRequest,
+    public ResponseEntity<PostIdDto> createPost(
+            @RequestBody @Valid final PostCreationRequest postCreationRequest,
             final HttpServletRequest request
     ) {
-
-        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        HttpSession session = request.getSession(false);
+        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Long postId = postService.create(
                 postCreationRequest.title(),
                 postCreationRequest.content(),
                 memberId
         );
 
-        return new ResponseEntity<>(postId, HttpStatus.CREATED);
-        // 이렇게 dto말고 long 객체로 보내면 어케 되는지 확인
+        return new ResponseEntity<>(PostIdDto.of(postId), HttpStatus.CREATED);
     }
 
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<Long> createComment(
-            @RequestBody final CommentCreationRequest commentCreationRequest,
+    public ResponseEntity<CommentIdDto> createComment(
+            @RequestBody @Valid final CommentCreationRequest commentCreationRequest,
             @PathVariable("postId") final Long postId,
             final HttpServletRequest request
     ) {
-        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        HttpSession session = request.getSession(false);
+        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Long commentId = commentService.create(
                 commentCreationRequest.content(),
                 commentCreationRequest.type(),
@@ -93,42 +100,43 @@ public class PostController {
                 memberId
         );
 
-        return new ResponseEntity<>(commentId, HttpStatus.CREATED);
+        return new ResponseEntity<>(CommentIdDto.of(commentId), HttpStatus.CREATED);
     }
 
     // update
 
     @PatchMapping("/{postId}")
-    public ResponseEntity<Long> updatePost(
-            @RequestBody final PostUpdateDto postUpdateDto,
+    public ResponseEntity<PostIdDto> updatePost(
+            @RequestBody @Valid final PostUpdateDto postUpdateDto,
             @PathVariable("postId") final Long postId,
             final HttpServletRequest request
     ) {
-        // TODO: 2023-08-30 작성자와 다른 memberId 수정 안되는지 확인
-        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        HttpSession session = request.getSession(false);
+        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Long updatedPostId = postService.update(
                 postUpdateDto.content(),
                 postId,
                 memberId
         );
 
-        return ResponseEntity.ok(updatedPostId);
+        return ResponseEntity.ok(PostIdDto.of(updatedPostId));
     }
 
     @PatchMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Long> updateComment(
+    public ResponseEntity<CommentIdDto> updateComment(
             @PathVariable("commentId") final Long commentId,
-            @RequestBody final CommentUpdateDto commentUpdateDto,
+            @RequestBody @Valid final CommentUpdateDto commentUpdateDto,
             final HttpServletRequest request
 
     ) {
         // TODO: 2023-08-30 작성자와 다른 memberId 수정 안되는지 확인
-        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        HttpSession session = request.getSession(false);
+        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         Long updatedCommentId = commentService.update(
                 commentId, commentUpdateDto.content(), memberId
         );
 
-        return ResponseEntity.ok(updatedCommentId);
+        return ResponseEntity.ok(CommentIdDto.of(commentId));
     }
 
     // delete
@@ -138,7 +146,8 @@ public class PostController {
             @PathVariable("postId") final Long postId,
             final HttpServletRequest request
     ) {
-        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        HttpSession session = request.getSession(false);
+        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         postService.delete(postId, memberId);
 
         return new ResponseEntity(HttpStatus.OK);
@@ -149,7 +158,8 @@ public class PostController {
             @PathVariable("commentId") final Long commentId,
             final HttpServletRequest request
     ) {
-        Long memberId = (Long) request.getAttribute(SessionConst.LOGIN_MEMBER);
+        HttpSession session = request.getSession(false);
+        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         commentService.delete(commentId, memberId);
 
         return new ResponseEntity(HttpStatus.OK);

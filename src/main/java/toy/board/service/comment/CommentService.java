@@ -43,7 +43,6 @@ public class CommentService {
 
     @Transactional
     public Long update(final Long commentId, final String content, final Long memberId) {
-
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
 
@@ -57,6 +56,6 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
         comment.validateRight(memberId);
-        commentRepository.deleteById(comment.getId());
+        comment.delete();
     }
 }

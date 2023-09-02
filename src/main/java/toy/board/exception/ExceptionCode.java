@@ -12,18 +12,18 @@ public enum ExceptionCode {
     DUPLICATE_USERNAME(400, "ACCOUNT-001", "계정 이메일 중복"),
     DUPLICATE_NICKNAME(400, "ACCOUNT-002", "닉네임 중복"),
     UNAUTHORIZED(401, "ACCOUNT-003", "인증 실패"),
-    ACCOUNT_NOT_FOUND(404, "ACCOUNT-004", "계정을 찾을 수 없음"),
+    ACCOUNT_NOT_FOUND(400, "ACCOUNT-004", "계정을 찾을 수 없음"),
     ROLE_NOT_EXISTS(403, "ACCOUNT-005", "권한 부족"),
     SESSION_NOT_EXISTS(401, "ACCOUNT-006", "세션이 존재하지 않음"),
 
-    POST_NOT_FOUND(404, "POST-001", "게시물을 찾을 수 없음"),
+    POST_NOT_FOUND(400, "POST-001", "게시물을 찾을 수 없음"),
     POST_NOT_WRITER(403, "POST-001", "게시물의 작성자가 아님"),
 
-    COMMENT_NOT_FOUND(404, "COMMENT-001", "댓글을 찾을 수 없음"),
+    COMMENT_NOT_FOUND(400, "COMMENT-001", "댓글을 찾을 수 없음"),
     COMMENT_NOT_WRITER(403, "COMMENT-002", "댓글의 작성자가 아님"),
-    INVALID_COMMENT_TYPE(404, "COMMENT-003", "유효하지 않은 댓글 타입"),
-    NULL_COMMENT(404, "COMMENT-004","댓글이 NULL임"),
-    COMMENT_CAN_NOT_HAVE_PARENT(404, "COMMENT-005", "Comment 타입의 댓글이 부모 댓글을 가질 수 없음");
+    INVALID_COMMENT_TYPE(400, "COMMENT-003", "유효하지 않은 댓글 타입"),
+    NULL_COMMENT(400, "COMMENT-004","댓글은 NULL일 수 없음"),
+    COMMENT_CAN_NOT_HAVE_PARENT(400, "COMMENT-005", "Comment 타입의 댓글이 부모 댓글을 가질 수 없음");
 
     private final int status;
     private final String code;

@@ -15,8 +15,8 @@ public class LoginInterceptor implements HandlerInterceptor {
     private static final int URL_FROM_INDEX = "http://".length();
     private static final String URL_SLICE = "/";
     private static final String GET = "GET";
-    public static final String REGEX_PATICULAR_POST = "/post/[0-9]+";
     public static final String URL_POST_LIST = "/posts";
+    public static final String REGEX_OF_POST_DETAIL_URL = URL_POST_LIST + "/[0-9]+";
     public static final String POST = "POST";
 
     @Override
@@ -43,16 +43,17 @@ public class LoginInterceptor implements HandlerInterceptor {
         String method = request.getMethod();
         String url = getRequestURLWithNoDomain(request);
         return isUrlToGetPostList(method, url)
-                || isUrlToGetParticularPost(method, url)
+                || isUrlToGetPostDetail(method, url)
                 || isUrlToJoin(method, url);
+//                || isUrlToGetPost
     }
 
     private boolean isUrlToJoin(final String method, final String url) {
         return method.equals(POST) && url.equals("/users");
     }
 
-    private boolean isUrlToGetParticularPost(final String method, final  String url) {
-        return method.equals(GET) && url.matches(REGEX_PATICULAR_POST);
+    private boolean isUrlToGetPostDetail(final String method, final String url) {
+        return method.equals(GET) && url.matches(REGEX_OF_POST_DETAIL_URL);
     }
 
     private boolean isUrlToGetPostList(final String method, final String url) {

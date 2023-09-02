@@ -16,8 +16,8 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseDeleteEntity {
 
-    public static final int TITLE_MAX_LENGTH = 10000;
-    public static final int CONTENT_MAX_LENGTH = 50;
+    public static final int TITLE_MAX_LENGTH = 50;
+    public static final int CONTENT_MAX_LENGTH = 10000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

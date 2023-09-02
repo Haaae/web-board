@@ -30,7 +30,7 @@ public class MemberTest {
         return Member.builder(
                 "username",
                 Login.builder().encodedPassword("password").build(),
-                Profile.builder("nickname").build(),
+                Profile.builder("sdfjkhj").build(),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

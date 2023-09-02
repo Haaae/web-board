@@ -108,6 +108,7 @@ class PostServiceTest {
         //when
         postService.delete(postId, memberId);
         //then
+        assertThat(em.find(Post.class, postId)).isNull();
     }
     
     @DisplayName("post 삭제 시 유효하지 않은 postId 사용하면 예외 발생")

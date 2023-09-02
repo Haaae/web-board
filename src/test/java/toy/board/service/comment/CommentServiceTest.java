@@ -177,8 +177,9 @@ class CommentServiceTest {
         Long memberId = this.memberId;
         //when
         commentService.delete(commentId, memberId);
+        Comment findComment = em.find(Comment.class, commentId);
         //then
-        assertThat(em.find(Comment.class, commentId)).isNull();
+        assertThat(findComment.isDeleted()).isTrue();
     }
 
     @DisplayName("delete 실패: member가 삭제 권한 없음")

@@ -102,6 +102,8 @@ class PostRepositoryTest {
     @Test
     public void whenFindAll_thenSuccess() throws  Exception {
         //given
+        int pageNum = 1;
+        int size = 10;
         PageRequest pageable = PageRequest.of(1, 10);
 
         //when
@@ -116,12 +118,23 @@ class PostRepositoryTest {
         }
 
         //then
+        assertThat(page.getNumber()).isEqualTo(pageNum);
+        assertThat(page.getNumberOfElements()).isEqualTo(size);
         assertThat(page.getTotalPages()).isEqualTo(2);
         assertThat(page.getTotalElements()).isEqualTo(20);
+        assertThat(page.getSize()).isEqualTo(size);
+        assertThat(page.hasNext()).isFalse();
+        assertThat(page.isFirst()).isFalse();
 
         System.out.println("==============================================");
         System.out.println("==============================================");
         System.out.println("==============================================");
-        System.out.println("page = " + page);
+        System.out.println("page.getNumber() = " + page.getNumber());
+        System.out.println("page.getNumberOfElements() = " + page.getNumberOfElements());
+        System.out.println("page.getTotalPages() = " + page.getTotalPages());
+        System.out.println("page.getTotalElements() = " + page.getTotalElements());
+        System.out.println("page.getSize() = " + page.getSize());
+        System.out.println("page.hasNext() = " + page.hasNext());
+        System.out.println("page.isFirst() = " + page.isFirst());
     }
 }

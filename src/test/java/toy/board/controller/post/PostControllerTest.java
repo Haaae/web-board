@@ -9,12 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,8 +43,6 @@ class PostControllerTest {
     public static final String POST_URL = PREFIX;
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private PostController postController;
     @Autowired
     private EntityManager em;
 
@@ -75,20 +73,27 @@ class PostControllerTest {
         memberId = null;
     }
 
-    /*
-    **요청 파라미터**
-- 예) `/members?page=0&size=3&sort=id,desc&sort=username, desc`
-- `page`: 현재 페이지, 0부터 시작한다.
-- `size`: 한 페이지에 노출할 데이터 건수
-- `sort`: 정렬 조건을 정의한다. 예) 정렬 속성,정렬 속성...(ASC | DESC), 정렬 방향을 변경하고 싶으면 sort 파라미터 추가 (`asc` 생략 가능)
-     */
+    @DisplayName("잘못된 페이징 정보로 목록을 조회시 400에러를 응답한다.")
+    @ParameterizedTest
+    @CsvSource({"1,0", "-1,1", "1,two", "two,1"})
+    public void response400WhenRequestByInvalidPagingInfo(String page, String size)
+            throws Exception {
+        //when
+        String url = POST_URL + "?page=" + page + "&size=" + size;
+        //then
+        mockMvc.perform(MockMvcRequestBuilders.get(url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
     @DisplayName("게시물 목록 조회 성공: 세션이 없어도 성공")
     @Test
     public void getPostList_success() throws  Exception {
         //given
         int page = 0;
         int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
         //when
         String url = POST_URL + "?page=" + page + "&size=" + size;
         //then
@@ -324,7 +329,6 @@ class PostControllerTest {
         //given
         Long memberId = this.memberId;
         Long invalidPostId = -1L;
-        Long commentId = this.commentId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         //when
         CommentCreationRequest request =
@@ -507,7 +511,6 @@ class PostControllerTest {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
         //when
         PostUpdateDto request = new PostUpdateDto("content");
         String content = mapper.writeValueAsString(request);
@@ -671,7 +674,6 @@ class PostControllerTest {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
         Long commentId = this.commentId;
         //when
         CommentUpdateDto request = new CommentUpdateDto("content");
@@ -691,7 +693,6 @@ class PostControllerTest {
     public void whenCommentUpdateWithNoRightUser_theFail() throws  Exception {
         //given
         Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
         Long memberId = -1L;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         Long commentId = this.commentId;
@@ -830,7 +831,6 @@ class PostControllerTest {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
         //when
         String url = POST_URL + "/" + postId;
         //then
@@ -887,7 +887,6 @@ class PostControllerTest {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
         Long commentId = this.commentId;
         //when
         String url = POST_URL + "/" + postId + "/comments/" + commentId;
@@ -940,8 +939,8 @@ class PostControllerTest {
 
         for (int i = 0; i < 30; i++) {
             Post post = new Post(member.getId(), member.getProfile().getNickname(),
-                    "title" + String.valueOf(i),
-                    "content" + String.valueOf(i)
+                    "title" + i,
+                    "content" + i
             );
 
             em.persist(post);

@@ -3,6 +3,7 @@ package toy.board.exception;
 public enum ExceptionCode {
     INVALID_INPUT_VALUE(400, "COMMON-001", "유효성 검증 실패"),
     INTERNAL_SERVER_ERROR(500, "COMMON-002", "서버에서 처리 불가"),
+    BAD_REQUEST_PAGING_ARG(400, "COMMON-003", "유효하지 않은 페이징 파라미터(size, page)"),
 
     UNABLE_TO_SEND_EMAIL(500, "LOGIN-001", "이메일 발송 실패"),
     NOT_MATCH_LOGIN_TYPE(400, "LOGIN-002", "로그인 타입이 일치하지 않음"),

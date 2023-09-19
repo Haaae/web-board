@@ -42,7 +42,7 @@ public class Comment extends BaseDeleteEntity {
     @Column(name = "writer")    // 작성자가 탈퇴할 경우 null로 변경해야 한다.
     private String writer;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

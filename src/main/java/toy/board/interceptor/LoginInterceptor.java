@@ -35,7 +35,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     private void validate(final HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
-            throw new BusinessException(ExceptionCode.UNAUTHORIZED);
+            throw new BusinessException(ExceptionCode.NOT_LOGIN_USER);
         }
     }
 

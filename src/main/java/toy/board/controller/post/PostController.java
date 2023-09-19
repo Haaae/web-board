@@ -65,7 +65,7 @@ public class PostController {
 //    } === 필요한가? ===
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Map<String, Object>> getPostDetail(@PathVariable("postId") final Long postId) {
+    public ResponseEntity<Map<String, Object>> getPost(@PathVariable("postId") final Long postId) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("postDto",
                 postRepository.getPostDtoById(postId).orElseThrow(

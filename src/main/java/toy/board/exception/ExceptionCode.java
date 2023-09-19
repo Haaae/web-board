@@ -3,7 +3,6 @@ package toy.board.exception;
 public enum ExceptionCode {
     INVALID_INPUT_VALUE(400, "COMMON-001", "유효성 검증 실패"),
     INTERNAL_SERVER_ERROR(500, "COMMON-002", "서버에서 처리 불가"),
-    BAD_REQUEST_PAGING_ARG(400, "COMMON-003", "유효하지 않은 페이징 파라미터(size, page)"),
 
     UNABLE_TO_SEND_EMAIL(500, "LOGIN-001", "이메일 발송 실패"),
     NOT_MATCH_LOGIN_TYPE(400, "LOGIN-002", "로그인 타입이 일치하지 않음"),
@@ -18,7 +17,9 @@ public enum ExceptionCode {
     SESSION_NOT_EXISTS(401, "ACCOUNT-006", "세션이 존재하지 않음"),
 
     POST_NOT_FOUND(400, "POST-001", "게시물을 찾을 수 없음"),
-    POST_NOT_WRITER(403, "POST-001", "게시물의 작성자가 아님"),
+    POST_NOT_WRITER(403, "POST-002", "게시물의 작성자가 아님"),
+    BAD_REQUEST_PAGING_ARG(400, "POST-003", "유효하지 않은 페이징 파라미터(size, page)"),
+
 
     COMMENT_NOT_FOUND(400, "COMMENT-001", "댓글을 찾을 수 없음"),
     COMMENT_NOT_WRITER(403, "COMMENT-002", "댓글의 작성자가 아님"),

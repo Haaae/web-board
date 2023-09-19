@@ -45,6 +45,7 @@ public class MemberController {
             @RequestBody @Valid final LoginRequest loginRequest,
             final HttpServletRequest request
     ) {
+        // TODO: 2023-09-12 현재 로그인 여부 체크 로직 필요
         // valid 실패 시 자동으로 에러 발생하므로 바로 member를 찾는다.
         Member loginMember = memberService.login(loginRequest.username(),
                 loginRequest.password());
@@ -127,7 +128,7 @@ public class MemberController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/emails/verifications")
+    @PostMapping("/emails/verifications")
     public ResponseEntity<EmailVerificationResponse> verificationEmail(@RequestBody @Valid final EmailVerificationRequest request) {
         boolean result = memberService.verifiedCode(request.email(), request.authCode());
 

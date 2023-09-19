@@ -1,7 +1,5 @@
 package toy.board.repository.user;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
 import toy.board.domain.user.Member;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 

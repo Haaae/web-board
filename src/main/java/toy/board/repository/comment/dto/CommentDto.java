@@ -1,4 +1,4 @@
-package toy.board.controller.post.dto;
+package toy.board.repository.comment.dto;
 
 import toy.board.domain.post.CommentType;
 

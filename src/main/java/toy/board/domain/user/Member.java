@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import toy.board.domain.BaseEntity;
-import toy.board.domain.auth.Cidi;
 import toy.board.domain.auth.Login;
 import toy.board.domain.auth.SocialLogin;
 
@@ -61,10 +60,6 @@ public class Member extends BaseEntity {
     )
     @JoinColumn(name = "login_id", unique = true)
     private Login login;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cidi_id", unique = true)
-    private Cidi cidi;
 
     public static MemberBuilder builder(
             final String username,

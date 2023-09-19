@@ -3,7 +3,7 @@ package toy.board.repository.comment;
 import static toy.board.domain.post.QComment.comment;
 
 import java.util.List;
-import toy.board.controller.post.dto.CommentDto;
+import toy.board.repository.comment.dto.CommentDto;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.QComment;

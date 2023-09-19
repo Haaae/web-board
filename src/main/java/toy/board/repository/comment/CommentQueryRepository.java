@@ -1,7 +1,7 @@
 package toy.board.repository.comment;
 
 import java.util.List;
-import toy.board.controller.post.dto.CommentDto;
+import toy.board.repository.comment.dto.CommentDto;
 
 public interface CommentQueryRepository {
 

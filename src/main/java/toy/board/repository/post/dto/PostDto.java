@@ -1,4 +1,4 @@
-package toy.board.controller.post.dto;
+package toy.board.repository.post.dto;
 
 import java.time.LocalDateTime;
 

@@ -1,7 +1,6 @@
 package toy.board.repository.comment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.controller.post.dto.CommentDto;
+import toy.board.repository.comment.dto.CommentDto;
 import toy.board.domain.auth.Login;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.LoginType;

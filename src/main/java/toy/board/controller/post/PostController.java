@@ -23,6 +23,7 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
+import toy.board.repository.post.dto.PostDto;
 import toy.board.service.comment.CommentService;
 import toy.board.service.post.PostService;
 

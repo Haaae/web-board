@@ -2,6 +2,7 @@ package toy.board.repository.comment;
 
 import static toy.board.domain.post.QComment.comment;
 
+import java.util.Comparator;
 import java.util.List;
 import toy.board.repository.comment.dto.CommentDto;
 import toy.board.domain.post.Comment;
@@ -43,7 +44,9 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
                 comment.isDeleted(),
                 comment.isModified(),
                 comment.getCreatedDate(),
-                comment.getReplies().stream().map(reply ->
+                comment.getReplies().stream().sorted(
+                        Comparator.comparing(Comment::getCreatedDate)
+                ).map(reply ->
                         new CommentDto(
                                 reply.getId(),
                                 reply.getWtiterId(),
@@ -56,7 +59,6 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
                                 null)
                 ).toList()
         );
-        commentDto.replies().stream().sorted();
         return commentDto;
     }
 }

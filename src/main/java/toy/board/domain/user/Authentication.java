@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import toy.board.domain.Agree;
 
 import toy.board.domain.BaseEntity;
 
@@ -28,17 +27,4 @@ public class Authentication extends BaseEntity {
 
     @Column(name = "birthday", length = VARCHAR_LENGTH)
     private String birthday;
-
-    @Column(name = "sex")
-    @Enumerated(EnumType.STRING)
-    private SEX sex;
-
-    @Column(name = "nation")
-    @Enumerated(EnumType.STRING)
-    private Nation nation;
-
-
-    @Column(name = "gether_agree", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Agree getherAgree;
 }

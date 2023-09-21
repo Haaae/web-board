@@ -1,4 +1,4 @@
-package toy.board.service;
+package toy.board.service.user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

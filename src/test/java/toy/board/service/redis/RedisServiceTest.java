@@ -1,4 +1,4 @@
-package toy.board.service;
+package toy.board.service.redis;
 
 import static org.assertj.core.api.Assertions.*;
 

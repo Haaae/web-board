@@ -1,4 +1,4 @@
-package toy.board.repository;
+package toy.board.repository.user;
 
 import static org.assertj.core.api.Assertions.*;
 

@@ -1,4 +1,4 @@
-package toy.board.controller;
+package toy.board.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -105,7 +105,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
 
                 .andDo(MockMvcResultHandlers.print());
     }
@@ -199,7 +199,7 @@ class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
-                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
 
                 .andDo(MockMvcResultHandlers.print());
     }

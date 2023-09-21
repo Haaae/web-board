@@ -68,9 +68,9 @@ class PostRepositoryTest {
 
                 em.persist(post);
             }
-            em.flush();
-            em.clear();
         }
+        em.flush();
+        em.clear();
     }
     
     @DisplayName("fetch join test: Post만 반환값으로 받고 엔티티 그래프를 이용할 수 있도록 한다.")
@@ -103,7 +103,7 @@ class PostRepositoryTest {
         //given
         int pageNum = 1;
         int size = 10;
-        PageRequest pageable = PageRequest.of(1, 10);
+        PageRequest pageable = PageRequest.of(pageNum, size);
 
         //when
         Page<PostDto> page = postRepository.findAllPost(pageable);

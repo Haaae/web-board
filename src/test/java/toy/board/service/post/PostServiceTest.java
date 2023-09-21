@@ -1,4 +1,4 @@
-package toy.board.service;
+package toy.board.service.post;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;

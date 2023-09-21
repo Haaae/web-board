@@ -21,7 +21,7 @@ public class RedisRepository {
         return Boolean.TRUE.equals(redisTemplate.delete(key));
     }
 
-    public void setValues(final String key, final String value,final Long expiredTime){
+    public void setValues(final String key, final String value, final Long expiredTime){
         redisTemplate.opsForValue().set(key, value, expiredTime, TimeUnit.MILLISECONDS);
     }
 }

@@ -45,10 +45,9 @@ public class MemberService {
      * @return NotNull
      */
     public Member login(final String username, final String password) {
-        Optional<Member> findMember = memberRepository.findMemberByUsername(username);
-        return findMember
-                .map(member -> validateLoginTypeAndPassword(password, member))
+        Member findMember = memberRepository.findMemberByUsername(username)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+        return validateLoginTypeAndPassword(password, findMember);
     }
 
     /*
@@ -91,15 +90,22 @@ public class MemberService {
 
     @Transactional
     public void withdrawal(final Long loginMemberId, final String password) {
-        Optional<Member> findMember = memberRepository.findMemberById(loginMemberId);
+        Member findMember = memberRepository.findMemberById(loginMemberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
 
-        if (findMember.isEmpty()) {
-            throw new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND);
-        }
-
-        findMember.ifPresent(member -> validatePassword(password, member));
+        validatePassword(password, findMember);
 
         memberRepository.deleteById(loginMemberId);
+    }
+
+    @Transactional
+    public void promoteMemberRole(Long masterId, Long targetId) {
+        Member master = memberRepository.findMemberById(masterId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+        Member target = memberRepository.findMemberById(targetId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+
+        master.updateRole(target);
     }
 
     private String createAuthCode() {

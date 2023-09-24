@@ -6,6 +6,8 @@ import lombok.*;
 import toy.board.domain.BaseEntity;
 import toy.board.domain.auth.Login;
 import toy.board.domain.auth.SocialLogin;
+import toy.board.exception.BusinessException;
+import toy.board.exception.ExceptionCode;
 
 @Entity
 @Getter
@@ -83,6 +85,17 @@ public class Member extends BaseEntity {
 
         this.login = login;
         login.changeMember(this);
+    }
+
+    public void updateRole(Member target) {
+        validateRoleEach(target);
+        target.role = UserRole.ADMIN;
+    }
+
+    private void validateRoleEach(Member target) {
+        if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
+            throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
+        }
     }
 }
 

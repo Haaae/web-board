@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import toy.board.controller.user.dto.RolePromotionDto;
 import toy.board.controller.user.dto.response.EmailVerificationResponse;
 import toy.board.controller.user.dto.request.EmailVerificationRequest;
 import toy.board.controller.user.dto.request.JoinRequest;
@@ -18,7 +19,7 @@ import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
 import toy.board.controller.user.dto.request.WithdrawalRequest;
 import toy.board.controller.user.dto.response.JoinResponse;
 import toy.board.controller.user.dto.response.LoginResponse;
-import toy.board.controller.user.dto.response.FindUserResponse;
+import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
@@ -101,24 +102,22 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.CREATED).body(JoinResponse.of(member));
     }
 
-    @GetMapping("/usernames/{username}")
-    public ResponseEntity<FindUserResponse> findUserByUsername(@PathVariable final String username) {
+    @GetMapping("/usernames/{username}/exist")
+    public ResponseEntity<ExistResponse> findUserByUsername(@PathVariable final String username) {
         Optional<Member> member = memberRepository.findMemberByUsername(username);
 
         return ResponseEntity.ok(
-                FindUserResponse.of(
-                        member.orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)))
+                new ExistResponse(member.isPresent())
         );
     }
 
-    @GetMapping("/nicknames/{nickname}")
-    public ResponseEntity<FindUserResponse> findUserByNickname(@PathVariable final String nickname) {
+    @GetMapping("/nicknames/{nickname}/exist")
+    public ResponseEntity<ExistResponse> existNickname(@PathVariable final String nickname) {
         Optional<Member> member = memberRepository.findMemberByNickname(nickname);
 
         return ResponseEntity.ok(
-                FindUserResponse.of(
-                        member.orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)))
-        );
+                new ExistResponse(member.isPresent())
+    );
     }
 
     @PostMapping("/emails/verification-requests")
@@ -133,5 +132,18 @@ public class MemberController {
         boolean result = memberService.verifiedCode(request.email(), request.authCode());
 
         return ResponseEntity.ok(EmailVerificationResponse.of(result));
+    }
+
+    @PostMapping("/roles/promotion")
+    public ResponseEntity promoteRole(
+            @RequestBody @Valid final RolePromotionDto rolePromotionDto,
+            HttpServletRequest request
+    ) {
+        HttpSession session = request.getSession(false);
+        Long masterId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        memberService.promoteMemberRole(masterId, rolePromotionDto.id());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

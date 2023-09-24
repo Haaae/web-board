@@ -1,11 +1,11 @@
 package toy.board.config;
 
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import toy.board.interceptor.LoginInterceptor;
@@ -16,7 +16,19 @@ import toy.board.resolver.PageableVerificationArgumentResolver;
 public class WebConfig implements WebMvcConfigurer {
 
     private final PageableVerificationArgumentResolver pageableVerificationArgumentResolver;
+    @Value("${web.security.origin-pattern}")
+    private String originPattern;
+    @Value("${web.security.max-age}")
+    private Long maxAge;
 
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(originPattern)
+                .allowedMethods("*")
+                .allowCredentials(true)
+                .maxAge(maxAge);
+    }
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())

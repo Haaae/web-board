@@ -14,10 +14,12 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private static final int URL_FROM_INDEX = "http://".length();
     private static final String URL_SLICE = "/";
-    private static final String GET = "GET";
+    public static final String URL_JOIN = "/users";
     public static final String URL_POST_LIST = "/posts";
     public static final String REGEX_OF_POST_DETAIL_URL = URL_POST_LIST + "/[0-9]+";
+    private static final String GET = "GET";
     public static final String POST = "POST";
+    public static final String OPTIONS = "OPTIONS";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -42,14 +44,19 @@ public class LoginInterceptor implements HandlerInterceptor {
     private boolean isRequestDoesNotNeedCheck(final HttpServletRequest request) {
         String method = request.getMethod();
         String url = getRequestURLWithNoDomain(request);
-        return isUrlToGetPostList(method, url)
+        return isMethodOptions(method)
+                || isUrlToGetPostList(method, url)
                 || isUrlToGetPostDetail(method, url)
                 || isUrlToJoin(method, url);
 //                || isUrlToGetPost
     }
 
+    private boolean isMethodOptions(String method) {
+        return method.equals(OPTIONS);
+    }
+
     private boolean isUrlToJoin(final String method, final String url) {
-        return method.equals(POST) && url.equals("/users");
+        return method.equals(POST) && url.equals(URL_JOIN);
     }
 
     private boolean isUrlToGetPostDetail(final String method, final String url) {

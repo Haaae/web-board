@@ -5,12 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.util.Assert;
 import toy.board.domain.base.BaseEntity;
-import toy.board.domain.user.Member;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"member"})
+@ToString
 public class Login extends BaseEntity {
 
     public static final int PASSWORD_LENGTH = 60;

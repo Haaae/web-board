@@ -80,7 +80,6 @@ public class Member extends BaseEntity {
         }
 
         this.login = login;
-        login.changeMember(this);
     }
 
     public void updateRole(Member target) {

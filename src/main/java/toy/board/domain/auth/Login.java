@@ -1,8 +1,8 @@
 package toy.board.domain.auth;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.util.Assert;
 import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 
@@ -26,9 +26,7 @@ public class Login extends BaseEntity {
     private Member member;
 
     @Builder
-    public Login(final String encodedPassword) {
-        Assert.hasText(encodedPassword, "password must be not empty. class: Login.class");
-
+    public Login(@NotNull final String encodedPassword) {
         this.password = encodedPassword;
     }
 

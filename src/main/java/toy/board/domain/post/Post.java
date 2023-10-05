@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import toy.board.domain.BaseDeleteEntity;
+import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-
-import java.util.Objects;
 
 @Entity
 @Getter

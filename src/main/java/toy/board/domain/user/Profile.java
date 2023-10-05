@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import lombok.ToString;
-import toy.board.domain.BaseEntity;
+import toy.board.domain.base.BaseEntity;
 
 @Entity
 @Getter

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
-import toy.board.domain.BaseDeleteEntity;
+import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 

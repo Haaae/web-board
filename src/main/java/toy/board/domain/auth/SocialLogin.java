@@ -3,7 +3,7 @@ package toy.board.domain.auth;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import toy.board.domain.BaseEntity;
+import toy.board.domain.base.BaseEntity;
 
 @Entity
 @Getter

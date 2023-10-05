@@ -1,4 +1,4 @@
-package toy.board.domain;
+package toy.board.domain.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

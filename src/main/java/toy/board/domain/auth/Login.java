@@ -3,7 +3,7 @@ package toy.board.domain.auth;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.util.Assert;
-import toy.board.domain.BaseEntity;
+import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 
 @Entity

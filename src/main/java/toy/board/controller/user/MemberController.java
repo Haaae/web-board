@@ -90,9 +90,6 @@ public class MemberController {
             - Password(Login.class)
             - Nickname(Profile.class)
 
-        선택 입력 정보
-            - 본인인증 정보
-
      */
     @PostMapping
     public ResponseEntity<JoinResponse> join(@RequestBody @Valid final JoinRequest joinRequest) {

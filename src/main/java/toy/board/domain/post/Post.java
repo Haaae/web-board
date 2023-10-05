@@ -31,10 +31,10 @@ public class Post extends BaseDeleteEntity {
     @Column(name = "hits", nullable = false)
     private Long hits;
 
-    @Column(name = "writer_id") // 작성자가 탈퇴할 경우 null로 변경해야 한다.
+    @Column(name = "writer_id")
     private Long writerId;
 
-    @Column(name = "writer")    // 작성자가 탈퇴할 경우 null로 변경해야 한다.
+    @Column(name = "writer")
     private String writer;
 
     public Post(

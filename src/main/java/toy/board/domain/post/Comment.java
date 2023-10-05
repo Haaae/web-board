@@ -36,10 +36,10 @@ public class Comment extends BaseDeleteEntity {
     @JoinColumn(name = "post_id", nullable = false, updatable = false)
     private Post post;
 
-    @Column(name = "writer_id") // 작성자가 탈퇴할 경우 null로 변경해야 한다.
-    private Long wtiterId;
+    @Column(name = "writer_id")
+    private Long writerId;
 
-    @Column(name = "writer")    // 작성자가 탈퇴할 경우 null로 변경해야 한다.
+    @Column(name = "writer")
     private String writer;
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
@@ -49,9 +49,7 @@ public class Comment extends BaseDeleteEntity {
     @JoinColumn(name = "parent_comment_id", updatable = false)
     private Comment parent;
 
-    /**
-     * 양방향 관계인 Member와 Post에 대해 자동으로 양방향 매핑을 수행한다.
-     */
+
     public Comment(
             @NotNull final Post post,
             @NotNull final Long writerId,
@@ -61,7 +59,7 @@ public class Comment extends BaseDeleteEntity {
             final Comment parent
     ) {
         this.post = post;
-        this.wtiterId = writerId;
+        this.writerId = writerId;
         this.writer = writer;
         this.content = content;
         this.type = type;
@@ -79,7 +77,7 @@ public class Comment extends BaseDeleteEntity {
     }
 
     public void validateRight(final Long writerId) {
-        if (!writerId.equals(this.wtiterId)) {
+        if (!writerId.equals(this.writerId)) {
             throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
         }
     }

@@ -37,7 +37,7 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
     private CommentDto convertToDto(final Comment comment) {
         CommentDto commentDto = new CommentDto(
                 comment.getId(),
-                comment.getWtiterId(),
+                comment.getWriterId(),
                 comment.getWriter(),
                 comment.getContent(),
                 comment.getType(),
@@ -49,7 +49,7 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
                 ).map(reply ->
                         new CommentDto(
                                 reply.getId(),
-                                reply.getWtiterId(),
+                                reply.getWriterId(),
                                 reply.getWriter(),
                                 reply.getContent(),
                                 reply.getType(),

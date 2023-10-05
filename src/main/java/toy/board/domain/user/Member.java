@@ -3,7 +3,7 @@ package toy.board.domain.user;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import toy.board.domain.BaseEntity;
+import toy.board.domain.base.BaseEntity;
 import toy.board.domain.auth.Login;
 import toy.board.domain.auth.SocialLogin;
 import toy.board.exception.BusinessException;
@@ -46,10 +46,6 @@ public class Member extends BaseEntity {
     )
     @JoinColumn(name = "profile_id", nullable = false, unique = true, updatable = false)
     private Profile profile;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "authentication_id", unique = true)
-    private Authentication authentication;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "social_login_id", unique = true)

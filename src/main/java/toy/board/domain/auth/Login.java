@@ -3,6 +3,7 @@ package toy.board.domain.auth;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.util.Assert;
 import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 
@@ -22,19 +23,10 @@ public class Login extends BaseEntity {
     @Column(name = "password", nullable = false, length = PASSWORD_LENGTH)
     private String password;
 
-    @OneToOne(mappedBy = "login")
-    private Member member;
-
     @Builder
     public Login(@NotNull final String encodedPassword) {
-        this.password = encodedPassword;
-    }
+        Assert.hasText(encodedPassword, "패스워드가 null이거나 비어있습니다. class: Login.class");
 
-    /**
-     * only use in the Member Entity.
-     * @param member
-     */
-    public void changeMember(final Member member) {
-        this.member = member;
+        this.password = encodedPassword;
     }
 }

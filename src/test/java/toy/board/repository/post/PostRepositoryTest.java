@@ -103,6 +103,9 @@ class PostRepositoryTest {
         //given
         int pageNum = 1;
         int size = 10;
+        int totalPages = 2;
+        int totalElements = 20;
+
         PageRequest pageable = PageRequest.of(pageNum, size);
 
         //when
@@ -119,8 +122,8 @@ class PostRepositoryTest {
         //then
         assertThat(page.getNumber()).isEqualTo(pageNum);
         assertThat(page.getNumberOfElements()).isEqualTo(size);
-        assertThat(page.getTotalPages()).isEqualTo(2);
-        assertThat(page.getTotalElements()).isEqualTo(20);
+        assertThat(page.getTotalPages()).isEqualTo(totalPages);
+        assertThat(page.getTotalElements()).isEqualTo(totalElements);
         assertThat(page.getSize()).isEqualTo(size);
         assertThat(page.hasNext()).isFalse();
         assertThat(page.isFirst()).isFalse();

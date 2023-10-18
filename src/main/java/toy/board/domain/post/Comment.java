@@ -42,7 +42,7 @@ public class Comment extends BaseDeleteEntity {
     @Column(name = "writer")
     private String writer;
 
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

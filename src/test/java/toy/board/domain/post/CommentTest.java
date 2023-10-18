@@ -18,11 +18,7 @@ class CommentTest {
     @Autowired
     private EntityManager em;
 
-    // 게시물을 삭제하면 모든 댓글이 삭제됨 cascade - 양방향 필요 x 그냥 post id 로 comment fetch join 하면 될 듯?
-    // 댓글을 삭제해도 게시물은 삭제되지 않음 - 양방향 필요 x
-    // 유저를 삭제해도 게시물은 삭제되지 않음 - 양방향 필요 x
-
-    @DisplayName("cascade test - 댓글에 cascade 설정하면 게시물을 삭제해도 삭제가 되나? => 무조건 양방향으로 연동된다.")
+    @DisplayName("orphanRemoval test - comment의 필드멤버 reply에 orphanRemoval 설정하면 comment가 삭제될 때만 reply를 삭제하는 단방향 전파가 성립된다. 이는 cascade도 마찬가지이다")
     @Test
     public void post_and_comment_with_no_cascade() throws Exception {
         //given
@@ -33,6 +29,8 @@ class CommentTest {
                 "title",
                 "content"
         );
+        em.persist(member);
+
         Comment comment = new Comment(
                 post,
                 member.getId(),
@@ -42,26 +40,31 @@ class CommentTest {
                 null
         );
 
-        em.persist(member);
         em.persist(post);
         em.persist(comment);
+
+        Comment parentComment = em.find(Comment.class, comment.getId());
+        Comment reply = new Comment(
+                post,
+                member.getId(),
+                member.getProfile().getNickname(),
+                "content",
+                CommentType.REPLY,
+                parentComment
+        );
+
+        em.persist(reply);
         em.flush();
         em.clear();
 
         // when then
-        Comment findComment = em.find(Comment.class, comment.getId());
-        Post findPost = em.find(Post.class, post.getId());
-        Member findMember = em.find(Member.class, member.getId());
-        assertThat(findPost).isNotNull();
-        assertThat(findMember).isNotNull();
-
-        em.remove(findComment); // 이때 post에 cascade를 걸지 않았으므로 post는 삭제되지 않는다
+        Comment findReply = em.find(Comment.class, reply.getId());
+        em.remove(findReply); // parent에 casecade 설정이 되어있지 않으므로 해당 엔티티의 삭제가 parent에게 전파되지 않는다.
         em.flush();
         em.clear();
 
-        Post findSecondPost = em.find(Post.class, post.getId());
-
-        assertThat(findSecondPost).isNotNull();
+        Comment findComment = em.find(Comment.class, comment.getId());
+        assertThat(findComment).isNotNull();
     }
 
 
@@ -85,9 +88,5 @@ class CommentTest {
         assertThat(parent.getReplies().contains(reply)).isTrue();
         assertThat(reply.getParent().equals(parent)).isTrue();
     }
-
-    // 댓글만 불러오면 댓글에 대한 게시물이 불러오지 않는다. - 단방향일 때 확인 필요
-
-    // 댓글을 삭제하면 모든 대댓글이 삭제됨 -> 이건 서비스 구현 후 서비스에서 테스트
 
 }

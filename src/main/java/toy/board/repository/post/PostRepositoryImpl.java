@@ -13,9 +13,10 @@ import toy.board.repository.post.dto.PostDto;
 import toy.board.domain.post.Post;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 
-public class PostRepositoryImpl extends Querydsl4RepositorySupport implements PostQueryRepository {
+public class PostRepositoryImpl extends Querydsl4RepositorySupport
+        implements PostQueryRepository {
 
-    protected PostRepositoryImpl() {
+    public PostRepositoryImpl() {
         super(Post.class);
     }
 

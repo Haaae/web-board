@@ -10,8 +10,8 @@ import toy.board.domain.post.CommentType;
 import toy.board.domain.post.QComment;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 
-public class CommentRepositoryImpl extends Querydsl4RepositorySupport implements
-        CommentQueryRepository {
+public class CommentRepositoryImpl extends Querydsl4RepositorySupport
+        implements CommentQueryRepository {
 
     public CommentRepositoryImpl() {
         super(Comment.class);

@@ -1,5 +1,6 @@
 package toy.board.service.post;
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,8 +10,11 @@ import toy.board.domain.post.Post;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
+import toy.board.repository.comment.dto.CommentDto;
 import toy.board.repository.post.PostRepository;
+import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.profile.ProfileRepository;
+import toy.board.service.post.dto.PostDetailDto;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,6 +31,21 @@ public class PostService {
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
         post.update(content, memberId);
         return post.getId();
+    }
+
+    @Transactional
+    public PostDetailDto getPostDetail(final Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new BusinessException(ExceptionCode.POST_NOT_FOUND)
+        );
+
+        post.increaseHits();
+
+        List<CommentDto> commentDtos = commentRepository.getCommentDtosByPostId(postId);
+
+        PostDto postDto = PostDto.of(post, commentDtos);
+
+        return PostDetailDto.of(postDto, commentDtos);
     }
 
     @Transactional

@@ -53,8 +53,8 @@ public class PostService {
         String nickname = profileRepository.findNicknameByMemberId(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
         Post post = new Post(memberId, nickname, title, content);
-        postRepository.save(post);
-        return post.getId();
+        Post savedPost = postRepository.save(post);
+        return savedPost.getId();
     }
 
     @Transactional

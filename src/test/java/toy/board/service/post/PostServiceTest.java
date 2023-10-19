@@ -24,6 +24,7 @@ import toy.board.domain.user.MemberTest;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
+import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.profile.ProfileRepository;
 
@@ -53,10 +54,11 @@ class PostServiceTest {
     void init() {
         Member member = MemberTest.create();
         Post post = new Post(memberId, member.getUsername(), title, content);
+        CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 
         given(postRepository.findById(anyLong())).willReturn(Optional.empty());
         given(postRepository.findById(eq(postId))).willReturn(Optional.of(post));
-        given(commentRepository.getCommentDtosByPostId(postId)).willReturn(new ArrayList<>());
+        given(commentRepository.getCommentListDtoByPostId(postId)).willReturn(commentListDto);
 
         given(profileRepository.findNicknameByMemberId(anyLong())).willReturn(
                 Optional.empty());

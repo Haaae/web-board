@@ -1,10 +1,7 @@
 package toy.board.repository.post.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import toy.board.domain.post.Post;
-import toy.board.repository.comment.dto.CommentDto;
 
 public record PostDto(
         Long postId,
@@ -17,13 +14,7 @@ public record PostDto(
         boolean isModified,
         Long commentNum
 ) {
-    public static PostDto of(Post post, List<CommentDto> commentDtos) {
-        AtomicLong commentNum = new AtomicLong(commentDtos.size());
-
-        commentDtos.forEach(c ->
-                commentNum.addAndGet(c.replies().size())
-        );
-
+    public static PostDto of(Post post, long commentNum) {
         return new PostDto(
                 post.getId(),
                 post.getWriterId(),
@@ -33,7 +24,7 @@ public record PostDto(
                 post.getHits(),
                 post.getCreatedDate(),
                 post.isModified(),
-                commentNum.get()
+                commentNum
         );
     }
 }

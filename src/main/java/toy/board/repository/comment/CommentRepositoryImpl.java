@@ -8,6 +8,7 @@ import toy.board.repository.comment.dto.CommentDto;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.QComment;
+import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 
 public class CommentRepositoryImpl extends Querydsl4RepositorySupport
@@ -18,8 +19,13 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
     }
 
     @Override
-    public List<CommentDto> getCommentDtosByPostId(final Long postId) {
-        return getComments(postId).stream().map(this::convertToDto).toList();
+    public CommentListDto getCommentListDtoByPostId(final Long postId) {
+        return new CommentListDto(
+                getComments(postId)
+                        .stream()
+                        .map(this::convertToDto)
+                        .toList()
+        );
     }
 
     private List<Comment> getComments(final Long postId) {

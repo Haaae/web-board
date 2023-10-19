@@ -1,16 +1,14 @@
 package toy.board.service.post;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Post;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
-import toy.board.repository.comment.dto.CommentDto;
+import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.profile.ProfileRepository;
@@ -41,11 +39,11 @@ public class PostService {
 
         post.increaseHits();
 
-        List<CommentDto> commentDtos = commentRepository.getCommentDtosByPostId(postId);
+        CommentListDto commentListDto = commentRepository.getCommentListDtoByPostId(postId);
 
-        PostDto postDto = PostDto.of(post, commentDtos);
+        PostDto postDto = PostDto.of(post, commentListDto.getTotalCommentNum());
 
-        return PostDetailDto.of(postDto, commentDtos);
+        return PostDetailDto.of(postDto, commentListDto);
     }
 
     @Transactional

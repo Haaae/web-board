@@ -51,7 +51,7 @@ public class Post extends BaseDeleteEntity {
         this.hits = 0L;
     }
 
-    public void update(@NotBlank final String content, final Long writerId) {
+    public void update(@NotBlank final String content, @NotNull final Long writerId) {
         validateRight(writerId);
         this.content = content;
     }

@@ -65,7 +65,7 @@ class MemberServiceTest {
         given(passwordEncoder.encode(anyString())).willReturn(password);
     }
 
-    @DisplayName("입력한 아이디와 일치하는 멤버가 없음")
+    @DisplayName("입력한 아이디와 일치하는 멤버가 없을 때 throw exception")
     @Test
     public void login_member_no_exist_test() throws Exception {
         Optional<Member> findMember = Optional.ofNullable(null);
@@ -76,7 +76,7 @@ class MemberServiceTest {
                 () -> memberService.login(username, password));
     }
 
-    @DisplayName("멤버의 로그인 타입이 로컬로그인이 아님")
+    @DisplayName("멤버의 로그인 타입이 로컬로그인이 아닐 때 throw exception")
     @Test
     public void login_not_match_member_login_type() throws Exception {
         Member findMember = createMember(LoginType.SOCIAL_LOGIN);
@@ -89,7 +89,7 @@ class MemberServiceTest {
         assertThrows(BusinessException.class, () -> memberService.login(username, password));
     }
 
-    @DisplayName("패스워드 불일치")
+    @DisplayName("패스워드 불일치 시 throw exception")
     @Test
     public void not_match_password() throws  Exception {
         Member findMember = createMember(LoginType.LOCAL_LOGIN);
@@ -113,9 +113,6 @@ class MemberServiceTest {
         member.changeLogin(login);
         return member;
     }
-
-    // join
-    // - 중복 검사가 잘 이루어지는가
 
     @DisplayName("이메일과 닉네임이 모두 기존에 존재하지 않음: 통과")
     @Test

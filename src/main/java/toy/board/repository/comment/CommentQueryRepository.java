@@ -1,9 +1,8 @@
 package toy.board.repository.comment;
 
-import java.util.List;
-import toy.board.repository.comment.dto.CommentDto;
+import toy.board.repository.comment.dto.CommentListDto;
 
 public interface CommentQueryRepository {
 
-    List<CommentDto> getCommentDtosByPostId(Long postId);
+    CommentListDto getCommentListDtoByPostId(Long postId);
 }

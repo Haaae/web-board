@@ -19,13 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import toy.board.constant.SessionConst;
 import toy.board.controller.post.dto.*;
-import toy.board.exception.BusinessException;
-import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.post.dto.PostDto;
 import toy.board.service.comment.CommentService;
 import toy.board.service.post.PostService;
+import toy.board.service.post.dto.PostDetailDto;
 
 @Controller
 @RequestMapping("/posts")
@@ -66,14 +65,9 @@ public class PostController {
 //    } === 필요한가? ===
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Map<String, Object>> getPost(@PathVariable("postId") final Long postId) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("postDto",
-                postRepository.getPostDtoById(postId).orElseThrow(
-                        () -> new BusinessException(ExceptionCode.POST_NOT_FOUND)
-                ));
-        map.put("commentDtos", commentRepository.getCommentDtosByPostId(postId));
-        return ResponseEntity.ok(map);
+    public ResponseEntity<PostDetailDto> getPost(@PathVariable("postId") final Long postId) {
+        PostDetailDto postDetail = postService.getPostDetail(postId);
+        return ResponseEntity.ok(postDetail);
     }
 
     // createComment

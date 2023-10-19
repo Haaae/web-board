@@ -18,6 +18,7 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
+import toy.board.repository.comment.dto.CommentListDto;
 
 @SpringBootTest
 class CommentRepositoryImplTest {
@@ -54,12 +55,10 @@ class CommentRepositoryImplTest {
         em.clear();
 
         //when
-        List<CommentDto> comments = commentRepository.getCommentDtosByPostId(post.getId());
+        CommentListDto commentListDto = commentRepository.getCommentListDtoByPostId(post.getId());
 
         //then
-        assertThat(comments.size()).isEqualTo(0);
-        Assertions.assertThrows(ArrayIndexOutOfBoundsException.class,
-                () -> comments.get(0));
+        assertThat(commentListDto.getTotalCommentNum()).isEqualTo(0);
     }
 
 }

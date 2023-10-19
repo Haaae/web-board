@@ -22,6 +22,6 @@ public class BaseTimeEntity {
     private LocalDateTime lastModifiedDate;
 
     public boolean isModified() {
-        return !createdDate.isEqual(lastModifiedDate);
+        return createdDate != null && !createdDate.isEqual(lastModifiedDate);
     }
 }

@@ -15,7 +15,7 @@ import toy.board.exception.ExceptionCode;
 
 @SpringBootTest
 @Transactional
-class PostTest {
+public class PostTest {
 
     @Autowired
     private EntityManager em;
@@ -33,7 +33,8 @@ class PostTest {
         //then
         assertThrows(BusinessException.class,
                 () -> post.update(newContent, invalidWriterId),
-                ExceptionCode.POST_NOT_WRITER.getDescription());
+                ExceptionCode.POST_NOT_WRITER.getDescription()
+        );
     }
 
     @DisplayName("사용자에 의한 게시물 수정 성공")

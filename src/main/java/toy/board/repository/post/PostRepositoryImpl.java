@@ -2,8 +2,6 @@ package toy.board.repository.post;
 
 import static toy.board.domain.post.QComment.comment;
 import static toy.board.domain.post.QPost.post;
-import static toy.board.domain.user.QMember.*;
-import static toy.board.domain.user.QProfile.*;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
@@ -11,10 +9,8 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import toy.board.domain.user.QMember;
-import toy.board.domain.user.QProfile;
-import toy.board.repository.post.dto.PostDto;
 import toy.board.domain.post.Post;
+import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 
 public class PostRepositoryImpl extends Querydsl4RepositorySupport

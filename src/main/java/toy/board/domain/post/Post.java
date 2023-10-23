@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import toy.board.domain.base.BaseDeleteEntity;
+import toy.board.domain.user.Member;
+import toy.board.domain.user.Profile;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
@@ -31,38 +33,47 @@ public class Post extends BaseDeleteEntity {
     @Column(name = "hits", nullable = false)
     private Long hits;
 
-    @Column(name = "writer_id")
-    private Long writerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private Member writer;
 
-    @Column(name = "writer")
-    private String writer;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "writer")
+//    private Profile writer;
 
     public Post(
-            @NotNull final Long writerId,
-            @NotNull final String writer,
+//            @NotNull final Member writerId,
+            @NotNull final Member writer,
             @NotBlank final String title,
             @NotBlank final String content
     ) {
 
-        this.writerId = writerId;
         this.writer = writer;
         this.title = title;
         this.content = content;
         this.hits = 0L;
     }
 
-    public void update(@NotBlank final String content, @NotNull final Long writerId) {
-        validateRight(writerId);
+    public void update(@NotBlank final String content, @NotNull final Long writer) {
+        validateRight(writer);
         this.content = content;
     }
 
-    public void validateRight(final Long writerId) {
-        if (!writerId.equals(this.writerId)) {
+    public void validateRight(final Long writer) {
+        if (!writer.equals(this.writer.getId())) {
             throw new BusinessException(ExceptionCode.POST_NOT_WRITER);
         }
     }
 
     public long increaseHits() {
         return this.hits++;
+    }
+
+    public Long getWriterId() {
+        return this.writer.getId();
+    }
+
+    public String getWriterNickname() {
+        return this.writer.getProfile().getNickname();
     }
 }

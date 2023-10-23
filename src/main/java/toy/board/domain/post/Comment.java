@@ -1,13 +1,26 @@
 package toy.board.domain.post;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.base.BaseDeleteEntity;
+import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
@@ -36,11 +49,9 @@ public class Comment extends BaseDeleteEntity {
     @JoinColumn(name = "post_id", nullable = false, updatable = false)
     private Post post;
 
-    @Column(name = "writer_id")
-    private Long writerId;
-
-    @Column(name = "writer")
-    private String writer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer")
+    private Member writer;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
@@ -52,14 +63,12 @@ public class Comment extends BaseDeleteEntity {
 
     public Comment(
             @NotNull final Post post,
-            @NotNull final Long writerId,
-            @NotBlank final String writer,
+            @NotBlank final Member writer,
             @NotNull final String content,
             @NotNull final CommentType type,
             final Comment parent
     ) {
         this.post = post;
-        this.writerId = writerId;
         this.writer = writer;
         this.content = content;
         this.type = type;
@@ -71,13 +80,13 @@ public class Comment extends BaseDeleteEntity {
         }
     }
 
-    public void update(@NotBlank final String content, final Long writerId) {
+    public void update(@NotBlank final String content, @NotNull final Long writerId) {
         validateRight(writerId);
         this.content = content;
     }
 
     public void validateRight(final Long writerId) {
-        if (!writerId.equals(this.writerId)) {
+        if (!writerId.equals(this.writer.getId())) {
             throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
         }
     }

@@ -40,7 +40,7 @@ class CommentServiceTest {
         em.persist(member);
         memberId = member.getId();
         nickname = member.getProfile().getNickname();
-        Post newPost = new Post(member.getId(), nickname, title, content);
+        Post newPost = new Post(member, title, content);
         em.persist(newPost);
         post = newPost;
         em.flush(); em.clear();

@@ -4,10 +4,10 @@ import static toy.board.domain.post.QComment.comment;
 
 import java.util.Comparator;
 import java.util.List;
-import toy.board.repository.comment.dto.CommentDto;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.QComment;
+import toy.board.repository.comment.dto.CommentDto;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 
@@ -41,10 +41,10 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
     }
 
     private CommentDto convertToDto(final Comment comment) {
-        CommentDto commentDto = new CommentDto(
+        return new CommentDto(
                 comment.getId(),
-                comment.getWriterId(),
-                comment.getWriter(),
+                comment.getWriter().getId(),
+                comment.getWriter().getProfile().getNickname(),
                 comment.getContent(),
                 comment.getType(),
                 comment.isDeleted(),
@@ -55,8 +55,8 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
                 ).map(reply ->
                         new CommentDto(
                                 reply.getId(),
-                                reply.getWriterId(),
-                                reply.getWriter(),
+                                reply.getWriter().getId(),
+                                reply.getWriter().getProfile().getNickname(),
                                 reply.getContent(),
                                 reply.getType(),
                                 reply.isDeleted(),
@@ -65,6 +65,5 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
                                 null)
                 ).toList()
         );
-        return commentDto;
     }
 }

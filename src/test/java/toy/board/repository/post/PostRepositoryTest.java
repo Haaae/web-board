@@ -1,6 +1,6 @@
 package toy.board.repository.post;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static toy.board.domain.post.QComment.comment;
 import static toy.board.domain.post.QPost.post;
 
@@ -16,13 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.repository.post.dto.PostDto;
 import toy.board.domain.auth.Login;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
+import toy.board.repository.post.dto.PostDto;
 
 @SpringBootTest
 @Transactional
@@ -60,8 +60,7 @@ class PostRepositoryTest {
 
             for (int j = 0; j < postNum; j++) {
                 Post post = new Post(
-                        member.getId(),
-                        member.getProfile().getNickname(),
+                        member,
                         titlePrefix.append(j).toString(),
                         "content"
                 );

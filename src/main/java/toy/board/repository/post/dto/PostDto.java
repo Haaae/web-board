@@ -18,7 +18,7 @@ public record PostDto(
         return new PostDto(
                 post.getId(),
                 post.getWriterId(),
-                post.getWriter(),
+                post.getWriterNickname(),
                 post.getTitle(),
                 post.getContent(),
                 post.getHits(),

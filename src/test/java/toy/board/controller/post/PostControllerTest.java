@@ -1,7 +1,5 @@
 package toy.board.controller.post;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
@@ -31,7 +29,11 @@ import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
-import toy.board.domain.user.*;
+import toy.board.domain.user.LoginType;
+import toy.board.domain.user.Member;
+import toy.board.domain.user.MemberTest;
+import toy.board.domain.user.Profile;
+import toy.board.domain.user.UserRole;
 
 @Transactional
 @ExtendWith(MockitoExtension.class) // Mockito와 같은 확장 기능을 테스트에 통합시켜주는 어노테이션
@@ -489,8 +491,8 @@ class PostControllerTest {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
+        Long writerId = post.getWriterId();
+        session.setAttribute(SessionConst.LOGIN_MEMBER, writerId);
         //when
         PostUpdateDto request = new PostUpdateDto("content");
         String content = mapper.writeValueAsString(request);
@@ -938,7 +940,7 @@ class PostControllerTest {
         em.persist(member2);
 
         for (int i = 0; i < 30; i++) {
-            Post post = new Post(member.getId(), member.getProfile().getNickname(),
+            Post post = new Post(member,
                     "title" + i,
                     "content" + i
             );
@@ -952,8 +954,7 @@ class PostControllerTest {
             for (int k = 0; k < 3; k++) {
                 Comment comment = new Comment(
                         post,
-                        member.getId(),
-                        member.getProfile().getNickname(),
+                        member,
                         "comment" + String.valueOf(k),
                         CommentType.COMMENT,
                         null
@@ -967,8 +968,7 @@ class PostControllerTest {
                 for (int j = 0; j < 5; j++) {
                     Comment reply = new Comment(
                             post,
-                            member2.getId(),
-                            member2.getProfile().getNickname(),
+                            member2,
                             "reply" + String.valueOf(j),
                             CommentType.REPLY,
                             comment

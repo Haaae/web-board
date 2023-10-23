@@ -4,14 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.repository.comment.dto.CommentDto;
 import toy.board.domain.auth.Login;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.LoginType;
@@ -45,8 +42,7 @@ class CommentRepositoryImplTest {
         em.persist(member);
 
         Post post = new Post(
-                member.getId(),
-                member.getProfile().getNickname(),
+                member,
                 "title",
                 "content"
         );

@@ -1,10 +1,9 @@
 package toy.board.repository.user;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-import toy.board.repository.user.MemberRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -52,7 +50,20 @@ class MemberRepositoryTest {
         em.clear();
     }
 
-    @DisplayName("닉네임으로 멤버 찾기 성공")
+    @DisplayName("memberId로 멤버 찾을 때 profile도 가져옴")
+    @Test
+    public void MemberRepositoryTest() throws  Exception {
+        //given
+
+        //when
+        Optional<Member> findMember = memberRepository.findMemberById(member.getId());
+
+        //then
+        assertThat(findMember.isPresent()).isTrue();
+        assertThat(findMember.get().getProfile()).isNotNull();
+    }
+
+    @DisplayName("닉네임으로 멤버 찾기 성공:멤버와 함께 profile도 fetch join으로 가져옴")
     @Test
     public void find_member_by_nickname_success() throws  Exception {
         // give
@@ -152,7 +163,4 @@ class MemberRepositoryTest {
         //then
         assertThat(exists).isFalse();
     }
-
-    // username으로 member 존재여부 확인 - 성공, 실패
-    // nickanme으로 member 존재여부 확인 -성공, 실패
 }

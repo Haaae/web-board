@@ -8,11 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
+import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
-import toy.board.repository.profile.ProfileRepository;
+import toy.board.repository.user.MemberRepository;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,7 +21,7 @@ import toy.board.repository.profile.ProfileRepository;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final ProfileRepository profileRepository;
+    private final MemberRepository memberRepository;
     private final PostRepository postRepository;
 
     @Transactional
@@ -28,14 +29,14 @@ public class CommentService {
             final Optional<Long> parentId, final Long postId, final Long memberId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
-        String nickname = profileRepository.findNicknameByMemberId(memberId)
+        Member member = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
         Comment parentComment = parentId.map(p ->
                 commentRepository.findById(p)
                         .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND))
         ).orElse(null);
 
-        Comment comment = new Comment(post, memberId, nickname, content, type, parentComment);
+        Comment comment = new Comment(post, member, content, type, parentComment);
 
         commentRepository.save(comment);
         return comment.getId();

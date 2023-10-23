@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Post;
+import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
@@ -12,6 +13,7 @@ import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.profile.ProfileRepository;
+import toy.board.repository.user.MemberRepository;
 import toy.board.service.post.dto.PostDetailDto;
 
 @Service
@@ -19,8 +21,9 @@ import toy.board.service.post.dto.PostDetailDto;
 @Transactional(readOnly = true)
 public class PostService {
 
-    private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
     private final ProfileRepository profileRepository;
+    private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
     @Transactional
@@ -33,9 +36,8 @@ public class PostService {
 
     @Transactional
     public PostDetailDto getPostDetail(final Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new BusinessException(ExceptionCode.POST_NOT_FOUND)
-        );
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
 
         post.increaseHits();
 
@@ -48,9 +50,10 @@ public class PostService {
 
     @Transactional
     public Long create(final String title, final String content, final Long memberId) {
-        String nickname = profileRepository.findNicknameByMemberId(memberId)
+        Member findMember = memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-        Post post = new Post(memberId, nickname, title, content);
+
+        Post post = new Post(findMember, title, content);
         Post savedPost = postRepository.save(post);
         return savedPost.getId();
     }

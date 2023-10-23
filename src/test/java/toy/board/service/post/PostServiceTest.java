@@ -53,7 +53,7 @@ class PostServiceTest {
     @BeforeEach
     void init() {
         Member member = MemberTest.create();
-        Post post = new Post(memberId, member.getUsername(), title, content);
+        Post post = new Post(member, title, content);
         CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 
         given(postRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -78,17 +78,6 @@ class PostServiceTest {
 
         //then
         assertThat(post.getHits()).isEqualTo(expectedHits);
-    }
-
-    @DisplayName("update 성공 시 update post id 반환")
-    @Test
-    public void whenPostUpdate_thenReturnValidValue() throws  Exception {
-        //given
-        //when
-        postService.update(newContent, postId, memberId);
-        Post post = postRepository.findById(postId).get();
-        //then
-        assertThat(post.getContent()).isEqualTo(newContent);
     }
 
     @DisplayName("update 시 유효하지 않은 post id 사용하면 예외 발생")

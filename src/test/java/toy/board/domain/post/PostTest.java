@@ -1,21 +1,32 @@
 package toy.board.domain.post;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Assertions;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import toy.board.domain.user.MemberTest;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
+@SpringBootTest
+@Transactional
 class PostTest {
+
+    @Autowired
+    private EntityManager em;
 
     @DisplayName("권한 없는 사용자가 게시물을 수정하려 할 경우 예외 발생")
     @Test
     public void whenUpdatePostWithNotValidWriterId_thenThrowException() throws Exception {
         //given
         Post post = create();
+        em.persist(post.getWriter());
+        em.persist(post);
         String newContent = "new";
         //when
         Long invalidWriterId = post.getWriterId() + 1;
@@ -30,6 +41,8 @@ class PostTest {
     public void whenUpdatePostWithValidWriterId_thenSuccess() throws Exception {
         //given
         Post post = create();
+        em.persist(post.getWriter());
+        em.persist(post);
         String newContent = "new";
         Long writerId = post.getWriterId();
         //when
@@ -37,8 +50,9 @@ class PostTest {
         //then
         assertThat(post.getContent()).isEqualTo(newContent);
     }
+
     public static Post create() {
-        return new Post(1L, "writer", "title", "content");
+        return new Post(MemberTest.create(), "title", "content");
     }
 
 }

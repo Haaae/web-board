@@ -56,12 +56,12 @@ public class CommentService {
     }
 
     private Post findPost(Long postId) {
-        return postRepository.findById(postId)
+        return postRepository.findPostById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
     }
 
     private Comment findComment(Long commentId) {
-        return commentRepository.findById(commentId)
+        return commentRepository.findCommentById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
     }
 

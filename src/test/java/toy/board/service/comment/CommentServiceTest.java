@@ -123,7 +123,7 @@ class CommentServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.create(content, CommentType.REPLY, parentId, postId,
                         memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.NULL_COMMENT);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_COMMENT_TYPE);
     }
 
     // update
@@ -148,10 +148,11 @@ class CommentServiceTest {
         Long commentId = createComment();
         String updateContent = "update comment";
         //when
-        Long noRightMember = 234L;
+        Member invalidMember = MemberTest.create("invalid", "invalid");
+        em.persist(invalidMember);
         //then
         BusinessException e = assertThrows(BusinessException.class,
-                () -> commentService.update(commentId, updateContent, noRightMember));
+                () -> commentService.update(commentId, updateContent, invalidMember.getId()));
         assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
     }
 
@@ -188,10 +189,11 @@ class CommentServiceTest {
         //given
         Long commentId = createComment();
         //when
-        Long noRightMember = 234L;
+        Member invalidMember = MemberTest.create("invalid", "invalid");
+        em.persist(invalidMember);
         //then
         BusinessException e = assertThrows(BusinessException.class,
-                () -> commentService.delete(commentId, noRightMember));
+                () -> commentService.delete(commentId, invalidMember.getId()));
         assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
     }
 

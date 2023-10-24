@@ -72,9 +72,10 @@ public class Comment extends BaseDeleteEntity {
         this.content = content;
         this.type = type;
 
-        validate(parent);
+        validateType(parent);
 
         if (type == CommentType.REPLY) {
+            validatePostOfParentComment(parent);
             this.leaveReply(parent);
         }
     }
@@ -117,17 +118,29 @@ public class Comment extends BaseDeleteEntity {
         parent.replies.add(this);
     }
 
-    private void validate(final Comment parent) {
-        if (this.type == CommentType.COMMENT && parent != null) {
-            throw new BusinessException(ExceptionCode.COMMENT_CAN_NOT_HAVE_PARENT);
-        }
-
-        if (this.type == CommentType.REPLY && parent == null) {
-            throw new BusinessException(ExceptionCode.NULL_COMMENT);
-        }
-
-        if (this.type == CommentType.REPLY && parent.type == CommentType.REPLY) {
+    private void validateType(final Comment parent) {
+        if (isNotValidType(parent)) {
             throw new BusinessException(ExceptionCode.INVALID_COMMENT_TYPE);
         }
     }
+
+    private void validatePostOfParentComment(final Comment parent) {
+        if (!parent.post.equals(this.post)) {
+            throw new BusinessException(ExceptionCode.INVALID_POST_OF_PARENT_COMMENT);
+        }
+    }
+
+    private boolean isNotValidType(Comment parent) {
+        return !(isValidComment(parent) || isValidReply(parent));
+    }
+
+    private boolean isValidReply(final Comment parent) {
+        return this.type == CommentType.REPLY && parent != null
+                && parent.type == CommentType.COMMENT;
+    }
+
+    private boolean isValidComment(final Comment parent) {
+        return this.type == CommentType.COMMENT && parent == null;
+    }
+
 }

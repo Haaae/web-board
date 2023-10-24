@@ -52,7 +52,7 @@ class PostServiceTest {
 
     @BeforeEach
     void init() {
-        Member member = MemberTest.create();
+        Member member = MemberTest.create("username", "emankcin");
         Post post = new Post(member, title, content);
         CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 

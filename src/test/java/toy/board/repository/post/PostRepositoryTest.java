@@ -8,6 +8,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,22 @@ class PostRepositoryTest {
         }
         em.flush();
         em.clear();
+    }
+
+    @DisplayName("jpa fetch join test: repository를 통해 post 가져올 때 member와 profile도 함께 가져온다.")
+    @Test
+    public void whenFindPost_thenFindMemberAndProfile() throws  Exception {
+        //given
+        Long postId = 1L;
+
+        //when
+        Optional<Post> findPost = postRepository.findById(postId);
+
+        //then. 쿼리가 발생하지 않음 확인 완료
+        assertThat(findPost.isPresent()).isTrue();
+        System.out.println("findPost 엔티티 프로퍼티 조회");
+        System.out.println("findPost.get().getWriter() = " + findPost.get().getWriter());
+        System.out.println("findPost.get().getWriterNickname() = " + findPost.get().getWriterNickname());
     }
     
     @DisplayName("fetch join test: Post만 반환값으로 받고 엔티티 그래프를 이용할 수 있도록 한다.")

@@ -61,7 +61,7 @@ class PostControllerTest {
     @Transactional
     void init() {
         setupWithSavingPostAndComment();
-        Member member = MemberTest.create();
+        Member member = MemberTest.create("username", "emankcin");
         em.persist(member);
         memberId = member.getId();
         em.flush(); em.clear();

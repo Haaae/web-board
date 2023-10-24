@@ -1,11 +1,32 @@
 package toy.board.domain.user;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import toy.board.domain.base.BaseEntity;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Builder.Default;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.auth.Login;
 import toy.board.domain.auth.SocialLogin;
+import toy.board.domain.base.BaseEntity;
+import toy.board.domain.post.Comment;
+import toy.board.domain.post.Post;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
@@ -13,7 +34,7 @@ import toy.board.exception.ExceptionCode;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"login"})
+@ToString(exclude = {"login", "posts", "comments"})
 @Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 
@@ -57,7 +78,17 @@ public class Member extends BaseEntity {
             orphanRemoval = true
     )
     @JoinColumn(name = "login_id", unique = true)
+    @ToString.Exclude
     private Login login;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
+    @ToString.Exclude
+    @Default
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
+    @ToString.Exclude
+    private List<Comment> comments = new ArrayList<>();
 
     public static MemberBuilder builder(
             final String username,
@@ -71,7 +102,9 @@ public class Member extends BaseEntity {
                 .login(login)
                 .profile(profile)
                 .loginType(loginType)
-                .role(userRole);
+                .role(userRole)
+                .comments(new ArrayList<>())
+                .posts(new ArrayList<>());
     }
 
     public void changeLogin(@NotNull final Login login) {
@@ -87,10 +120,19 @@ public class Member extends BaseEntity {
         target.role = UserRole.ADMIN;
     }
 
+    public void addPost(Post post) {
+        this.posts.add(post);
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
+
     private void validateRoleEach(Member target) {
         if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
             throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
         }
     }
+
 }
 

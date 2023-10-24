@@ -78,6 +78,7 @@ public class MemberService {
         Member findMember = findMember(loginMemberId);
 
         checkPassword(password, findMember.getPassword());
+        findMember.changeAllPostAndCommentWriterToNull();
 
         memberRepository.deleteById(loginMemberId);
     }

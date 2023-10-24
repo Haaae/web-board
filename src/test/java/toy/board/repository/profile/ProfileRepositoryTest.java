@@ -27,7 +27,7 @@ class ProfileRepositoryTest {
     @Test
     public void whenAttemptGetNicknameByMemberId_Success() throws  Exception {
         //given
-        Member member = MemberTest.create("username", "emankcin");
+        Member member = MemberTest.create();
         em.persist(member);
         em.flush(); em.clear();
 
@@ -42,7 +42,7 @@ class ProfileRepositoryTest {
     @Test
     public void whenAttemptGetNicknameByNotExistMemberId_Fail() throws  Exception {
         //given
-        Member member = MemberTest.create("username", "emankcin");
+        Member member = MemberTest.create();
         em.persist(member);
         em.flush(); em.clear();
 

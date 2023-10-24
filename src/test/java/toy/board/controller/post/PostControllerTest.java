@@ -695,9 +695,14 @@ class PostControllerTest {
     public void whenCommentUpdateWithNoRightUser_theFail() throws  Exception {
         //given
         Long postId = this.postId;
-        Long memberId = -1L;
+
+        Member member = MemberTest.create("invalid", "invalid");
+        em.persist(member);
+        Long memberId = member.getId();
+
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         Long commentId = this.commentId;
+
         //when
         CommentUpdateDto request = new CommentUpdateDto("content");
         String content = mapper.writeValueAsString(request);

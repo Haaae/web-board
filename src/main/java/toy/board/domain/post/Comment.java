@@ -97,13 +97,17 @@ public class Comment extends BaseDeleteEntity {
         post.addComment(this);
     }
 
-    public void update(@NotBlank final String content, @NotNull final Long writerId) {
-        validateRight(writerId);
+    public void update(@NotBlank final String content, @NotNull final Member writer) {
+        validateRight(writer);
         this.content = content;
     }
 
-    public void validateRight(final Long writerId) {
-        if (!writerId.equals(this.writer.getId())) {
+    public void validateRight(final Member writer) {
+        if (this.writer.hasDeleteRight()) {
+            return;
+        }
+
+        if (this.writer == null || !writer.equals(this.writer)) {
             throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
         }
     }

@@ -27,7 +27,7 @@ import toy.board.exception.ExceptionCode;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"comments"})
+@ToString
 public class Post extends BaseEntity {
 
     public static final int TITLE_MAX_LENGTH = 50;
@@ -52,6 +52,7 @@ public class Post extends BaseEntity {
     private Member writer;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
+    @ToString.Exclude
     private List<Comment> comments = new ArrayList<>();
 
     public Post(
@@ -81,6 +82,10 @@ public class Post extends BaseEntity {
     }
 
     public void validateRight(final Member writer) {
+        if (writer.hasDeleteRight()) {
+            return;
+        }
+
         if (this.writer == null || !writer.getId().equals(this.writer.getId())) {
             throw new BusinessException(ExceptionCode.POST_NOT_WRITER);
         }

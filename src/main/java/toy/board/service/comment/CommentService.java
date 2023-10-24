@@ -27,14 +27,10 @@ public class CommentService {
     @Transactional
     public Long create(final String content, final CommentType type,
             final Optional<Long> parentId, final Long postId, final Long memberId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
-        Member member = memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-        Comment parentComment = parentId.map(p ->
-                commentRepository.findById(p)
-                        .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND))
-        ).orElse(null);
+        Post post = findPost(postId);
+        Member member = findMember(memberId);
+        Comment parentComment = parentId.map(this::findComment)
+                .orElse(null);  // parentId가 null이 아니면 해당 Comment를 찾아온다.
 
         Comment comment = new Comment(post, member, content, type, parentComment);
 
@@ -44,19 +40,33 @@ public class CommentService {
 
     @Transactional
     public Long update(final Long commentId, final String content, final Long memberId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+        Comment comment = findComment(commentId);
+        Member member = findMember(memberId);
 
-        comment.update(content, memberId);
-
+        comment.update(content, member);
         return commentId;
     }
 
     @Transactional
     public void delete(final Long commentId, final Long memberId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
-        comment.validateRight(memberId);
+        Comment comment = findComment(commentId);
+        Member member = findMember(memberId);
+        comment.validateRight(member);
         comment.delete();
+    }
+
+    private Post findPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+    }
+
+    private Comment findComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+    }
+
+    private Member findMember(Long memberId) {
+        return memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 }

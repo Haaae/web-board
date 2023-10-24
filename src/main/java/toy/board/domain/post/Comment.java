@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -28,7 +27,6 @@ import toy.board.exception.ExceptionCode;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"replies"})
 public class Comment extends BaseDeleteEntity {
 
@@ -68,8 +66,8 @@ public class Comment extends BaseDeleteEntity {
             @NotNull final CommentType type,
             final Comment parent
     ) {
-        this.post = post;
-        this.writer = writer;
+        addCommentTo(post);
+        addCommentTo(writer);
         this.content = content;
         this.type = type;
 
@@ -78,6 +76,24 @@ public class Comment extends BaseDeleteEntity {
         if (type == CommentType.REPLY) {
             this.leaveReply(parent);
         }
+    }
+
+    /**
+     * Member와 Comment의 양방향 매핑을 위한 메서드.
+     * @param writer Comment 작성자.
+     */
+    private void addCommentTo(Member writer) {
+        this.writer = writer;
+        writer.addComment(this);
+    }
+
+    /**
+     * Post와 Comment의 양방향 매핑을 위한 메서드
+     * @param post Comment가 소속된 게시물.
+     */
+    private void addCommentTo(Post post) {
+        this.post = post;
+        post.addComment(this);
     }
 
     public void update(@NotBlank final String content, @NotNull final Long writerId) {

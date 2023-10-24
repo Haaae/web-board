@@ -27,7 +27,7 @@ import toy.board.exception.ExceptionCode;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"replies"})
+@ToString
 public class Comment extends BaseDeleteEntity {
 
     public static final int CONTENT_LENGTH = 1000;
@@ -56,6 +56,7 @@ public class Comment extends BaseDeleteEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id", updatable = false)
+    @ToString.Exclude
     private Comment parent;
 
 

@@ -36,7 +36,7 @@ class CommentServiceTest {
 
     @BeforeEach
     void init() {
-        Member member = MemberTest.create();
+        Member member = MemberTest.create("username", "emankcin");
         em.persist(member);
         memberId = member.getId();
         nickname = member.getProfile().getNickname();
@@ -168,8 +168,8 @@ class CommentServiceTest {
         assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_FOUND);
     }
 
-    // delete
-    @DisplayName("delete 성공")
+    // remove
+    @DisplayName("remove 성공")
     @Test
     public void delete_success() throws  Exception {
         //given

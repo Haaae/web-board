@@ -26,11 +26,11 @@ public class MemberTest {
         member = Member.builder(username, login, profile, loginType, userRole).build();
     }
 
-    public static Member create() {
+    public static Member create(String username, String nickname) {
         return Member.builder(
-                "username",
+                username,
                 Login.builder().encodedPassword("password").build(),
-                Profile.builder("sdfjkhj").build(),
+                Profile.builder(nickname).build(),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

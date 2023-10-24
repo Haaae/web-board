@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.util.Assert;
 import toy.board.domain.auth.Login;
 import toy.board.domain.auth.SocialLogin;
 import toy.board.domain.base.BaseEntity;
@@ -108,9 +109,7 @@ public class Member extends BaseEntity {
     }
 
     public void changeLogin(@NotNull final Login login) {
-        if (login == null) {
-            throw new IllegalArgumentException("Login must not be NULL." + this.getClass());
-        }
+        Assert.notNull(login, "login mush not be null!");
 
         this.login = login;
     }
@@ -138,5 +137,17 @@ public class Member extends BaseEntity {
         return role.isDeleteRight();
     }
 
+    public String getPassword() {
+        return this.login.getPassword();
+    }
+
+    public boolean isLocalLogin() {
+        return this.loginType == LoginType.LOCAL_LOGIN;
+    }
+
+    public void changeAllPostAndCommentWriterToNull() {
+        this.posts.forEach(Post::applyWriterWithdrawal);
+        this.comments.forEach(Comment::applyWriterWithdrawal);
+    }
 }
 

@@ -46,7 +46,7 @@ public class MemberService {
     public Member login(final String username, final String password) {
         Member findMember = findMember(username);
 
-        checkLoginType(findMember);
+        findMember.validateLoginType(LoginType.LOCAL_LOGIN);
         checkPassword(password, findMember.getPassword());
         return findMember;
     }
@@ -128,12 +128,6 @@ public class MemberService {
     private void checkNicknameDuplication(final String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
             throw new BusinessException(ExceptionCode.DUPLICATE_NICKNAME);
-        }
-    }
-
-    private void checkLoginType(Member member) {
-        if (member.isLocalLogin()) {
-            throw new BusinessException(ExceptionCode.NOT_MATCH_LOGIN_TYPE);
         }
     }
 

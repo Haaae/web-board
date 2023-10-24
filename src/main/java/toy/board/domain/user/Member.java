@@ -127,12 +127,6 @@ public class Member extends BaseEntity {
         this.comments.add(comment);
     }
 
-    private void validateRoleEach(Member target) {
-        if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
-            throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
-        }
-    }
-
     public boolean hasDeleteRight() {
         return role.isDeleteRight();
     }
@@ -141,13 +135,20 @@ public class Member extends BaseEntity {
         return this.login.getPassword();
     }
 
-    public boolean isLocalLogin() {
-        return this.loginType == LoginType.LOCAL_LOGIN;
-    }
-
     public void changeAllPostAndCommentWriterToNull() {
         this.posts.forEach(Post::applyWriterWithdrawal);
         this.comments.forEach(Comment::applyWriterWithdrawal);
     }
-}
 
+    public void validateLoginType(LoginType loginType) {
+        if (this.loginType != loginType) {
+            throw new BusinessException(ExceptionCode.NOT_MATCH_LOGIN_TYPE);
+        }
+    }
+
+    private void validateRoleEach(Member target) {
+        if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
+            throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
+        }
+    }
+}

@@ -18,7 +18,6 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -34,7 +33,7 @@ import toy.board.exception.ExceptionCode;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"login", "posts", "comments"})
+@ToString
 @Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 
@@ -83,11 +82,12 @@ public class Member extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
     @ToString.Exclude
-    @Default
+    @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
     @ToString.Exclude
+    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
     public static MemberBuilder builder(
@@ -132,6 +132,10 @@ public class Member extends BaseEntity {
         if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
             throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
         }
+    }
+
+    public boolean hasDeleteRight() {
+        return role.isDeleteRight();
     }
 
 }

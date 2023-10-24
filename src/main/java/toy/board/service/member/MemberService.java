@@ -3,7 +3,6 @@ package toy.board.service.member;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +38,17 @@ public class MemberService {
     private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
 
     /**
-     * member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      * @param username
      * @param password
-     * @return NotNull
+     * @return member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서
+     * 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      */
     public Member login(final String username, final String password) {
-        Member findMember = memberRepository.findMemberByUsername(username)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-        return validateLoginTypeAndPassword(password, findMember);
+        Member findMember = findMember(username);
+
+        checkLoginType(findMember);
+        checkPassword(password, findMember.getPassword());
+        return findMember;
     }
 
     /*
@@ -56,26 +57,41 @@ public class MemberService {
      */
     @Transactional
     public Member join(final String username, final String password, final String nickname) {
+        checkUsernameDuplication(username); // username 중복 검사
+        checkNicknameDuplication(nickname); // nickname 중복 검사
 
-        // username 중복 검사
-        validateDuplicateUsername(username);
-        // nickname 중복 검사
-        validateDuplicateNickname(nickname);
-
-        // Create entity
         Profile profile = Profile.builder(nickname).build();
         Login login = new Login(passwordEncoder.encode(password));
-        Member member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
+        Member member = Member
+                .builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER)
+                .build();
         member.changeLogin(login);
 
-        // save. cascade로 인해 member만 저장해도 profile과 login이 저장된다.
         // TODO: 동시성 문제는 DataIntegrityViolationException을 ControllerAdvice에서 공통 처리한다.
+        // save. cascade로 인해 member만 저장해도 profile과 login이 저장된다.
         memberRepository.save(member);
         return member;
     }
 
+    @Transactional
+    public void withdrawal(final Long loginMemberId, final String password) {
+        Member findMember = findMember(loginMemberId);
+
+        checkPassword(password, findMember.getPassword());
+
+        memberRepository.deleteById(loginMemberId);
+    }
+
+    @Transactional
+    public void promoteMemberRole(Long masterId, Long targetId) {
+        Member master = findMember(masterId);
+        Member target = findMember(targetId);
+
+        master.updateRole(target);
+    }
+
     public void sendCodeToEmail(final String email) {
-        validateDuplicateUsername(email);
+        checkUsernameDuplication(email);
         String authCode = createAuthCode();
         mailService.sendMail(email, EMAIL_TITLE, authCode);
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
@@ -84,28 +100,8 @@ public class MemberService {
 
     @Transactional
     public boolean verifiedCode(final String email, final String authCode) {
-        validateDuplicateUsername(email);
+        checkUsernameDuplication(email);
         return redisService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
-    }
-
-    @Transactional
-    public void withdrawal(final Long loginMemberId, final String password) {
-        Member findMember = memberRepository.findMemberById(loginMemberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-
-        validatePassword(password, findMember);
-
-        memberRepository.deleteById(loginMemberId);
-    }
-
-    @Transactional
-    public void promoteMemberRole(Long masterId, Long targetId) {
-        Member master = memberRepository.findMemberById(masterId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-        Member target = memberRepository.findMemberById(targetId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
-
-        master.updateRole(target);
     }
 
     private String createAuthCode() {
@@ -122,41 +118,37 @@ public class MemberService {
         }
     }
 
-    private void validateDuplicateUsername(final String username) {
+    private void checkUsernameDuplication(final String username) {
         if (memberRepository.existsByUsername(username)) {
-            log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), username);
             throw new BusinessException(ExceptionCode.DUPLICATE_USERNAME);
         }
     }
 
-    private void validateDuplicateNickname(final String nickname) {
+    private void checkNicknameDuplication(final String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            log.debug("=== {} exception occur username: {} ===", this.getClass().getName(), nickname);
             throw new BusinessException(ExceptionCode.DUPLICATE_NICKNAME);
         }
     }
 
-    private Member validateLoginTypeAndPassword(final String password, final Member member) {
-        if (isLoginTypeNotMatch(member)) {
+    private void checkLoginType(Member member) {
+        if (member.isLocalLogin()) {
             throw new BusinessException(ExceptionCode.NOT_MATCH_LOGIN_TYPE);
         }
-
-        validatePassword(password, member);
-
-        return member;
     }
 
-    private void validatePassword(final String password, final Member member) {
-        if (isPasswordNotMatch(password, member)) {
+    private void checkPassword(final String enteredPassword, final String password) {
+        if (!passwordEncoder.matches(enteredPassword, password)) {
             throw new BusinessException(ExceptionCode.NOT_MATCH_PASSWORD);
         }
     }
 
-    private boolean isPasswordNotMatch(final String password, final Member member) {
-        return !passwordEncoder.matches(password, member.getLogin().getPassword());
+    private Member findMember(Long memberId) {
+        return memberRepository.findMemberById(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 
-    private boolean isLoginTypeNotMatch(final Member member) {
-        return member.getLoginType() != LoginType.LOCAL_LOGIN;
+    private Member findMember(String username) {
+        return memberRepository.findMemberByUsername(username)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 }

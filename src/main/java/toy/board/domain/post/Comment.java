@@ -143,4 +143,7 @@ public class Comment extends BaseDeleteEntity {
         return this.type == CommentType.COMMENT && parent == null;
     }
 
+    public void applyWriterWithdrawal() {
+        this.writer = null;
+    }
 }

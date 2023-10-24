@@ -111,4 +111,8 @@ public class Post extends BaseEntity {
         this.writer = writer;
         writer.addPost(this);
     }
+
+    public void applyWriterWithdrawal() {
+        this.writer = null;
+    }
 }

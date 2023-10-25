@@ -1,14 +1,8 @@
 package toy.board.repository.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static toy.board.domain.post.QComment.comment;
-import static toy.board.domain.post.QPost.post;
-
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,14 +10,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.auth.Login;
+import toy.board.domain.post.Comment;
+import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.repository.post.dto.PostDto;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static toy.board.domain.post.QComment.comment;
+import static toy.board.domain.post.QPost.post;
 
 @SpringBootTest
 @Transactional
@@ -67,6 +72,12 @@ class PostRepositoryTest {
                 );
 
                 em.persist(post);
+
+                Comment comment = new Comment(post, member, "title", CommentType.COMMENT, null);
+                em.persist(comment);
+                Comment reply = new Comment(post, member, "title", CommentType.REPLY, comment);
+                em.persist(reply);
+
             }
         }
         em.flush();
@@ -75,7 +86,7 @@ class PostRepositoryTest {
 
     @DisplayName("jpa fetch join test: repository를 통해 post 가져올 때 member와 profile도 함께 가져온다.")
     @Test
-    public void whenFindPost_thenFindMemberAndProfile() throws  Exception {
+    public void whenFindPost_thenFindMemberAndProfile() throws Exception {
         //given
         Long postId = 1L;
 
@@ -88,10 +99,10 @@ class PostRepositoryTest {
         System.out.println("findPost.get().getWriter() = " + findPost.get().getWriter());
         System.out.println("findPost.get().getWriterNickname() = " + findPost.get().getWriterNickname());
     }
-    
+
     @DisplayName("fetch join test: Post만 반환값으로 받고 엔티티 그래프를 이용할 수 있도록 한다.")
     @Test
-    public void whenFetchJoinPost_thenUsingEntityThatRelated() throws  Exception {
+    public void whenFetchJoinPost_thenUsingEntityThatRelated() throws Exception {
         //given
         List<Tuple> posts = queryFactory
                 .select(post, comment.count())
@@ -109,20 +120,51 @@ class PostRepositoryTest {
                     "post.getWriter() = " + post.getWriter());
             System.out.println("commentCount = " + commentCount);
         }
-    
+
         //then
     }
 
-    @DisplayName("@ManyToOne과 fetch join을 사용한 findAll(Pageable pageable)이 정상동작")
+    @DisplayName("spring data jpa를 사용한 findAll이 정상동작")
     @Test
-    public void whenFindAll_thenSuccess() throws  Exception {
+    public void whenFindAllPostUsingSpringDataJpa_thenSuccess() throws Exception {
+        //given
+        int pageNum = 1;
+        int size = 10;
+        int totalPages = 2;
+        int totalElements = 20;
+        String sort = "createdDate";
+
+        PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
+        //when
+
+        Page<Post> page = postRepository.findAll(pageable);
+
+        // for문을 돌며 Member 와 Profile에 접근해도 추가적인 쿼리가 발생하지 않는다.
+        for (Post post : page.getContent()) {
+            System.out.println("==============================");
+            System.out.println("post.getWriterNickname() = " + post.getWriterNickname());
+        }
+
+        //then
+        assertThat(page.getNumber()).isEqualTo(pageNum);
+        assertThat(page.getNumberOfElements()).isEqualTo(size);
+        assertThat(page.getTotalPages()).isEqualTo(totalPages);
+        assertThat(page.getTotalElements()).isEqualTo(totalElements);
+        assertThat(page.getSize()).isEqualTo(size);
+        assertThat(page.hasNext()).isFalse();
+        assertThat(page.isFirst()).isFalse();
+    }
+
+    @DisplayName("Querydsl을 사용한 findAllPost(Pageable pageable)이 정상동작")
+    @Test
+    public void whenFindAllPostUsingQuerydsl_thenSuccess() throws Exception {
         //given
         int pageNum = 1;
         int size = 10;
         int totalPages = 2;
         int totalElements = 20;
 
-        PageRequest pageable = PageRequest.of(pageNum, size);
+        Pageable pageable = PageRequest.of(pageNum, size);
 
         //when
         Page<PostDto> page = postRepository.findAllPost(pageable);

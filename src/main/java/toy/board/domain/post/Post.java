@@ -62,7 +62,7 @@ public class Post extends BaseEntity {
      *
      * @param comment Post에 포함될 새로운 메서드
      */
-    public void addComment(Comment comment) {
+    public void addComment(final Comment comment) {
         this.comments.add(comment);
     }
 
@@ -71,12 +71,13 @@ public class Post extends BaseEntity {
         this.content = content;
     }
 
+    // TODO: 2023-10-26 test
     public void validateRight(final Member writer) {
         if (writer.hasDeleteRight()) {
             return;
         }
 
-        if (this.writer == null || !writer.getId().equals(this.writer.getId())) {
+        if (!writer.equals(this.writer)) {
             throw new BusinessException(ExceptionCode.POST_NOT_WRITER);
         }
     }
@@ -98,7 +99,7 @@ public class Post extends BaseEntity {
      *
      * @param writer Post 작성자.
      */
-    private void addPostTo(Member writer) {
+    private void addPostTo(final Member writer) {
         this.writer = writer;
         writer.addPost(this);
     }

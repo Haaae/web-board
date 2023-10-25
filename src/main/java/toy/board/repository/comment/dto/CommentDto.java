@@ -3,7 +3,6 @@ package toy.board.repository.comment.dto;
 import toy.board.domain.post.CommentType;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record CommentDto(
         Long commentId,
@@ -14,7 +13,6 @@ public record CommentDto(
         boolean isDeleted,
         boolean isModified,
         LocalDateTime createdDate,
-        List<CommentDto> replies
+        CommentListDto replies
 ) {
-
 }

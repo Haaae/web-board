@@ -9,7 +9,7 @@ public record PostDetailDto(
         Map<String, Object> postDetail
 ) {
 
-    public static PostDetailDto of(PostDto postDto, CommentListDto commentListDto) {
+    public static PostDetailDto of(final PostDto postDto, final CommentListDto commentListDto) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("post", postDto);
         map.put("comments", commentListDto.commentDtos());

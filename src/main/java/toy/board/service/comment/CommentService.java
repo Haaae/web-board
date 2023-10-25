@@ -1,6 +1,5 @@
 package toy.board.service.comment;
 
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +14,8 @@ import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
@@ -26,7 +27,7 @@ public class CommentService {
 
     @Transactional
     public Long create(final String content, final CommentType type,
-            final Optional<Long> parentId, final Long postId, final Long memberId) {
+                       final Optional<Long> parentId, final Long postId, final Long memberId) {
         Post post = findPost(postId);
         Member member = findMember(memberId);
         Comment parentComment = parentId.map(this::findComment)
@@ -49,6 +50,7 @@ public class CommentService {
 
     /**
      * Comment 삭제 시 DB에서 삭제하지 않고 isDeleted = true로 변경한다.
+     *
      * @param commentId
      * @param memberId
      */
@@ -60,17 +62,17 @@ public class CommentService {
         comment.delete();
     }
 
-    private Post findPost(Long postId) {
+    private Post findPost(final Long postId) {
         return postRepository.findPostById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
     }
 
-    private Comment findComment(Long commentId) {
+    private Comment findComment(final Long commentId) {
         return commentRepository.findCommentById(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
     }
 
-    private Member findMember(Long memberId) {
+    private Member findMember(final Long memberId) {
         return memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }

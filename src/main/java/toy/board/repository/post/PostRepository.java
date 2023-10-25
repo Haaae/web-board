@@ -44,5 +44,5 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostQueryRepo
             countQuery = "SELECT count(p) FROM Post p"
     )
     @Override
-    Page<Post> findAll(Pageable pageable);
+    Page<Post> findAll(final Pageable pageable);
 }

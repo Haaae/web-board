@@ -74,7 +74,7 @@ public class Comment extends BaseDeleteEntity {
      *
      * @param writer Comment 작성자.
      */
-    private void addCommentTo(Member writer) {
+    private void addCommentTo(final Member writer) {
         this.writer = writer;
         writer.addComment(this);
     }
@@ -84,7 +84,7 @@ public class Comment extends BaseDeleteEntity {
      *
      * @param post Comment가 소속된 게시물.
      */
-    private void addCommentTo(Post post) {
+    private void addCommentTo(final Post post) {
         this.post = post;
         post.addComment(this);
     }
@@ -111,7 +111,7 @@ public class Comment extends BaseDeleteEntity {
     public String getWriterNickname() {
         return this.writer.getProfile().getNickname();
     }
-    
+
     private void leaveReply(final Comment parent) {
         this.parent = parent;
         parent.replies.add(this);
@@ -129,7 +129,7 @@ public class Comment extends BaseDeleteEntity {
         }
     }
 
-    private boolean isNotValidType(Comment parent) {
+    private boolean isNotValidType(final Comment parent) {
         return !(isValidComment(parent) || isValidReply(parent));
     }
 

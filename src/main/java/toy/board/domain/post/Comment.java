@@ -1,27 +1,16 @@
 package toy.board.domain.post;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -82,6 +71,7 @@ public class Comment extends BaseDeleteEntity {
 
     /**
      * Member와 Comment의 양방향 매핑을 위한 메서드.
+     *
      * @param writer Comment 작성자.
      */
     private void addCommentTo(Member writer) {
@@ -91,6 +81,7 @@ public class Comment extends BaseDeleteEntity {
 
     /**
      * Post와 Comment의 양방향 매핑을 위한 메서드
+     *
      * @param post Comment가 소속된 게시물.
      */
     private void addCommentTo(Post post) {
@@ -113,6 +104,14 @@ public class Comment extends BaseDeleteEntity {
         }
     }
 
+    public Long getWriterId() {
+        return this.writer.getId();
+    }
+
+    public String getWriterNickname() {
+        return this.writer.getProfile().getNickname();
+    }
+    
     private void leaveReply(final Comment parent) {
         this.parent = parent;
         parent.replies.add(this);

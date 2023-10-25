@@ -15,4 +15,7 @@ public record CommentDto(
         LocalDateTime createdDate,
         CommentListDto replies
 ) {
+    public boolean isCommentType() {
+        return type == CommentType.COMMENT;
+    }
 }

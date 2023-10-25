@@ -12,9 +12,9 @@ public record PostDto(
         Long hits,
         LocalDateTime createdDate,
         boolean isModified,
-        int commentNum
+        Long commentNum
 ) {
-    public static PostDto of(Post post) {
+    public static PostDto of(Post post, long commentNum) {
         return new PostDto(
                 post.getId(),
                 post.getWriterId(),
@@ -24,7 +24,7 @@ public record PostDto(
                 post.getHits(),
                 post.getCreatedDate(),
                 post.isModified(),
-                post.countComment()
+                commentNum
         );
     }
 }

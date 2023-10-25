@@ -1,27 +1,16 @@
 package toy.board.domain.post;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -70,6 +59,7 @@ public class Post extends BaseEntity {
     /**
      * Comment와 Post의 양방향 매핑을 위한 메서드.
      * Comment에서 호출한다.
+     *
      * @param comment Post에 포함될 새로운 메서드
      */
     public void addComment(Comment comment) {
@@ -105,6 +95,7 @@ public class Post extends BaseEntity {
 
     /**
      * Post와 Member의 양방향 매핑을 위한 메서드.
+     *
      * @param writer Post 작성자.
      */
     private void addPostTo(Member writer) {
@@ -114,5 +105,9 @@ public class Post extends BaseEntity {
 
     public void applyWriterWithdrawal() {
         this.writer = null;
+    }
+
+    public int countComment() {
+        return this.comments.size();
     }
 }

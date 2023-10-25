@@ -1,10 +1,6 @@
 package toy.board.controller.post;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -22,10 +18,12 @@ import toy.board.controller.post.dto.*;
 import toy.board.domain.post.Post;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
-import toy.board.repository.post.dto.PostDto;
 import toy.board.service.comment.CommentService;
 import toy.board.service.post.PostService;
 import toy.board.service.post.dto.PostDetailDto;
+import toy.board.service.post.dto.PostDto;
+
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/posts")

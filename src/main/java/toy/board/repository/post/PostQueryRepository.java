@@ -1,9 +1,10 @@
 package toy.board.repository.post;
 
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import toy.board.repository.post.dto.PostDto;
+import toy.board.service.post.dto.PostDto;
+
+import java.util.Optional;
 
 public interface PostQueryRepository {
 

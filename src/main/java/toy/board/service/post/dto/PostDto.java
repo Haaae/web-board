@@ -1,4 +1,4 @@
-package toy.board.repository.post.dto;
+package toy.board.service.post.dto;
 
 import toy.board.domain.post.Post;
 import toy.board.repository.comment.dto.CommentListDto;
@@ -16,7 +16,7 @@ public record PostDto(
         boolean isModified,
         int commentNum
 ) {
-    public static PostDto of(Post post) {
+    public static PostDto of(final Post post) {
         return new PostDto(
                 post.getId(),
                 post.getWriterId(),
@@ -30,7 +30,7 @@ public record PostDto(
         );
     }
 
-    public static PostDto of(Post post, CommentListDto commentListDto) {
+    public static PostDto of(final Post post, final CommentListDto commentListDto) {
         return new PostDto(
                 post.getId(),
                 post.getWriterId(),

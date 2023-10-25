@@ -12,9 +12,9 @@ import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
-import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.post.dto.PostDetailDto;
+import toy.board.service.post.dto.PostDto;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -83,12 +83,12 @@ public class PostService {
     }
 
 
-    private Member findMember(Long memberId) {
+    private Member findMember(final Long memberId) {
         return memberRepository.findMemberById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 
-    private Post findPost(Long postId) {
+    private Post findPost(final Long postId) {
         return postRepository.findPostById(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
     }

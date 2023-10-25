@@ -6,8 +6,8 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import toy.board.domain.post.Post;
-import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
+import toy.board.service.post.dto.PostDto;
 
 import java.util.Optional;
 

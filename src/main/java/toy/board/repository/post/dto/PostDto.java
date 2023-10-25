@@ -1,7 +1,9 @@
 package toy.board.repository.post.dto;
 
-import java.time.LocalDateTime;
 import toy.board.domain.post.Post;
+import toy.board.repository.comment.dto.CommentListDto;
+
+import java.time.LocalDateTime;
 
 public record PostDto(
         Long postId,
@@ -12,9 +14,9 @@ public record PostDto(
         Long hits,
         LocalDateTime createdDate,
         boolean isModified,
-        Long commentNum
+        int commentNum
 ) {
-    public static PostDto of(Post post, long commentNum) {
+    public static PostDto of(Post post) {
         return new PostDto(
                 post.getId(),
                 post.getWriterId(),
@@ -24,7 +26,21 @@ public record PostDto(
                 post.getHits(),
                 post.getCreatedDate(),
                 post.isModified(),
-                commentNum
+                post.countComment()
+        );
+    }
+
+    public static PostDto of(Post post, CommentListDto commentListDto) {
+        return new PostDto(
+                post.getId(),
+                post.getWriterId(),
+                post.getWriterNickname(),
+                post.getTitle(),
+                post.getContent(),
+                post.getHits(),
+                post.getCreatedDate(),
+                post.isModified(),
+                commentListDto.countTotalCommentNum()
         );
     }
 }

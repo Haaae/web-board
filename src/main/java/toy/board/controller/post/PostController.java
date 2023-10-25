@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import toy.board.constant.SessionConst;
 import toy.board.controller.post.dto.*;
+import toy.board.domain.post.Post;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.post.dto.PostDto;
@@ -53,9 +54,8 @@ public class PostController {
             @PageableDefault(size = 5, page = 0, sort = "createdDate")
             Pageable pageable
     ) {
-        Page<PostDto> page = postRepository.findAllPost(pageable);
-
-        return ResponseEntity.ok(page);
+        Page<Post> page = postRepository.findAll(pageable);
+        return ResponseEntity.ok(page.map(PostDto::of));
     }
 
 //    @GetMapping("/comments")

@@ -1,14 +1,5 @@
 package toy.board.service.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.util.ArrayList;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +17,15 @@ import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
-import toy.board.repository.profile.ProfileRepository;
+import toy.board.repository.user.MemberRepository;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)   // 사용하지 않는 Mock 설정에 대해 오류를 발생하지 않도록 설정
@@ -40,10 +39,11 @@ class PostServiceTest {
     @Mock
     private CommentRepository commentRepository;
     @Mock
-    private ProfileRepository profileRepository;
+    private MemberRepository memberRepository;
 
     Long invalidPostId = 1242L;
     Long invalidMemberId = 23523L;
+    Long notExistMemberId = 2323L;
     String newContent = "new content";
     String content = "content";
     String title = "title";
@@ -53,28 +53,28 @@ class PostServiceTest {
     @BeforeEach
     void init() {
         Member member = MemberTest.create("username", "emankcin");
+        Member invalidMember = MemberTest.create("other", "sdf");
         Post post = new Post(member, title, content);
         CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 
-        given(postRepository.findById(anyLong())).willReturn(Optional.empty());
-        given(postRepository.findById(eq(postId))).willReturn(Optional.of(post));
+        given(postRepository.findPostById(eq(invalidPostId))).willReturn(Optional.empty());
+        given(postRepository.findPostById(eq(postId))).willReturn(Optional.of(post));
         given(commentRepository.getCommentListDtoByPostId(postId)).willReturn(commentListDto);
 
-        given(profileRepository.findNicknameByMemberId(anyLong())).willReturn(
-                Optional.empty());
-        given(profileRepository.findNicknameByMemberId(eq(memberId))).willReturn(
-                Optional.of(member.getProfile().getNickname()));
+        given(memberRepository.findMemberById(eq(notExistMemberId))).willReturn(Optional.empty());
+        given(memberRepository.findMemberById(eq(invalidMemberId))).willReturn(Optional.of(invalidMember));
+        given(memberRepository.findMemberById(eq(memberId))).willReturn(Optional.of(member));
     }
 
     @DisplayName("게시물 조회 시 게시물 조회 수 증가: 성공")
     @Test
-    public void whenReadPostDetail_thenIncreasePostHits() throws  Exception {
+    public void whenReadPostDetail_thenIncreasePostHits() throws Exception {
         //given
         Long expectedHits = 1L;
 
         //when
         postService.getPostDetail(postId);
-        Post post = postRepository.findById(postId).get();
+        Post post = postRepository.findPostById(postId).get();
 
         //then
         assertThat(post.getHits()).isEqualTo(expectedHits);
@@ -82,7 +82,7 @@ class PostServiceTest {
 
     @DisplayName("update 시 유효하지 않은 post id 사용하면 예외 발생")
     @Test
-    public void whenPostUpdateWithInvalidPostId_thenThrowException() throws  Exception {
+    public void whenPostUpdateWithInvalidPostId_thenThrowException() throws Exception {
         //given
         //when
         //then
@@ -93,7 +93,7 @@ class PostServiceTest {
 
     @DisplayName("update 시 유효하지 않은 member id 사용하면 예외 발생")
     @Test
-    public void whenPostUpdateWithInvalidMemberId_thenThrowException() throws  Exception {
+    public void whenPostUpdateWithInvalidMemberId_thenThrowException() throws Exception {
         //given
         //when
         //then
@@ -104,18 +104,18 @@ class PostServiceTest {
 
     @DisplayName("post create 시 유효하지 않은 member id 사용하면 예외 발생")
     @Test
-    public void whenCreatePostWithNotExistMemberId_thenThrowException() throws  Exception {
+    public void whenCreatePostWithNotExistMemberId_thenThrowException() throws Exception {
         //given
         //when
         //then
         BusinessException e = assertThrows(BusinessException.class,
-                () -> postService.create(title, content, invalidMemberId));
+                () -> postService.create(title, content, notExistMemberId));
         assertThat(e.getCode()).isEqualTo(ExceptionCode.ACCOUNT_NOT_FOUND);
     }
-    
+
     @DisplayName("post 삭제 시 유효하지 않은 postId 사용하면 예외 발생")
     @Test
-    public void whenDeletePostWithInvalidPostId_thenThrowsException() throws  Exception {
+    public void whenDeletePostWithInvalidPostId_thenThrowsException() throws Exception {
         //given
         //when
         //then
@@ -126,7 +126,7 @@ class PostServiceTest {
 
     @DisplayName("post 삭제 시 유효하지 않은 memberId 사용하면 예외 발생")
     @Test
-    public void whenDeletePostWithInvalidMemberId_thenThrowsException() throws  Exception {
+    public void whenDeletePostWithInvalidMemberId_thenThrowsException() throws Exception {
         //given
         //when
         //then

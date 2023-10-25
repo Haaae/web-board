@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.auth.Login;
@@ -21,7 +20,6 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-import toy.board.repository.post.dto.PostDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -153,48 +151,5 @@ class PostRepositoryTest {
         assertThat(page.getSize()).isEqualTo(size);
         assertThat(page.hasNext()).isFalse();
         assertThat(page.isFirst()).isFalse();
-    }
-
-    @DisplayName("Querydsl을 사용한 findAllPost(Pageable pageable)이 정상동작")
-    @Test
-    public void whenFindAllPostUsingQuerydsl_thenSuccess() throws Exception {
-        //given
-        int pageNum = 1;
-        int size = 10;
-        int totalPages = 2;
-        int totalElements = 20;
-
-        Pageable pageable = PageRequest.of(pageNum, size);
-
-        //when
-        Page<PostDto> page = postRepository.findAllPost(pageable);
-
-        for (PostDto postListDto : page.getContent()) {
-            System.out.println("=================================================================");
-            System.out.println("postListDto = " + postListDto);
-            System.out.println("postListDto.writer = " + postListDto.writer());
-            System.out.println("postListDto.writerId = " + postListDto.writerId());
-            System.out.println("postListDto.isModified() = " + postListDto.isModified());
-        }
-
-        //then
-        assertThat(page.getNumber()).isEqualTo(pageNum);
-        assertThat(page.getNumberOfElements()).isEqualTo(size);
-        assertThat(page.getTotalPages()).isEqualTo(totalPages);
-        assertThat(page.getTotalElements()).isEqualTo(totalElements);
-        assertThat(page.getSize()).isEqualTo(size);
-        assertThat(page.hasNext()).isFalse();
-        assertThat(page.isFirst()).isFalse();
-
-        System.out.println("==============================================");
-        System.out.println("==============================================");
-        System.out.println("==============================================");
-        System.out.println("page.getNumber() = " + page.getNumber());
-        System.out.println("page.getNumberOfElements() = " + page.getNumberOfElements());
-        System.out.println("page.getTotalPages() = " + page.getTotalPages());
-        System.out.println("page.getTotalElements() = " + page.getTotalElements());
-        System.out.println("page.getSize() = " + page.getSize());
-        System.out.println("page.hasNext() = " + page.hasNext());
-        System.out.println("page.isFirst() = " + page.isFirst());
     }
 }

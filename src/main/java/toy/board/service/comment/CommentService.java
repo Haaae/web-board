@@ -47,6 +47,11 @@ public class CommentService {
         return commentId;
     }
 
+    /**
+     * Comment 삭제 시 DB에서 삭제하지 않고 isDeleted = true로 변경한다.
+     * @param commentId
+     * @param memberId
+     */
     @Transactional
     public void delete(final Long commentId, final Long memberId) {
         Comment comment = findComment(commentId);

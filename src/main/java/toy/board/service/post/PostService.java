@@ -43,13 +43,14 @@ public class PostService {
      */
     @Transactional
     public PostDetailDto getPostDetail(final Long postId) {
-        Post post = findPostFetchComment(postId);
+        // Post, Post.writer, Post.writer.profile만 fetch join으로 가져옴
+        Post post = findPost(postId);
 
         post.increaseHits();
-        PostDto postDto = PostDto.of(post);
 
         // CommentListDto.of(post)로 CommentListDto를 가져오면 Comment 구조 상 Comment.replies의 szie만큼의 쿼리가 발생한다.
         CommentListDto commentListDto = commentRepository.getCommentListDtoByPostId(postId);
+        PostDto postDto = PostDto.of(post, commentListDto);
 
         return PostDetailDto.of(postDto, commentListDto);
     }
@@ -89,11 +90,6 @@ public class PostService {
 
     private Post findPost(Long postId) {
         return postRepository.findPostById(postId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
-    }
-
-    private Post findPostFetchComment(Long postId) {
-        return postRepository.findPostByIdFetchComment(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
     }
 }

@@ -13,7 +13,6 @@ import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.post.dto.PostDto;
-import toy.board.repository.profile.ProfileRepository;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.post.dto.PostDetailDto;
 
@@ -34,15 +33,23 @@ public class PostService {
         return post.getId();
     }
 
+    /**
+     * PostDetail를 반환하는 메서드. Comment가 Comment 컬렉션을 내부적으로 가지고 있어
+     * 엔티티 그래프를 통해 재귀적으로 프로퍼티에 접근하면 불필요한 쿼리가 발생하기 때문에
+     * 개별적인 쿼리를 날려 Post와 연관된 Comment를 가져온다.
+     *
+     * @param postId
+     * @return
+     */
     @Transactional
     public PostDetailDto getPostDetail(final Long postId) {
-        Post post = findPost(postId);
+        Post post = findPostFetchComment(postId);
 
         post.increaseHits();
+        PostDto postDto = PostDto.of(post);
 
+        // CommentListDto.of(post)로 CommentListDto를 가져오면 Comment 구조 상 Comment.replies의 szie만큼의 쿼리가 발생한다.
         CommentListDto commentListDto = commentRepository.getCommentListDtoByPostId(postId);
-
-        PostDto postDto = PostDto.of(post, commentListDto.getTotalCommentNum());
 
         return PostDetailDto.of(postDto, commentListDto);
     }
@@ -60,6 +67,7 @@ public class PostService {
      * post 삭제 시 repository를 통해 직접 reply, comment를 우선 삭제하고 post를 삭제한다.
      * JPA에서 제공하는 OrhpanRemoval과 같은 기능을 사용하지 않는 이유는
      * 재귀적인 comment와 reply의 관계로 인해 count(comment + reply)만큼의 select 쿼리가 발생하기 때문이다.
+     *
      * @param postId
      * @param memberId
      */
@@ -81,6 +89,11 @@ public class PostService {
 
     private Post findPost(Long postId) {
         return postRepository.findPostById(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+    }
+
+    private Post findPostFetchComment(Long postId) {
+        return postRepository.findPostByIdFetchComment(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
     }
 }

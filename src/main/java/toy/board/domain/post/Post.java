@@ -1,16 +1,27 @@
 package toy.board.domain.post;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -57,8 +68,7 @@ public class Post extends BaseEntity {
     }
 
     /**
-     * Comment와 Post의 양방향 매핑을 위한 메서드.
-     * Comment에서 호출한다.
+     * Comment와 Post의 양방향 매핑을 위한 메서드. Comment에서 호출한다.
      *
      * @param comment Post에 포함될 새로운 메서드
      */
@@ -71,7 +81,6 @@ public class Post extends BaseEntity {
         this.content = content;
     }
 
-    // TODO: 2023-10-26 test
     public void validateRight(final Member writer) {
         if (writer.hasDeleteRight()) {
             return;

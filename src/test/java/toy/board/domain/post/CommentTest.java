@@ -1,10 +1,10 @@
 package toy.board.domain.post;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
+import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
@@ -22,52 +23,119 @@ class CommentTest {
     @Autowired
     private EntityManager em;
 
-    @DisplayName("권한 검증 성공")
+    @DisplayName("권한 검증: 작성자가 탈퇴한 댓글")
     @Test
-    public void whenValidateWithMemberId_thenValidateSuccess() throws  Exception {
+    public void 권한_테스트_작성자_탈퇴() throws Exception {
         //given
-        Comment comment = create(PostTest.create("username", "emankcin"), CommentType.COMMENT);
-        Post post = comment.getPost();
+        Comment comment = create(
+                PostTest.create("username", "emankcin"),
+                CommentType.COMMENT
+        );
         Member member = comment.getWriter();
 
-        em.persist(member);
-        em.persist(post);
-        em.persist(comment);
-        em.flush();em.clear();
+        Member invalidMember = MemberTest.create(
+                "invalid",
+                "invalid",
+                UserRole.USER
+        );
 
-        Long commentId = comment.getId();
-        long memberId = member.getId();
-
+        Member master = MemberTest.create(
+                "Master",
+                "master",
+                UserRole.MASTER
+        );
+        Member admin = MemberTest.create(
+                "Master",
+                "master",
+                UserRole.ADMIN
+        );
         //when
-        Comment findComment = em.find(Comment.class, commentId);
-        Member findMember = em.find(Member.class, memberId);
+        comment.applyWriterWithdrawal();
+
         //then
-        Assertions.assertDoesNotThrow(() -> findComment.validateRight(findMember));
+        BusinessException writerException = assertThrows(
+                BusinessException.class,
+                () -> comment.validateRight(member)
+        );
+        assertThat(writerException.getCode())
+                .isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+
+        BusinessException invalidMemberException = assertThrows(
+                BusinessException.class,
+                () -> comment.validateRight(invalidMember)
+        );
+        assertThat(invalidMemberException.getCode())
+                .isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+
+        assertDoesNotThrow(() -> comment.validateRight(master));
+        assertDoesNotThrow(() -> comment.validateRight(admin));
     }
 
-    @DisplayName("권한 검증 실패")
+    @DisplayName("권한 검증: 권한 있는 다른 사용자")
     @Test
-    public void whenValidateWithInvalidMemberId_thenValidateFail() throws  Exception {
+    public void 권한_테스트_권한_있는_다른_사용자() throws Exception {
         //given
-        Comment comment = create(PostTest.create("username", "emankcin"), CommentType.COMMENT);
-        Post post = comment.getPost();
-        Member member = comment.getWriter();
-
-        em.persist(member);
-        em.persist(post);
-        em.persist(comment);
-
-        Member invalidMember = MemberTest.create("invalid", "invalid");
+        Comment comment = create(
+                PostTest.create("username", "emankcin"),
+                CommentType.COMMENT
+        );
 
         //when
-
+        Member master = MemberTest.create(
+                "Master",
+                "master",
+                UserRole.MASTER
+        );
+        Member admin = MemberTest.create(
+                "Master",
+                "master",
+                UserRole.ADMIN
+        );
         //then
-        Assertions.assertThrows(BusinessException.class, () -> comment.validateRight(invalidMember));
+        assertDoesNotThrow(() -> comment.validateRight(master));
+        assertDoesNotThrow(() -> comment.validateRight(admin));
+    }
+
+    @DisplayName("권한 검증: 작성자 성공")
+    @Test
+    public void whenValidateWithMemberId_thenValidateSuccess() throws Exception {
+        //given
+        Comment comment = create(
+                PostTest.create("username", "emankcin"),
+                CommentType.COMMENT
+        );
+        //when
+        Member member = comment.getWriter();
+        //then
+        assertDoesNotThrow(() -> comment.validateRight(member));
+    }
+
+    @DisplayName("권한 검증: 권한 없는 사용자 실패")
+    @Test
+    public void whenValidateWithInvalidMemberId_thenValidateFail() throws Exception {
+        //given
+        Comment comment = create(
+                PostTest.create("username", "emankcin"),
+                CommentType.COMMENT
+        );
+        //when
+        Member invalidMember = MemberTest.create(
+                "invalid",
+                "invalid",
+                UserRole.USER
+        );
+        //then
+        BusinessException e = assertThrows(
+                BusinessException.class,
+                () -> comment.validateRight(invalidMember)
+        );
+        assertThat(e.getCode())
+                .isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
     }
 
     @DisplayName("게시물이 동일할 때 타입에 따른 생성자 구분으로 자동 양방향 매핑")
     @Test
-    public void CommentTypeTest() throws  Exception {
+    public void CommentTypeTest() throws Exception {
         //given
         Post post = PostTest.create("username", "emankcin");
         em.persist(post.getWriter());
@@ -90,7 +158,7 @@ class CommentTest {
 
     @DisplayName("유효하지 않은 타입에 따른 댓글 생성 실패")
     @Test
-    public void whenInvalidType_thenFailToCreateComment() throws  Exception {
+    public void whenInvalidType_thenFailToCreateComment() throws Exception {
         //given
         Post post = PostTest.create("username", "emankcin");
         em.persist(post.getWriter());
@@ -124,7 +192,7 @@ class CommentTest {
 
     @DisplayName("답글 생성 시 답글과 댓글의 게시물이 다를 경우 생성 실패")
     @Test
-    public void whenInvalidPostOfParent_thenFailToCreateReply() throws  Exception {
+    public void whenInvalidPostOfParent_thenFailToCreateReply() throws Exception {
         //given
         Post post = PostTest.create("username", "emankcin");
         em.persist(post.getWriter());

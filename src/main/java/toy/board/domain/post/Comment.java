@@ -122,6 +122,10 @@ public class Comment extends BaseDeleteEntity {
     public String getWriterNickname() {
         return this.writer.getProfile().getNickname();
     }
+    
+    public void applyWriterWithdrawal() {
+        this.writer = null;
+    }
 
     private void leaveReply(final Comment parent) {
         this.parent = parent;
@@ -151,9 +155,5 @@ public class Comment extends BaseDeleteEntity {
 
     private boolean isValidComment(final Comment parent) {
         return this.type == CommentType.COMMENT && parent == null;
-    }
-
-    public void applyWriterWithdrawal() {
-        this.writer = null;
     }
 }

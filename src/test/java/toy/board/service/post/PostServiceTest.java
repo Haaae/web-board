@@ -1,5 +1,12 @@
 package toy.board.service.post;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+
+import java.util.ArrayList;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,20 +19,13 @@ import org.mockito.quality.Strictness;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
+import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
-
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)   // 사용하지 않는 Mock 설정에 대해 오류를 발생하지 않도록 설정
@@ -52,8 +52,8 @@ class PostServiceTest {
 
     @BeforeEach
     void init() {
-        Member member = MemberTest.create("username", "emankcin");
-        Member invalidMember = MemberTest.create("other", "sdf");
+        Member member = MemberTest.create("username", "emankcin", UserRole.USER);
+        Member invalidMember = MemberTest.create("other", "sdf", UserRole.USER);
         Post post = new Post(member, title, content);
         CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 
@@ -62,7 +62,8 @@ class PostServiceTest {
         given(commentRepository.getCommentListDtoByPostId(postId)).willReturn(commentListDto);
 
         given(memberRepository.findMemberById(eq(notExistMemberId))).willReturn(Optional.empty());
-        given(memberRepository.findMemberById(eq(invalidMemberId))).willReturn(Optional.of(invalidMember));
+        given(memberRepository.findMemberById(eq(invalidMemberId))).willReturn(
+                Optional.of(invalidMember));
         given(memberRepository.findMemberById(eq(memberId))).willReturn(Optional.of(member));
     }
 

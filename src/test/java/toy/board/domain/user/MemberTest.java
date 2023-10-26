@@ -20,19 +20,19 @@ public class MemberTest {
     LoginType loginType = LoginType.LOCAL_LOGIN;
     UserRole userRole = UserRole.USER;
     Member member;
-    
+
     @BeforeEach
     void init() {
         member = Member.builder(username, login, profile, loginType, userRole).build();
     }
 
-    public static Member create(String username, String nickname) {
+    public static Member create(String username, String nickname, UserRole role) {
         return Member.builder(
                 username,
                 Login.builder().encodedPassword("password").build(),
                 Profile.builder(nickname).build(),
                 LoginType.LOCAL_LOGIN,
-                UserRole.USER
+                role
         ).build();
     }
 }

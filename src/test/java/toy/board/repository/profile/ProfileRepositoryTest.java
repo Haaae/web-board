@@ -1,7 +1,7 @@
 package toy.board.repository.profile;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.persistence.EntityManager;
 import java.util.NoSuchElementException;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
+import toy.board.domain.user.UserRole;
 
 @SpringBootTest
 @Transactional
@@ -25,10 +26,12 @@ class ProfileRepositoryTest {
 
     @DisplayName("멤버 id로 닉네임 가져오기 성공")
     @Test
-    public void whenAttemptGetNicknameByMemberId_Success() throws  Exception {
+    public void whenAttemptGetNicknameByMemberId_Success() throws Exception {
         //given
-        Member member = MemberTest.create("username", "emankcin");        em.persist(member);
-        em.flush(); em.clear();
+        Member member = MemberTest.create("username", "emankcin", UserRole.USER);
+        em.persist(member);
+        em.flush();
+        em.clear();
 
         //when
         Optional<String> nickname = profileRepository.findNicknameByMemberId(member.getId());
@@ -39,10 +42,12 @@ class ProfileRepositoryTest {
 
     @DisplayName("멤버 id로 닉네임 가져오기 실패: 저장되지 않는 멤버 아이디")
     @Test
-    public void whenAttemptGetNicknameByNotExistMemberId_Fail() throws  Exception {
+    public void whenAttemptGetNicknameByNotExistMemberId_Fail() throws Exception {
         //given
-        Member member = MemberTest.create("username", "emankcin");        em.persist(member);
-        em.flush(); em.clear();
+        Member member = MemberTest.create("username", "emankcin", UserRole.USER);
+        em.persist(member);
+        em.flush();
+        em.clear();
 
         Long notExistMemberId = 123L;
 

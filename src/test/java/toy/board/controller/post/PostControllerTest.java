@@ -61,10 +61,11 @@ class PostControllerTest {
     @Transactional
     void init() {
         setupWithSavingPostAndComment();
-        Member member = MemberTest.create("username", "emankcin");
+        Member member = MemberTest.create("username", "emankcin", UserRole.USER);
         em.persist(member);
         memberId = member.getId();
-        em.flush(); em.clear();
+        em.flush();
+        em.clear();
     }
 
     @AfterEach
@@ -92,7 +93,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 목록 조회 성공: 세션이 없어도 성공")
     @Test
-    public void getPostList_success() throws  Exception {
+    public void getPostList_success() throws Exception {
         //given
         int page = 0;
         int size = 10;
@@ -108,7 +109,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 상세 데이터 조회: 세션 없이 성공")
     @Test
-    public void getPostDetail_success() throws  Exception {
+    public void getPostDetail_success() throws Exception {
         //given
         postId = this.postId;
         //when
@@ -123,7 +124,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 생성: 세션 없으면 실패")
     @Test
-    public void whenCreatePostWithNoSession_thenUnauthorizedFail() throws  Exception {
+    public void whenCreatePostWithNoSession_thenUnauthorizedFail() throws Exception {
         //given
         //when
         PostCreationRequest request = new PostCreationRequest("title", "content");
@@ -139,7 +140,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 생성 실패: too long content")
     @Test
-    public void whenCreatePostWithTooLongContent_thenFail() throws  Exception {
+    public void whenCreatePostWithTooLongContent_thenFail() throws Exception {
         //given
         Long memberId = this.memberId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
@@ -161,7 +162,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 생성 실패: too long title")
     @Test
-    public void whenCreatePostWithTooLongTitle_thenFail() throws  Exception {
+    public void whenCreatePostWithTooLongTitle_thenFail() throws Exception {
         //given
         Long memberId = this.memberId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
@@ -180,7 +181,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 생성 실패: empty content")
     @Test
-    public void whenCreatePostWithEmptyContent_thenFail() throws  Exception {
+    public void whenCreatePostWithEmptyContent_thenFail() throws Exception {
         //given
         Long memberId = this.memberId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
@@ -199,7 +200,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 생성 실패: empty title")
     @Test
-    public void whenCreatePostWithEmptyTitle_thenFail() throws  Exception {
+    public void whenCreatePostWithEmptyTitle_thenFail() throws Exception {
         //given
         Long memberId = this.memberId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
@@ -218,7 +219,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 생성: 세션 있으면 성공")
     @Test
-    public void whenCreatePostWithSession_thenUnauthorizedFail() throws  Exception {
+    public void whenCreatePostWithSession_thenUnauthorizedFail() throws Exception {
         //given
         Long memberId = this.memberId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
@@ -283,7 +284,7 @@ class PostControllerTest {
     // 세션 없음
     @DisplayName("Comment 생성 실패: 세션 없음")
     @Test
-    public void whenCreateCommentWithNoSession_thenExceptionThrow() throws  Exception {
+    public void whenCreateCommentWithNoSession_thenExceptionThrow() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -304,7 +305,7 @@ class PostControllerTest {
 
     @DisplayName("Comment 생성 실패: comment 생성 시 commentId가 null이 아님")
     @Test
-    public void PostControllerTest() throws  Exception {
+    public void PostControllerTest() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -327,7 +328,7 @@ class PostControllerTest {
 
     @DisplayName("Comment 생성 실패: postId가 유효하지 않음")
     @Test
-    public void whenCreateCommentInvalidPostId_theFail() throws  Exception {
+    public void whenCreateCommentInvalidPostId_theFail() throws Exception {
         //given
         Long memberId = this.memberId;
         Long invalidPostId = -1L;
@@ -346,10 +347,10 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
     }
-    
+
     @DisplayName("comment 생성 실패: reply 생성 시 commentId가 유효하지 않음")
     @Test
-    public void whenCreateCommentInvalidCommentId_theFail() throws  Exception {
+    public void whenCreateCommentInvalidCommentId_theFail() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -372,7 +373,7 @@ class PostControllerTest {
 
     @DisplayName("comment 생성 실패: reply 생성 시 commentId의 타입이 reply")
     @Test
-    public void whenCreateCommentInvalidCommentType_theFail() throws  Exception {
+    public void whenCreateCommentInvalidCommentType_theFail() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -395,7 +396,7 @@ class PostControllerTest {
 
     @DisplayName("comment 생성 실패: reply 생성 시 commentId가 null임")
     @Test
-    public void whenCreateCommentInvalidCommentIsNull_theFail() throws  Exception {
+    public void whenCreateCommentInvalidCommentIsNull_theFail() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -417,7 +418,7 @@ class PostControllerTest {
 
     @DisplayName("comment 생성 실패: empty content")
     @Test
-    public void whenCreateCommentEmptyContent_theFail() throws  Exception {
+    public void whenCreateCommentEmptyContent_theFail() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -440,7 +441,7 @@ class PostControllerTest {
 
     @DisplayName("comment 생성 실패: content length 초과")
     @Test
-    public void whenCreateCommentTooLongLength_theFail() throws  Exception {
+    public void whenCreateCommentTooLongLength_theFail() throws Exception {
         //given
         Long memberId = this.memberId;
         Long postId = this.postId;
@@ -487,7 +488,7 @@ class PostControllerTest {
     // update post 성공
     @DisplayName("update post 성공")
     @Test
-    public void updatePost_success() throws  Exception {
+    public void updatePost_success() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -509,7 +510,7 @@ class PostControllerTest {
 
     @DisplayName("post update - 세션 없음")
     @Test
-    public void whenUpdatePostWithNoSession_theFail() throws  Exception {
+    public void whenUpdatePostWithNoSession_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -528,7 +529,7 @@ class PostControllerTest {
 
     @DisplayName("post update - 작성자와 다른 회원")
     @Test
-    public void whenUpdatePostNoRightMember_theFail() throws  Exception {
+    public void whenUpdatePostNoRightMember_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -550,7 +551,7 @@ class PostControllerTest {
 
     @DisplayName("post update - 존재하지 않는 post id")
     @Test
-    public void whenUpdatePostNotExistPostId_theFail() throws  Exception {
+    public void whenUpdatePostNotExistPostId_theFail() throws Exception {
         //given
         Long invalidPostId = -1L;
         Long memberId = this.memberId;
@@ -571,7 +572,7 @@ class PostControllerTest {
 
     @DisplayName("post update - 너무 긴 본문")
     @Test
-    public void whenUpdatePostTooLongContent_theFail() throws  Exception {
+    public void whenUpdatePostTooLongContent_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -604,7 +605,7 @@ class PostControllerTest {
 
     @DisplayName("post update - 빈 본문")
     @Test
-    public void whenUpdatePostEmptyContent_theFail() throws  Exception {
+    public void whenUpdatePostEmptyContent_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -626,7 +627,7 @@ class PostControllerTest {
 
     @DisplayName("comment update 성공")
     @Test
-    public void commentUpdate_success() throws  Exception {
+    public void commentUpdate_success() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -649,7 +650,7 @@ class PostControllerTest {
 
     @DisplayName("comment update 실패 - 존재하지 않는 comment id")
     @Test
-    public void whenCommentUpdateWithNoExistCommentId_theFail() throws  Exception {
+    public void whenCommentUpdateWithNoExistCommentId_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -672,7 +673,7 @@ class PostControllerTest {
 
     @DisplayName("comment update 실패 - 세션 없음")
     @Test
-    public void whenCommentUpdateWithNoSession_theFail() throws  Exception {
+    public void whenCommentUpdateWithNoSession_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -692,11 +693,11 @@ class PostControllerTest {
 
     @DisplayName("comment update 실패 - 권한 없는 사용자")
     @Test
-    public void whenCommentUpdateWithNoRightUser_theFail() throws  Exception {
+    public void whenCommentUpdateWithNoRightUser_theFail() throws Exception {
         //given
         Long postId = this.postId;
 
-        Member member = MemberTest.create("invalid", "invalid");
+        Member member = MemberTest.create("invalid", "invalid", UserRole.USER);
         em.persist(member);
         Long memberId = member.getId();
 
@@ -719,7 +720,7 @@ class PostControllerTest {
 
     @DisplayName("comment update 실패 - 빈 본문")
     @Test
-    public void whenUpdateCommentWithEmptyContent_theFail() throws  Exception {
+    public void whenUpdateCommentWithEmptyContent_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -742,7 +743,7 @@ class PostControllerTest {
 
     @DisplayName("comment update 실패 - 너무 긴 본문")
     @Test
-    public void whenUpdateCommentWithTooLongContent_theFail() throws  Exception {
+    public void whenUpdateCommentWithTooLongContent_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -776,7 +777,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 삭제 성공")
     @Test
-    public void deletePost_success() throws  Exception {
+    public void deletePost_success() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -795,7 +796,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 삭제 실패 - 유효하지 않은 게시물")
     @Test
-    public void whenDeletePostNoExistPost_thenFail() throws  Exception {
+    public void whenDeletePostNoExistPost_thenFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -815,7 +816,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 삭제 실패 - 유효하지 않은 사용자")
     @Test
-    public void whenDeletePostNoRightUser_thenFail() throws  Exception {
+    public void whenDeletePostNoRightUser_thenFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -834,7 +835,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 삭제 실패 - 세션 없음")
     @Test
-    public void whenDeletePostNoSession_thenFail() throws  Exception {
+    public void whenDeletePostNoSession_thenFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -850,7 +851,7 @@ class PostControllerTest {
 
     @DisplayName("게시물 삭제 성공")
     @Test
-    public void deleteComment_success() throws  Exception {
+    public void deleteComment_success() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -870,7 +871,7 @@ class PostControllerTest {
 
     @DisplayName("존재하지 않는 commentId")
     @Test
-    public void whenDeleteNoExistCommentId_theFail() throws  Exception {
+    public void whenDeleteNoExistCommentId_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -890,7 +891,7 @@ class PostControllerTest {
 
     @DisplayName("세션 없음")
     @Test
-    public void whenDeleteNoSession_theFail() throws  Exception {
+    public void whenDeleteNoSession_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
@@ -907,7 +908,7 @@ class PostControllerTest {
 
     @DisplayName("권한 없는 사용자")
     @Test
-    public void whenDeleteNoRight_theFail() throws  Exception {
+    public void whenDeleteNoRight_theFail() throws Exception {
         //given
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);

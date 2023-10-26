@@ -1,8 +1,14 @@
 package toy.board.repository.post;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static toy.board.domain.post.QComment.comment;
+import static toy.board.domain.post.QPost.post;
+
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,17 +22,11 @@ import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
+import toy.board.domain.post.PostTest;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static toy.board.domain.post.QComment.comment;
-import static toy.board.domain.post.QPost.post;
 
 @SpringBootTest
 @Transactional
@@ -86,16 +86,20 @@ class PostRepositoryTest {
     @Test
     public void whenFindPost_thenFindMemberAndProfile() throws Exception {
         //given
-        Long postId = 1L;
+        Post post = PostTest.create("random", "random");
+        em.persist(post.getWriter());
+        em.persist(post);
+        Long postId = post.getId();
 
         //when
-        Optional<Post> findPost = postRepository.findById(postId);
+        Optional<Post> findPost = postRepository.findPostById(postId);
 
         //then. 쿼리가 발생하지 않음 확인 완료
         assertThat(findPost.isPresent()).isTrue();
         System.out.println("findPost 엔티티 프로퍼티 조회");
         System.out.println("findPost.get().getWriter() = " + findPost.get().getWriter());
-        System.out.println("findPost.get().getWriterNickname() = " + findPost.get().getWriterNickname());
+        System.out.println(
+                "findPost.get().getWriterNickname() = " + findPost.get().getWriterNickname());
     }
 
     @DisplayName("fetch join test: Post만 반환값으로 받고 엔티티 그래프를 이용할 수 있도록 한다.")

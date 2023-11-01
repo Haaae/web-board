@@ -136,4 +136,16 @@ public class Member extends BaseEntity {
             throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
         }
     }
+
+    public String getNickname() {
+        return this.profile.getNickname();
+    }
+
+    public long getPostCount() {
+        return this.posts.size();
+    }
+
+    public long getCommentCount() {
+        return this.comments.size();
+    }
 }

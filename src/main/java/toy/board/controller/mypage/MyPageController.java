@@ -1,4 +1,4 @@
-package toy.board.controller;
+package toy.board.controller.mypage;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
-import toy.board.controller.dto.MyPageDto;
+import toy.board.controller.mypage.dto.MyPageDto;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.Member;

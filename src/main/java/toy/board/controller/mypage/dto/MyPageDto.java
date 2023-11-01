@@ -1,4 +1,4 @@
-package toy.board.controller.dto;
+package toy.board.controller.mypage.dto;
 
 import toy.board.domain.user.Member;
 

@@ -116,6 +116,10 @@ public class Comment extends BaseDeleteEntity {
         this.writer = null;
     }
 
+    public boolean isCommentType() {
+        return this.type == CommentType.COMMENT;
+    }
+
     private void leaveReply(final Comment parent) {
         this.parent = parent;
         parent.replies.add(this);

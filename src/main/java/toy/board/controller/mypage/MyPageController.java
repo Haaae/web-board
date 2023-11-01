@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
@@ -33,6 +34,7 @@ public class MyPageController {
     private final CommentRepository commentRepository;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<MyPageDto> load(final HttpServletRequest request) {
         Long memberId = getMemberIdFrom(request);
 
@@ -44,6 +46,7 @@ public class MyPageController {
     }
 
     @GetMapping("/posts")
+    @Transactional(readOnly = true)
     public ResponseEntity<Page<PostDto>> getPosts(
             @PageableDefault(size = 5, page = 0, sort = "createdDate") final Pageable pageable,
             final HttpServletRequest request) {
@@ -56,6 +59,7 @@ public class MyPageController {
     }
 
     @GetMapping("/comments")
+    @Transactional(readOnly = true)
     public ResponseEntity<Page<CommentDto>> getComments(
             @PageableDefault(size = 5, page = 0, sort = "createdDate") final Pageable pageable,
             final HttpServletRequest request) {

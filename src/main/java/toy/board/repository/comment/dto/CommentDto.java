@@ -4,6 +4,7 @@ import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record CommentDto(
         Long commentId,
@@ -33,10 +34,16 @@ public record CommentDto(
                 comment.isDeleted(),
                 comment.isModified(),
                 comment.getCreatedDate(),
-                CommentListDto.createReplyTypeFrom(
-                        comment.getReplies()
+                new CommentListDto(
+                        convertRepliesToCommentDtos(comment.getReplies())
                 )
         );
+    }
+
+    private static List<CommentDto> convertRepliesToCommentDtos(List<Comment> replies) {
+        return replies.stream()
+                .map(CommentDto::createReplyTypeFrom)
+                .toList();
     }
 
     /**

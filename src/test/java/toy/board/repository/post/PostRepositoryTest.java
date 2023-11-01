@@ -1,14 +1,8 @@
 package toy.board.repository.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static toy.board.domain.post.QComment.comment;
-import static toy.board.domain.post.QPost.post;
-
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +22,13 @@ import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static toy.board.domain.post.QComment.comment;
+import static toy.board.domain.post.QPost.post;
+
 @SpringBootTest
 @Transactional
 class PostRepositoryTest {
@@ -38,6 +39,8 @@ class PostRepositoryTest {
     private PostRepository postRepository;
     @Autowired
     private JPAQueryFactory queryFactory;
+
+    private Long memberId;
 
     @BeforeEach
     void setup() {
@@ -62,6 +65,8 @@ class PostRepositoryTest {
 
             em.persist(member);
 
+            this.memberId = member.getId();
+
             for (int j = 0; j < postNum; j++) {
                 Post post = new Post(
                         member,
@@ -80,6 +85,33 @@ class PostRepositoryTest {
         }
         em.flush();
         em.clear();
+    }
+
+    @DisplayName("jpa fetch join test: memberId와 일치하는 writerId를 갖는 Post 페이징")
+    @Test
+    public void 실행테스트_findAllByWriterId() throws Exception {
+        //given
+        long memberId = this.memberId;
+
+        int pageNum = 0;
+        int size = 10;
+        int numberOfElements = 2;
+        int totalPages = 1;
+        int totalElements = 2;
+        String sort = "createdDate";
+
+        PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
+        //when
+        Page<Post> page = postRepository.findAllByWriterId(memberId, pageable);
+
+        //then
+        assertThat(page.getNumber()).isEqualTo(pageNum);
+        assertThat(page.getNumberOfElements()).isEqualTo(numberOfElements);
+        assertThat(page.getTotalPages()).isEqualTo(totalPages);
+        assertThat(page.getTotalElements()).isEqualTo(totalElements);
+        assertThat(page.getSize()).isEqualTo(size);
+        assertThat(page.hasNext()).isFalse();
+        assertThat(page.isFirst()).isTrue();
     }
 
     @DisplayName("jpa fetch join test: repository를 통해 post 가져올 때 member와 profile도 함께 가져온다.")

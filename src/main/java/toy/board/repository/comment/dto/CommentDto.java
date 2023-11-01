@@ -35,12 +35,12 @@ public record CommentDto(
                 comment.isModified(),
                 comment.getCreatedDate(),
                 new CommentListDto(
-                        convertRepliesToCommentDtos(comment.getReplies())
+                        convertRepliesToCommentDtoCollection(comment.getReplies())
                 )
         );
     }
 
-    private static List<CommentDto> convertRepliesToCommentDtos(List<Comment> replies) {
+    private static List<CommentDto> convertRepliesToCommentDtoCollection(List<Comment> replies) {
         return replies.stream()
                 .map(CommentDto::createReplyTypeFrom)
                 .toList();
@@ -49,7 +49,7 @@ public record CommentDto(
     /**
      * Comment의 프로퍼티로 CommentDto를 생성해 반환한다. 이때 Comment.replies에 접근하지 않고 CommentDto.replies를 null로 설정한다.
      *
-     * @param comment CommentType.REPLY인 Comment
+     * @param comment CommentType.REPLY인 Comment를 비롯한 replies에 접근할 필요없는 모든 Comment
      * @return replies가 null인 CommentDto
      */
     public static CommentDto createReplyTypeFrom(Comment comment) {

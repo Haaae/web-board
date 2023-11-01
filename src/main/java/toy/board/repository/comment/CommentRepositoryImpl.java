@@ -94,8 +94,8 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
                         ).map(reply ->
                                 new CommentDto(
                                         reply.getId(),
-                                        reply.getWriter().getId(),
-                                        reply.getWriter().getProfile().getNickname(),
+                                        reply.getWriterId(),
+                                        reply.getWriterNickname(),
                                         reply.getContent(),
                                         reply.getType(),
                                         reply.isDeleted(),

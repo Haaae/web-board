@@ -7,6 +7,9 @@ public record JoinResponse(
         String nickname
 ) {
     public static JoinResponse of(Member member) {
-        return new JoinResponse(member.getUsername(), member.getProfile().getNickname());
+        return new JoinResponse(
+                member.getUsername(),
+                member.getNickname()
+        );
     }
 }

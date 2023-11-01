@@ -10,6 +10,11 @@ public record LoginResponse(
         UserRole role
 ) {
     public static LoginResponse of(Member member) {
-        return new LoginResponse(member.getId(), member.getUsername(), member.getProfile().getNickname(), member.getRole());
+        return new LoginResponse(
+                member.getId(),
+                member.getUsername(),
+                member.getNickname(),
+                member.getRole()
+        );
     }
 }

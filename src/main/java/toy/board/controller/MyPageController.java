@@ -63,7 +63,7 @@ public class MyPageController {
         Long memberId = getMemberIdFrom(request);
         Page<Comment> page = commentRepository.findAllByWriterId(memberId, pageable);
         return ResponseEntity.ok(
-                page.map(CommentDto::createHasNotReplies)
+                page.map(CommentDto::createReplyTypeFrom)
         );
 
     }

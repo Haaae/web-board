@@ -1,9 +1,6 @@
 package toy.board.repository.user;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import jakarta.persistence.EntityManager;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,10 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -52,7 +53,7 @@ class MemberRepositoryTest {
 
     @DisplayName("memberId로 멤버 찾을 때 profile도 가져옴")
     @Test
-    public void MemberRepositoryTest() throws  Exception {
+    public void MemberRepositoryTest() throws Exception {
         //given
 
         //when
@@ -65,11 +66,11 @@ class MemberRepositoryTest {
 
     @DisplayName("닉네임으로 멤버 찾기 성공:멤버와 함께 profile도 fetch join으로 가져옴")
     @Test
-    public void find_member_by_nickname_success() throws  Exception {
+    public void find_member_by_nickname_success() throws Exception {
         // give
 
         //when
-        Member findMember = memberRepository.findMemberByNickname(member.getProfile().getNickname()).get();
+        Member findMember = memberRepository.findMemberByNickname(member.getNickname()).get();
 
         //then
         assertThat(findMember).isNotNull();
@@ -78,7 +79,7 @@ class MemberRepositoryTest {
 
     @DisplayName("닉네임으로 멤버 가져오기 실패: 해당 닉네임과 일치하는 닉네임을 가진 멤버가 없음")
     @Test
-    public void find_member_by_nickname_fail_cause_not_exists_nickname() throws  Exception {
+    public void find_member_by_nickname_fail_cause_not_exists_nickname() throws Exception {
         // give
         String wrongNickname = "wrong nickname";
 
@@ -116,7 +117,7 @@ class MemberRepositoryTest {
 
     @DisplayName("username으로 member 존재여부 확인 - 성공")
     @Test
-    public void exists_member_by_username_success() throws  Exception {
+    public void exists_member_by_username_success() throws Exception {
         //given
 
         //when
@@ -128,7 +129,7 @@ class MemberRepositoryTest {
 
     @DisplayName("nickname으로 member 존재여부 확인 - 성공")
     @Test
-    public void exists_member_by_nickname_success() throws  Exception {
+    public void exists_member_by_nickname_success() throws Exception {
         //given
 
         //when
@@ -140,7 +141,7 @@ class MemberRepositoryTest {
 
     @DisplayName("nickanem으로 member 존재여부 확인 - 실패")
     @Test
-    public void exists_member_by_nickname_fail() throws  Exception {
+    public void exists_member_by_nickname_fail() throws Exception {
         //given
         String wrong_input = "adsfasdf";
 
@@ -153,7 +154,7 @@ class MemberRepositoryTest {
 
     @DisplayName("username으로 member 존재여부 확인 - 성공")
     @Test
-    public void exists_member_by_username_fail() throws  Exception {
+    public void exists_member_by_username_fail() throws Exception {
         //given
         String wrong_input = "adsfasdf";
 

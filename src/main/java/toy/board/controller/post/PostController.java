@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import toy.board.constant.SessionConst;
 import toy.board.controller.post.dto.*;
 import toy.board.domain.post.Post;
-import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.service.comment.CommentService;
 import toy.board.service.post.PostService;
@@ -33,7 +32,6 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
 
     // read
 
@@ -53,7 +51,9 @@ public class PostController {
             Pageable pageable
     ) {
         Page<Post> page = postRepository.findAll(pageable);
-        return ResponseEntity.ok(page.map(PostDto::of));
+        return ResponseEntity.ok(
+                page.map(PostDto::of)
+        );
     }
 
 //    @GetMapping("/comments")
@@ -83,7 +83,7 @@ public class PostController {
                 memberId
         );
 
-        return new ResponseEntity<>(PostIdDto.of(postId), HttpStatus.CREATED);
+        return new ResponseEntity<>(PostIdDto.from(postId), HttpStatus.CREATED);
     }
 
     @PostMapping("/{postId}/comments")
@@ -121,7 +121,7 @@ public class PostController {
                 memberId
         );
 
-        return ResponseEntity.ok(PostIdDto.of(updatedPostId));
+        return ResponseEntity.ok(PostIdDto.from(updatedPostId));
     }
 
     @PatchMapping("/{postId}/comments/{commentId}")

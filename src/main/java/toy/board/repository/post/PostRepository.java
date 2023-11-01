@@ -43,4 +43,20 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostQueryRepo
     )
     @Override
     Page<Post> findAll(final Pageable pageable);
+
+    /**
+     * WriterId가 memberId와 같은 Post를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile을 fetch join한다.
+     *
+     * @param writerId writerId가 일치하는 Post들을 반환한다.
+     * @param pageable 페이징 정보
+     */
+    @Query(value = """
+            SELECT p FROM Post p 
+            LEFT JOIN FETCH p.writer AS w 
+            LEFT JOIN FETCH w.profile
+            WHERE w.id = :writerId
+            """,
+            countQuery = "SELECT count(p) FROM Post p WHERE p.writer.id = :writerId"
+    )
+    Page<Post> findAllByWriterId(@Param("writerId") final Long writerId, final Pageable pageable);
 }

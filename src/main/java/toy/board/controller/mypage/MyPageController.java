@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -48,7 +49,12 @@ public class MyPageController {
     @GetMapping("/posts")
     @Transactional(readOnly = true)
     public ResponseEntity<Page<PostDto>> getPosts(
-            @PageableDefault(size = 5, page = 0, sort = "createdDate") final Pageable pageable,
+            @PageableDefault(
+                    size = 5,
+                    page = 0,
+                    sort = "createdDate",
+                    direction = Sort.Direction.DESC
+            ) final Pageable pageable,
             final HttpServletRequest request) {
 
         Long memberId = getMemberIdFrom(request);
@@ -61,7 +67,12 @@ public class MyPageController {
     @GetMapping("/comments")
     @Transactional(readOnly = true)
     public ResponseEntity<Page<CommentDto>> getComments(
-            @PageableDefault(size = 5, page = 0, sort = "createdDate") final Pageable pageable,
+            @PageableDefault(
+                    size = 5,
+                    page = 0,
+                    sort = "createdDate",
+                    direction = Sort.Direction.DESC
+            ) final Pageable pageable,
             final HttpServletRequest request) {
 
         Long memberId = getMemberIdFrom(request);

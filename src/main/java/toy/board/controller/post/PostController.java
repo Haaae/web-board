@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +48,11 @@ public class PostController {
     @GetMapping
     @Transactional(readOnly = true)
     public ResponseEntity<Page<PostDto>> getPosts(
-            @PageableDefault(size = 5, page = 0, sort = "createdDate")
+            @PageableDefault(
+                    size = 5,
+                    page = 0,
+                    sort = "createdDate",
+                    direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         Page<Post> page = postRepository.findAll(pageable);

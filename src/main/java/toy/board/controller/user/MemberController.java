@@ -72,6 +72,8 @@ public class MemberController {
 
         memberService.withdrawal(loginMemberId, withdrawalRequest.password());
 
+        session.invalidate();
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

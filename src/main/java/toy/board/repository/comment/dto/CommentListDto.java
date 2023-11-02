@@ -34,14 +34,11 @@ public record CommentListDto(
 
 
     public int countTotalCommentNum() {
-        long countCommentType = countCommentType();
-        AtomicInteger countTotal = plusReplyTypeCount(countCommentType);
-
-        return countTotal.get();
+        return commentDtos.size() + calculateRepliesCount();
     }
 
-    private AtomicInteger plusReplyTypeCount(long countCommentType) {
-        AtomicInteger countTotal = new AtomicInteger((int) countCommentType);
+    private int calculateRepliesCount() {
+        AtomicInteger countTotal = new AtomicInteger();
         commentDtos.stream()
                 .filter(CommentDto::isCommentType)
                 .forEach(c ->
@@ -50,7 +47,7 @@ public record CommentListDto(
                                         .countTotalCommentNum()
                         )
                 );
-        return countTotal;
+        return countTotal.get();
     }
 
     private long countCommentType() {

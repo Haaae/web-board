@@ -11,7 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import toy.board.constant.SessionConst;
 import toy.board.controller.user.dto.RolePromotionDto;
-import toy.board.controller.user.dto.request.*;
+import toy.board.controller.user.dto.request.EmailVerificationRequest;
+import toy.board.controller.user.dto.request.JoinRequest;
+import toy.board.controller.user.dto.request.LoginRequest;
+import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
 import toy.board.controller.user.dto.response.EmailVerificationResponse;
 import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.controller.user.dto.response.JoinResponse;
@@ -59,7 +62,7 @@ public class MemberController {
 
     @DeleteMapping
     public ResponseEntity withdrawal(
-            @RequestBody @Valid final WithdrawalRequest withdrawalRequest,
+//            @RequestBody @Valid final WithdrawalRequest withdrawalRequest,
             final HttpServletRequest request
     ) {
 
@@ -70,7 +73,7 @@ public class MemberController {
                 SessionConst.LOGIN_MEMBER
         );
 
-        memberService.withdrawal(loginMemberId, withdrawalRequest.password());
+        memberService.withdrawal(loginMemberId);
 
         session.invalidate();
 

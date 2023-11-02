@@ -1,9 +1,5 @@
 package toy.board.service.member;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +14,12 @@ import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
-import toy.board.service.redis.RedisService;
 import toy.board.service.mail.MailService;
+import toy.board.service.redis.RedisService;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 
 @Transactional(readOnly = true)
 @Service
@@ -74,10 +74,9 @@ public class MemberService {
     }
 
     @Transactional
-    public void withdrawal(final Long loginMemberId, final String password) {
+    public void withdrawal(final Long loginMemberId) {
         Member findMember = findMember(loginMemberId);
 
-        checkPassword(password, findMember.getPassword());
         findMember.changeAllPostAndCommentWriterToNull();
 
         memberRepository.deleteById(loginMemberId);

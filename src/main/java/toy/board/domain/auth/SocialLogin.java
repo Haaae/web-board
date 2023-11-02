@@ -1,12 +1,16 @@
 package toy.board.domain.auth;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.base.BaseEntity;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class SocialLogin extends BaseEntity {
 
     public static final int EXTERNAL_ID_LENGTH = 64;

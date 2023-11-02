@@ -3,7 +3,10 @@ package toy.board.domain.post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
@@ -15,7 +18,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Comment extends BaseDeleteEntity {
 

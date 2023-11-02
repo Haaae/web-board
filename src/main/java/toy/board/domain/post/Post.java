@@ -86,14 +86,6 @@ public class Post extends BaseEntity {
         return this.hits++;
     }
 
-    public Long getWriterId() {
-        return this.writer.getId();
-    }
-
-    public String getWriterNickname() {
-        return this.writer.getNickname();
-    }
-
     /**
      * Post와 Member의 양방향 매핑을 위한 메서드.
      *
@@ -110,5 +102,19 @@ public class Post extends BaseEntity {
 
     public int countComment() {
         return this.comments.size();
+    }
+
+    public Long getWriterId() {
+        if (this.writer == null) {
+            return null;
+        }
+        return this.writer.getId();
+    }
+
+    public String getWriterNickname() {
+        if (this.writer == null) {
+            return null;
+        }
+        return this.writer.getNickname();
     }
 }

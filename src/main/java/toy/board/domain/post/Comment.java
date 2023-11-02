@@ -91,36 +91,6 @@ public class Comment extends BaseDeleteEntity {
         post.addComment(this);
     }
 
-    public void update(@NotBlank final String content, @NotNull final Member writer) {
-        validateRight(writer);
-        this.content = content;
-    }
-
-    public void validateRight(final Member writer) {
-        if (writer.hasDeleteRight()) {
-            return;
-        }
-
-        if (!writer.equals(this.writer)) {
-            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
-        }
-    }
-
-    public Long getWriterId() {
-        return this.writer.getId();
-    }
-
-    public String getWriterNickname() {
-        return this.writer.getNickname();
-    }
-
-    public void applyWriterWithdrawal() {
-        this.writer = null;
-    }
-
-    public boolean isCommentType() {
-        return this.type == CommentType.COMMENT;
-    }
 
     private void leaveReply(final Comment parent) {
         this.parent = parent;
@@ -150,5 +120,43 @@ public class Comment extends BaseDeleteEntity {
 
     private boolean isValidComment(final Comment parent) {
         return this.type == CommentType.COMMENT && parent == null;
+    }
+
+    public void update(@NotBlank final String content, @NotNull final Member writer) {
+        validateRight(writer);
+        this.content = content;
+    }
+
+    public void validateRight(final Member writer) {
+        if (writer.hasDeleteRight()) {
+            return;
+        }
+
+        if (!writer.equals(this.writer)) {
+            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
+        }
+    }
+
+    public void applyWriterWithdrawal() {
+        this.writer = null;
+    }
+
+    public boolean isCommentType() {
+        return this.type == CommentType.COMMENT;
+    }
+
+
+    public Long getWriterId() {
+        if (this.writer == null) {
+            return null;
+        }
+        return this.writer.getId();
+    }
+
+    public String getWriterNickname() {
+        if (this.writer == null) {
+            return null;
+        }
+        return this.writer.getNickname();
     }
 }

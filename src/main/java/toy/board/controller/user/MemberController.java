@@ -3,33 +3,25 @@ package toy.board.controller.user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import toy.board.constant.SessionConst;
 import toy.board.controller.user.dto.RolePromotionDto;
+import toy.board.controller.user.dto.request.*;
 import toy.board.controller.user.dto.response.EmailVerificationResponse;
-import toy.board.controller.user.dto.request.EmailVerificationRequest;
-import toy.board.controller.user.dto.request.JoinRequest;
-import toy.board.controller.user.dto.request.LoginRequest;
-import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
-import toy.board.controller.user.dto.request.WithdrawalRequest;
+import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.controller.user.dto.response.JoinResponse;
 import toy.board.controller.user.dto.response.LoginResponse;
-import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.domain.user.Member;
-import toy.board.exception.BusinessException;
-import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.member.MemberService;
-import toy.board.constant.SessionConst;
 
 import java.util.Objects;
-
-// TODO: 2023-08-25 dto가 서비스에서 만들어져서 넘어오도록 한다. 모든 데이터의 전달에 dto를 사용할 필요는 없다.
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
@@ -75,12 +67,12 @@ public class MemberController {
         HttpSession session = request.getSession(false);
 
         // 세션에서 사용자 정보 가져오기. 세션이 null이면 커스텀 예외 throws
-            Long loginMemberId = (Long) Objects.requireNonNull(session)
-                    .getAttribute(SessionConst.LOGIN_MEMBER);
+        Long loginMemberId = (Long) Objects.requireNonNull(session)
+                .getAttribute(SessionConst.LOGIN_MEMBER);
 
-            memberService.withdrawal(loginMemberId, withdrawalRequest.password());
+        memberService.withdrawal(loginMemberId, withdrawalRequest.password());
 
-            return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /*  회원가입시 필요한 정보
@@ -114,7 +106,7 @@ public class MemberController {
 
         return ResponseEntity.ok(
                 new ExistResponse(member.isPresent())
-    );
+        );
     }
 
     @PostMapping("/emails/verification-requests")

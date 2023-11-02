@@ -20,7 +20,6 @@ import toy.board.domain.user.Member;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.member.MemberService;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -54,7 +53,7 @@ public class MemberController {
     @PostMapping("/logout")
     public ResponseEntity logout(final HttpServletRequest request) {
 
-        Objects.requireNonNull(request.getSession(false)).invalidate();
+        request.getSession(false).invalidate();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -67,8 +66,9 @@ public class MemberController {
         HttpSession session = request.getSession(false);
 
         // 세션에서 사용자 정보 가져오기. 세션이 null이면 커스텀 예외 throws
-        Long loginMemberId = (Long) Objects.requireNonNull(session)
-                .getAttribute(SessionConst.LOGIN_MEMBER);
+        Long loginMemberId = (Long) session.getAttribute(
+                SessionConst.LOGIN_MEMBER
+        );
 
         memberService.withdrawal(loginMemberId, withdrawalRequest.password());
 

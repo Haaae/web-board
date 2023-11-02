@@ -56,12 +56,6 @@ public class PostController {
         );
     }
 
-//    @GetMapping("/comments")
-//    public ResponseEntity<List<CommentDto>> getComments() {
-//        List<CommentDto> comments = commentService.getComments();
-//        return ResponseEntity.ok(comments);
-//    } === 필요한가? ===
-
     @GetMapping("/{postId}")
     public ResponseEntity<PostDetailDto> getPost(@PathVariable("postId") final Long postId) {
         PostDetailDto postDetail = postService.getPostDetail(postId);
@@ -165,22 +159,4 @@ public class PostController {
 
         return new ResponseEntity(HttpStatus.OK);
     }
-
-/*
-myposts, mycomment 같이 mypage에 필요한 데이터는 MyController에서 한 번에 전달하는 것이 좋지 않을까?
- */
-//    @GetMapping("/myposts")
-//    public ResponseEntity getMyPosts(HttpServletRequest request) {
-//        HttpSession session = request.getSession(false);
-//        Object memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-//        postService.find
-//
-//
-//        return null;
-//    }
-
-//    @GetMapping("/mycomments")
-//    public ResponseEntity getMyComments() {
-//        return null;
-//    }
 }

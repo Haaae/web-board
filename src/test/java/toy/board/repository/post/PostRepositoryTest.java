@@ -21,11 +21,13 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
+import toy.board.service.post.dto.PostDto;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static toy.board.domain.post.QComment.comment;
 import static toy.board.domain.post.QPost.post;
 
@@ -123,6 +125,9 @@ class PostRepositoryTest {
         em.persist(post);
         Long postId = post.getId();
 
+        em.flush();
+        em.clear();
+
         //when
         Optional<Post> findPost = postRepository.findPostById(postId);
 
@@ -132,6 +137,41 @@ class PostRepositoryTest {
         System.out.println("findPost.get().getWriter() = " + findPost.get().getWriter());
         System.out.println(
                 "findPost.get().getWriterNickname() = " + findPost.get().getWriterNickname());
+    }
+
+    @DisplayName("탈퇴한 회원의 post를 정상적으로 가져온다.")
+    @Test
+    public void 정상테스트_탈퇴한_회원_게시물() throws Exception {
+        //given
+        Post post = PostTest.create("random", "random");
+        Comment comment = new Comment(post, post.getWriter(), "content", CommentType.COMMENT, null);
+
+        em.persist(post.getWriter());
+        em.persist(post);
+        em.persist(comment);
+        Long postId = post.getId();
+
+
+        post.getWriter().changeAllPostAndCommentWriterToNull();
+        em.flush();
+        em.clear();
+
+        //when
+        Optional<Post> findPost = postRepository.findPostById(postId);
+
+        //then. 쿼리가 발생하지 않음 확인 완료
+        assertThat(findPost.isPresent()).isTrue();
+        Post findPostGet = findPost.get();
+
+        assertThat(findPostGet.getComments()).isNotNull();
+        System.out.println("findPost.get().getComments().get(0) = " + findPostGet.getComments().get(0));
+
+        assertThatNoException()
+                .isThrownBy(() ->
+                        PostDto.of(findPostGet)
+                );
+        PostDto postDto = PostDto.of(findPostGet);
+        System.out.println("postDto = " + postDto);
     }
 
     @DisplayName("fetch join test: Post만 반환값으로 받고 엔티티 그래프를 이용할 수 있도록 한다.")

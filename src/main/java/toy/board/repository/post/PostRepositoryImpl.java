@@ -68,7 +68,7 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport
                         .then(false)
                         .otherwise(true)
                         .as("isModified"),
-                comment.count().as("commentNum")
+                comment.count().as("commentCount")
         );
     }
 }

@@ -33,7 +33,7 @@ public record CommentListDto(
     }
 
 
-    public int countTotalCommentNum() {
+    public int countTotalComment() {
         return commentDtos.size() + calculateRepliesCount();
     }
 
@@ -44,7 +44,7 @@ public record CommentListDto(
                 .forEach(c ->
                         countTotal.addAndGet(
                                 c.replies()
-                                        .countTotalCommentNum()
+                                        .countTotalComment()
                         )
                 );
         return countTotal.get();

@@ -100,7 +100,7 @@ public class Post extends BaseEntity {
         this.writer = null;
     }
 
-    public int countComment() {
+    public int commentCount() {
         return this.comments.size();
     }
 

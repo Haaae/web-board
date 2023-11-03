@@ -13,7 +13,7 @@ public record PostDto(
         String content,
         Long hits,
         LocalDateTime createdDate,
-        boolean isModified,
+        boolean isEdited,
         int commentCount
 ) {
     public static PostDto of(final Post post) {
@@ -25,7 +25,7 @@ public record PostDto(
                 post.getContent(),
                 post.getHits(),
                 post.getCreatedDate(),
-                post.isModified(),
+                post.isEdited(),
                 post.commentCount()
         );
     }
@@ -39,7 +39,7 @@ public record PostDto(
                 post.getContent(),
                 post.getHits(),
                 post.getCreatedDate(),
-                post.isModified(),
+                post.isEdited(),
                 commentListDto.countTotalComment()
         );
     }

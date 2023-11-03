@@ -43,6 +43,9 @@ public class Comment extends BaseDeleteEntity {
     @JoinColumn(name = "writer")
     private Member writer;
 
+    @Column(name = "isEdited", nullable = false)
+    private boolean isEdited;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
 
@@ -63,6 +66,7 @@ public class Comment extends BaseDeleteEntity {
         addCommentTo(writer);
         this.content = content;
         this.type = type;
+        this.isEdited = false;
 
         validateType(parent);
 
@@ -126,6 +130,7 @@ public class Comment extends BaseDeleteEntity {
     public void update(@NotBlank final String content, @NotNull final Member writer) {
         validateRight(writer);
         this.content = content;
+        this.isEdited = true;
     }
 
     public void validateRight(final Member writer) {

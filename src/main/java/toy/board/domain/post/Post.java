@@ -39,6 +39,9 @@ public class Post extends BaseEntity {
     @Column(name = "hits", nullable = false)
     private Long hits;
 
+    @Column(name = "isEdited", nullable = false)
+    private boolean isEdited;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
     private Member writer;
@@ -57,6 +60,7 @@ public class Post extends BaseEntity {
         this.title = title;
         this.content = content;
         this.hits = 0L;
+        this.isEdited = false;
     }
 
     /**
@@ -71,6 +75,7 @@ public class Post extends BaseEntity {
     public void update(@NotBlank final String content, @NotNull final Member writer) {
         validateRight(writer);
         this.content = content;
+        this.isEdited = true;
     }
 
     public void validateRight(final Member writer) {

@@ -13,7 +13,7 @@ public record CommentDto(
         String content,
         CommentType type,
         boolean isDeleted,
-        boolean isModified,
+        boolean isEdited,
         LocalDateTime createdDate,
         CommentListDto replies
 ) {
@@ -32,7 +32,7 @@ public record CommentDto(
                 comment.getContent(),
                 comment.getType(),
                 comment.isDeleted(),
-                comment.isModified(),
+                comment.isEdited(),
                 comment.getCreatedDate(),
                 new CommentListDto(
                         convertRepliesToCommentDtoCollection(comment.getReplies())
@@ -60,7 +60,7 @@ public record CommentDto(
                 comment.getContent(),
                 comment.getType(),
                 comment.isDeleted(),
-                comment.isModified(),
+                comment.isEdited(),
                 comment.getCreatedDate(),
                 null
         );

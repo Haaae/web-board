@@ -40,7 +40,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
             LEFT JOIN FETCH w.profile 
             WHERE w.id = :writerId
             """,
-            countQuery = "SELECT count(c) FROM Comment c WHERE c.writer.id = :memberId"
+            countQuery = "SELECT count(c) FROM Comment c WHERE c.writer.id = :writerId"
     )
     Page<Comment> findAllByWriterId(@Param("writerId") Long writerId, Pageable pageable);
 

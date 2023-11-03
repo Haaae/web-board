@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
+import toy.board.controller.mypage.dto.MyCommentDto;
+import toy.board.controller.mypage.dto.MyInfoDto;
 import toy.board.controller.mypage.dto.MyPageDto;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
@@ -20,10 +22,8 @@ import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
-import toy.board.repository.comment.dto.CommentDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
-import toy.board.service.post.dto.PostDto;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,19 +36,19 @@ public class MyPageController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<MyPageDto> load(final HttpServletRequest request) {
+    public ResponseEntity<MyInfoDto> load(final HttpServletRequest request) {
         Long memberId = getMemberIdFrom(request);
 
         Member member = getMemberWithProfile(memberId);
 
         return ResponseEntity.ok(
-                MyPageDto.of(member)
+                MyInfoDto.of(member)
         );
     }
 
     @GetMapping("/posts")
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<PostDto>> getPosts(
+    public ResponseEntity<Page<MyPageDto>> getPosts(
             @PageableDefault(
                     size = 5,
                     page = 0,
@@ -60,13 +60,13 @@ public class MyPageController {
         Long memberId = getMemberIdFrom(request);
         Page<Post> page = postRepository.findAllByWriterId(memberId, pageable);
         return ResponseEntity.ok(
-                page.map(PostDto::of)
+                page.map(MyPageDto::of)
         );
     }
 
     @GetMapping("/comments")
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<CommentDto>> getComments(
+    public ResponseEntity<Page<MyCommentDto>> getComments(
             @PageableDefault(
                     size = 5,
                     page = 0,
@@ -79,7 +79,7 @@ public class MyPageController {
         Page<Comment> page = commentRepository.findAllByWriterId(memberId, pageable);
 
         return ResponseEntity.ok(
-                page.map(CommentDto::createReplyTypeFrom)
+                page.map(MyCommentDto::of)
         );
 
     }

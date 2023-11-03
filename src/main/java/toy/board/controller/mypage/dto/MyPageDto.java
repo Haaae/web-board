@@ -1,19 +1,28 @@
 package toy.board.controller.mypage.dto;
 
-import toy.board.domain.user.Member;
+import toy.board.domain.post.Post;
+
+import java.time.LocalDateTime;
 
 public record MyPageDto(
-        String username,
-        String nickname,
-        long postCount,
-        long commentCount
+        Long postId,
+        String title,
+        String content,
+        String writer,
+        Long hits,
+        LocalDateTime createdDate,
+        int commentCount
 ) {
-    public static MyPageDto of(Member member) {
+
+    public static MyPageDto of(Post post) {
         return new MyPageDto(
-                member.getUsername(),
-                member.getNickname(),
-                member.getPostCount(),
-                member.getCommentCount()
+                post.getId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getWriterNickname(),
+                post.getHits(),
+                post.getCreatedDate(),
+                post.commentCount()
         );
     }
 }

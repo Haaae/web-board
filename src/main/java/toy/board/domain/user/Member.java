@@ -13,6 +13,7 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -135,6 +136,14 @@ public class Member extends BaseEntity {
         if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
             throw new BusinessException(ExceptionCode.ROLE_NOT_EXISTS);
         }
+    }
+
+    public List<Post> getPosts() {
+        return Collections.unmodifiableList(this.posts);
+    }
+
+    public List<Comment> getComments() {
+        return Collections.unmodifiableList(this.comments);
     }
 
     public String getNickname() {

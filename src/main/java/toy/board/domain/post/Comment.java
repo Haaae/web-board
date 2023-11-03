@@ -13,6 +13,7 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -145,6 +146,11 @@ public class Comment extends BaseDeleteEntity {
         return this.type == CommentType.COMMENT;
     }
 
+    public List<Comment> getReplies() {
+        return Collections.unmodifiableList(
+                this.replies
+        );
+    }
 
     public Long getWriterId() {
         if (this.writer == null) {

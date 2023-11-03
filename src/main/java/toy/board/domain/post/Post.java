@@ -13,6 +13,7 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -44,7 +45,7 @@ public class Post extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
     @ToString.Exclude
-    private List<Comment> comments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
 
     public Post(
             @NotNull final Member writer,
@@ -102,6 +103,12 @@ public class Post extends BaseEntity {
 
     public int commentCount() {
         return this.comments.size();
+    }
+
+    public List<Comment> getComments() {
+        return Collections.unmodifiableList(
+                this.comments
+        );
     }
 
     public Long getWriterId() {

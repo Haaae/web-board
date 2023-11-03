@@ -29,16 +29,17 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
     Optional<Comment> findCommentById(@Param("commentId") final Long id);
 
     /**
-     * WriterId가 memberId와 같은 Comment를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile을 fetch join한다.
+     * WriterId가 memberId와 같은 Comment를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile, Post를 fetch join한다.
      *
      * @param writerId writerId가 일치하는 Post들을 반환한다.
      * @param pageable 페이징 정보
      */
     @Query(value = """
             SELECT c FROM Comment c 
+            LEFT JOIN FETCH c.post 
             LEFT JOIN FETCH c.writer AS w 
             LEFT JOIN FETCH w.profile 
-            WHERE w.id = :writerId
+            WHERE w.id = :writerId AND NOT c.isDeleted
             """,
             countQuery = "SELECT count(c) FROM Comment c WHERE c.writer.id = :writerId"
     )

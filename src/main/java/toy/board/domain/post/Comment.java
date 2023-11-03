@@ -170,4 +170,8 @@ public class Comment extends BaseDeleteEntity {
         }
         return this.writer.getNickname();
     }
+
+    public Long getPostId() {
+        return this.post.getId();
+    }
 }

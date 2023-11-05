@@ -36,20 +36,21 @@ public class PostService {
     /**
      * PostDetail를 반환하는 메서드. Comment가 Comment 컬렉션을 내부적으로 가지고 있어
      * 엔티티 그래프를 통해 재귀적으로 프로퍼티에 접근하면 불필요한 쿼리가 발생하기 때문에
-     * 개별적인 쿼리를 날려 Post와 연관된 Comment를 가져온다.
+     * Post.Comment에 접근할 때는 Post.Comment.replies.replies에 접근하지 않도록 한다.
+     * 때문에 재귀적인 방식은 사용하지 않는다.
      *
      * @param postId
      * @return
      */
     @Transactional
     public PostDetailDto getPostDetail(final Long postId) {
-        // Post, Post.writer, Post.writer.profile만 fetch join으로 가져옴
-        Post post = findPost(postId);
+        // Post, Post.writer, Post.writer.profile, Profile.comments를 fetch join으로 가져옴
+        Post post = findPostWithFetchComments(postId);
 
         post.increaseHits();
 
-        // CommentListDto.of(post)로 CommentListDto를 가져오면 Comment 구조 상 Comment.replies의 szie만큼의 쿼리가 발생한다.
-        CommentListDto commentListDto = commentRepository.getCommentListDtoByPostId(postId);
+        CommentListDto commentListDto = CommentListDto.of(post);
+
         PostDto postDto = PostDto.of(post, commentListDto);
 
         return PostDetailDto.of(postDto, commentListDto);
@@ -85,11 +86,22 @@ public class PostService {
 
     private Member findMember(final Long memberId) {
         return memberRepository.findMemberById(memberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)
+                );
     }
 
     private Post findPost(final Long postId) {
         return postRepository.findPostById(postId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.POST_NOT_FOUND)
+                );
+    }
+
+    private Post findPostWithFetchComments(Long postId) {
+        return postRepository.findPostByIdWithFetchComments(postId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.POST_NOT_FOUND)
+                );
     }
 }

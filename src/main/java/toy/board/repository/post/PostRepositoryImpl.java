@@ -13,12 +13,25 @@ import java.util.Optional;
 
 import static toy.board.domain.post.QComment.comment;
 import static toy.board.domain.post.QPost.post;
+import static toy.board.domain.user.QMember.member;
 
 public class PostRepositoryImpl extends Querydsl4RepositorySupport
         implements PostQueryRepository {
 
     public PostRepositoryImpl() {
         super(Post.class);
+    }
+
+    @Override
+    public Optional<Post> findPostByIdWithFetchComments(Long postId) {
+        return Optional.ofNullable(
+                selectFrom(post)
+                        .leftJoin(post.comments).fetchJoin()
+                        .leftJoin(post.writer, member).fetchJoin()
+                        .leftJoin(member.profile).fetchJoin()
+                        .where(post.id.eq(postId))
+                        .fetchOne()
+        );
     }
 
     // Post - Comment를 양방향 매핑함에 따라 더 이상 사용하지 않으나 예시를 위해 남겨둠

@@ -157,7 +157,7 @@ class PostRepositoryTest {
         em.clear();
 
         //when
-        Optional<Post> findPost = postRepository.findPostById(postId);
+        Optional<Post> findPost = postRepository.findPostByIdWithFetchComments(postId);
 
         //then. 쿼리가 발생하지 않음 확인 완료
         assertThat(findPost.isPresent()).isTrue();

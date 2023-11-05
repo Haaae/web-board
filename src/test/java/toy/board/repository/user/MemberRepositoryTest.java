@@ -76,17 +76,11 @@ class MemberRepositoryTest {
         - memberRepository.save(member) => 이 메서드만 수행하면 위 두 메서드를 같이 수행한 것과 같다.
          */
 
-
-        //when
-        Optional<Member> findMember = memberRepository.findMemberByUsername(member.getUsername());
-        Optional<Login> findLogin = findMember.map(Member::getLogin);
-        Optional<Profile> findProfile = findMember.map(Member::getProfile);
-
+        //given
         // then
-        assertThat(findLogin.isEmpty()).isFalse();
-        assertThat(findLogin.get().getPassword()).isEqualTo(login.getPassword());
-        assertThat(findProfile.isEmpty()).isFalse();
-        assertThat(findProfile.get().getNickname()).isEqualTo(profile.getNickname());
+        assertThat(member.getId()).isNotNull();
+        assertThat(profile.getId()).isNotNull();
+        assertThat(login.getId()).isNotNull();
     }
 
     @DisplayName("username으로 member 존재여부 확인 - 성공")

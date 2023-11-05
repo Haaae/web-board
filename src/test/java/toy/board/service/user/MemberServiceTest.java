@@ -18,12 +18,11 @@ import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
-
-
-import java.util.Optional;
 import toy.board.service.member.MemberService;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
 
@@ -56,11 +55,18 @@ class MemberServiceTest {
 
         member.changeLogin(login);
         memberRepository.save(member);
+
         given(memberRepository.save(any())).willReturn(member);
-        given(memberRepository.existsByUsername(eq(username))).willReturn(false);
-        given(memberRepository.existsByUsername(eq("wrong input"))).willReturn(true);
-        given(memberRepository.existsByNickname(eq(nickname))).willReturn(false);
-        given(memberRepository.existsByNickname(eq("wrong input"))).willReturn(true);
+
+        given(memberRepository.existsByUsername(eq(username)))
+                .willReturn(false);
+        given(memberRepository.existsByUsername(eq("wrong input")))
+                .willReturn(true);
+
+        given(memberRepository.existsByNickname(eq(nickname)))
+                .willReturn(false);
+        given(memberRepository.existsByNickname(eq("wrong input")))
+                .willReturn(true);
 
         given(passwordEncoder.encode(anyString())).willReturn(password);
     }
@@ -69,7 +75,7 @@ class MemberServiceTest {
     @Test
     public void login_member_no_exist_test() throws Exception {
         Optional<Member> findMember = Optional.ofNullable(null);
-        doReturn(findMember).when(memberRepository).findMemberByUsername(anyString());
+        doReturn(findMember).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
 
         //then
         assertThrows(BusinessException.class,
@@ -81,8 +87,8 @@ class MemberServiceTest {
     public void login_not_match_member_login_type() throws Exception {
         Member findMember = createMember(LoginType.SOCIAL_LOGIN);
 
-//        doReturn(Optional.createComment(findMember)).when(memberRepository).findMemberByUsername(anyString());
-        given(memberRepository.findMemberByUsername(anyString()))
+//        doReturn(Optional.createComment(findMember)).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
+        given(memberRepository.findMemberByUsernameWithFetchJoinLogin(anyString()))
                 .willReturn(Optional.of(findMember));
 
         //then
@@ -91,9 +97,9 @@ class MemberServiceTest {
 
     @DisplayName("패스워드 불일치 시 throw exception")
     @Test
-    public void not_match_password() throws  Exception {
+    public void not_match_password() throws Exception {
         Member findMember = createMember(LoginType.LOCAL_LOGIN);
-        doReturn(Optional.of(findMember)).when(memberRepository).findMemberByUsername(anyString());
+        doReturn(Optional.of(findMember)).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
 
         //when
         String wrongPassword = "not match password";
@@ -116,7 +122,7 @@ class MemberServiceTest {
 
     @DisplayName("이메일과 닉네임이 모두 기존에 존재하지 않음: 통과")
     @Test
-    public void MemberServiceTest() throws  Exception {
+    public void MemberServiceTest() throws Exception {
         //given
 
         //when
@@ -124,10 +130,10 @@ class MemberServiceTest {
         //then
         assertThat(result.getUsername()).isEqualTo(member.getUsername());
     }
-    
+
     @DisplayName("이메일이 기존 이메일과 중복일 경우: 예외발생")
     @Test
-    public void join_fail_cause_duplicate_username() throws  Exception {
+    public void join_fail_cause_duplicate_username() throws Exception {
         //given
         String wrongInput = "wrong input";
         //when
@@ -138,7 +144,7 @@ class MemberServiceTest {
 
     @DisplayName("닉네임이 기존 닉네임과 중복일 경우: 예외발생")
     @Test
-    public void join_fail_cause_duplicate_nickname() throws  Exception {
+    public void join_fail_cause_duplicate_nickname() throws Exception {
         //given
         String wrongInput = "wrong input";
 

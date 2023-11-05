@@ -58,7 +58,7 @@ public class MyPageController {
             final HttpServletRequest request) {
 
         Long memberId = getMemberIdFrom(request);
-        Page<Post> page = postRepository.findAllByWriterId(memberId, pageable);
+        Page<Post> page = postRepository.findAllByWriterIdFetchJoinWriterAndProfile(memberId, pageable);
         return ResponseEntity.ok(
                 page.map(MyPageDto::of)
         );

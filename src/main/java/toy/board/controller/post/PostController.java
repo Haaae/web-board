@@ -55,7 +55,7 @@ public class PostController {
                     direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<Post> page = postRepository.findAll(pageable);
+        Page<Post> page = postRepository.findAllWithFetchJoinWriterAndProfile(pageable);
         return ResponseEntity.ok(
                 page.map(PostDto::of)
         );

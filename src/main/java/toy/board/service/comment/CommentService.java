@@ -63,7 +63,7 @@ public class CommentService {
     }
 
     private Post findPost(final Long postId) {
-        return postRepository.findPostById(postId)
+        return postRepository.findPostWithFetchJoinWriterAndProfile(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
     }
 

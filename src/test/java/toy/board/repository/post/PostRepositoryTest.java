@@ -104,7 +104,7 @@ class PostRepositoryTest {
 
         PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
         //when
-        Page<Post> page = postRepository.findAllByWriterId(memberId, pageable);
+        Page<Post> page = postRepository.findAllByWriterIdFetchJoinWriterAndProfile(memberId, pageable);
 
         //then
         assertThat(page.getNumber()).isEqualTo(pageNum);
@@ -129,7 +129,7 @@ class PostRepositoryTest {
         em.clear();
 
         //when
-        Optional<Post> findPost = postRepository.findPostById(postId);
+        Optional<Post> findPost = postRepository.findPostWithFetchJoinWriterAndProfile(postId);
 
         //then. 쿼리가 발생하지 않음 확인 완료
         assertThat(findPost.isPresent()).isTrue();
@@ -157,7 +157,7 @@ class PostRepositoryTest {
         em.clear();
 
         //when
-        Optional<Post> findPost = postRepository.findPostByIdWithFetchComments(postId);
+        Optional<Post> findPost = postRepository.findPostWithFetchJoinWriterAndProfileAndComments(postId);
 
         //then. 쿼리가 발생하지 않음 확인 완료
         assertThat(findPost.isPresent()).isTrue();
@@ -211,7 +211,7 @@ class PostRepositoryTest {
         PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
         //when
 
-        Page<Post> page = postRepository.findAll(pageable);
+        Page<Post> page = postRepository.findAllWithFetchJoinWriterAndProfile(pageable);
 
         // for문을 돌며 Member 와 Profile에 접근해도 추가적인 쿼리가 발생하지 않는다.
         for (Post post : page.getContent()) {

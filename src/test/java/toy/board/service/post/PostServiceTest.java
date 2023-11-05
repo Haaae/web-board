@@ -15,12 +15,9 @@ import toy.board.domain.user.MemberTest;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.repository.comment.CommentRepository;
-import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,8 +35,6 @@ class PostServiceTest {
     @Mock
     private PostRepository postRepository;
     @Mock
-    private CommentRepository commentRepository;
-    @Mock
     private MemberRepository memberRepository;
 
     Long invalidPostId = 1242L;
@@ -56,11 +51,16 @@ class PostServiceTest {
         Member member = MemberTest.create("username", "emankcin", UserRole.USER);
         Member invalidMember = MemberTest.create("other", "sdf", UserRole.USER);
         Post post = new Post(member, title, content);
-        CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 
-        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(invalidPostId))).willReturn(Optional.empty());
-        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(postId))).willReturn(Optional.of(post));
-        given(commentRepository.getCommentListDtoByPostId(postId)).willReturn(commentListDto);
+        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(invalidPostId)))
+                .willReturn(Optional.empty());
+        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(postId)))
+                .willReturn(Optional.of(post));
+
+        given(postRepository.findPostWithFetchJoinWriterAndProfileAndComments(eq(invalidPostId)))
+                .willReturn(Optional.empty());
+        given(postRepository.findPostWithFetchJoinWriterAndProfileAndComments(eq(postId)))
+                .willReturn(Optional.of(post));
 
         given(memberRepository.findMemberById(eq(notExistMemberId))).willReturn(Optional.empty());
         given(memberRepository.findMemberById(eq(invalidMemberId))).willReturn(

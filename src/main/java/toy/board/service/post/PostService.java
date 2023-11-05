@@ -85,7 +85,7 @@ public class PostService {
 
 
     private Member findMember(final Long memberId) {
-        return memberRepository.findMemberById(memberId)
+        return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)
                 );

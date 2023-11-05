@@ -57,7 +57,7 @@ class MemberRepositoryTest {
         //given
 
         //when
-        Optional<Member> findMember = memberRepository.findMemberById(member.getId());
+        Optional<Member> findMember = memberRepository.findMemberWithFetchJoinProfile(member.getId());
 
         //then
         assertThat(findMember.isPresent()).isTrue();

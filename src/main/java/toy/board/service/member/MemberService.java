@@ -137,7 +137,7 @@ public class MemberService {
     }
 
     private Member findMember(Long memberId) {
-        return memberRepository.findMemberById(memberId)
+        return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 

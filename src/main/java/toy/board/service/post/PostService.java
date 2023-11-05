@@ -98,7 +98,7 @@ public class PostService {
                 );
     }
 
-    private Post findPostWithFetchComments(Long postId) {
+    private Post findPostWithFetchComments(final Long postId) {
         return postRepository.findPostWithFetchJoinWriterAndProfileAndComments(postId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.POST_NOT_FOUND)

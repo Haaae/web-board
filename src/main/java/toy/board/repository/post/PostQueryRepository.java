@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface PostQueryRepository {
 
-    Optional<Post> findPostWithFetchJoinWriterAndProfileAndComments(Long postId);
+    Optional<Post> findPostWithFetchJoinWriterAndProfileAndComments(final Long postId);
 
-    Optional<Post> findPostWithFetchJoinWriterAndProfile(Long postId);
+    Optional<Post> findPostWithFetchJoinWriterAndProfile(final Long postId);
 
     Page<Post> findAllWithFetchJoinWriterAndProfile(final Pageable pageable);
 

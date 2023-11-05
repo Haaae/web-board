@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberQueryRepository {
 
-    Optional<Member> findMemberByUsername(String username);
+    Optional<Member> findMemberByUsernameWithFetchJoinLogin(String username);
 
     @Query(value = "SELECT m FROM Member m LEFT Join Fetch m.profile WHERE m.id = :memberId")
     Optional<Member> findMemberWithFetchJoinProfile(@Param("memberId") Long id);

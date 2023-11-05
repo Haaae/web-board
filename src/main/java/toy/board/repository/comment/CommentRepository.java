@@ -26,7 +26,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
             + "LEFT JOIN FETCH w.profile "
             + "WHERE c.id = :commentId"
     )
-    Optional<Comment> findCommentById(@Param("commentId") final Long id);
+    Optional<Comment> findCommentWithFetchJoinWriterAndProfile(@Param("commentId") final Long id);
 
     /**
      * WriterId가 memberId와 같은 Comment를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile, Post를 fetch join한다.
@@ -43,7 +43,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
             """,
             countQuery = "SELECT count(c) FROM Comment c WHERE c.writer.id = :writerId"
     )
-    Page<Comment> findAllByWriterId(@Param("writerId") Long writerId, Pageable pageable);
+    Page<Comment> findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(@Param("writerId") Long writerId, Pageable pageable);
 
     void deleteCommentsByPost(final Post post);
 

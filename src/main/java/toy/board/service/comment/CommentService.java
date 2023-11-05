@@ -68,7 +68,7 @@ public class CommentService {
     }
 
     private Comment findComment(final Long commentId) {
-        return commentRepository.findCommentById(commentId)
+        return commentRepository.findCommentWithFetchJoinWriterAndProfile(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
     }
 

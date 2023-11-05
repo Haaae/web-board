@@ -29,7 +29,7 @@ class CommentRepositoryTest {
     @Autowired
     private EntityManager em;
 
-    @DisplayName("findAllByWriterId() 시 삭제 상태인 Comment는 가져오지 않음")
+    @DisplayName("findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile() 시 삭제 상태인 Comment는 가져오지 않음")
     @Test
     public void 실행테스트_삭제된_댓글_제외() throws Exception {
         //given
@@ -44,7 +44,7 @@ class CommentRepositoryTest {
         PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
 
         //when
-        Page<Comment> page = commentRepository.findAllByWriterId(writerId, pageable);
+        Page<Comment> page = commentRepository.findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(writerId, pageable);
 
         //then
         assertThat(page.getSize()).isEqualTo(size);

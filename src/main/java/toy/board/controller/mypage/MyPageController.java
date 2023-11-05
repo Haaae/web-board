@@ -76,7 +76,8 @@ public class MyPageController {
             final HttpServletRequest request) {
 
         Long memberId = getMemberIdFrom(request);
-        Page<Comment> page = commentRepository.findAllByWriterId(memberId, pageable);
+        Page<Comment> page = commentRepository
+                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(memberId, pageable);
 
         return ResponseEntity.ok(
                 page.map(MyCommentDto::of)

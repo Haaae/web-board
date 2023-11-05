@@ -102,10 +102,10 @@ public class MemberController {
 
     @GetMapping("/nicknames/{nickname}/exist")
     public ResponseEntity<ExistResponse> existNickname(@PathVariable final String nickname) {
-        Optional<Member> member = memberRepository.findMemberByNickname(nickname);
+        boolean isExist = memberRepository.existsByNickname(nickname);
 
         return ResponseEntity.ok(
-                new ExistResponse(member.isPresent())
+                new ExistResponse(isExist)
         );
     }
 

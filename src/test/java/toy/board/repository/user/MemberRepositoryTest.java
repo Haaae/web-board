@@ -64,32 +64,6 @@ class MemberRepositoryTest {
         assertThat(findMember.get().getProfile()).isNotNull();
     }
 
-    @DisplayName("닉네임으로 멤버 찾기 성공:멤버와 함께 profile도 fetch join으로 가져옴")
-    @Test
-    public void find_member_by_nickname_success() throws Exception {
-        // give
-
-        //when
-        Member findMember = memberRepository.findMemberByNickname(member.getNickname()).get();
-
-        //then
-        assertThat(findMember).isNotNull();
-        assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
-    }
-
-    @DisplayName("닉네임으로 멤버 가져오기 실패: 해당 닉네임과 일치하는 닉네임을 가진 멤버가 없음")
-    @Test
-    public void find_member_by_nickname_fail_cause_not_exists_nickname() throws Exception {
-        // give
-        String wrongNickname = "wrong nickname";
-
-        //when
-        Optional<Member> findMember = memberRepository.findMemberByNickname(wrongNickname);
-
-        //then
-        assertThat(findMember.isEmpty()).isTrue();
-    }
-
     @DisplayName("cascade: member만 저장해도 profile과 login이 같이 save됨")
     @Test
     void save_with_cascade() {

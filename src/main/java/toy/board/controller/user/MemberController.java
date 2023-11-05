@@ -62,7 +62,6 @@ public class MemberController {
 
     @DeleteMapping
     public ResponseEntity withdrawal(
-//            @RequestBody @Valid final WithdrawalRequest withdrawalRequest,
             final HttpServletRequest request
     ) {
 

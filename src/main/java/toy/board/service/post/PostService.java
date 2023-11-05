@@ -51,7 +51,7 @@ public class PostService {
 
         CommentListDto commentListDto = CommentListDto.of(post);
 
-        PostDto postDto = PostDto.of(post, commentListDto);
+        PostDto postDto = PostDto.of(post);
 
         return PostDetailDto.of(postDto, commentListDto);
     }

@@ -39,7 +39,7 @@ public class MyPageController {
     public ResponseEntity<MyInfoDto> load(final HttpServletRequest request) {
         Long memberId = getMemberIdFrom(request);
 
-        Member member = getMemberWithProfile(memberId);
+        Member member = findMemberWithFetchJoinProfile(memberId);
 
         return ResponseEntity.ok(
                 MyInfoDto.of(member)
@@ -90,7 +90,7 @@ public class MyPageController {
         return (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
     }
 
-    private Member getMemberWithProfile(long memberId) {
+    private Member findMemberWithFetchJoinProfile(long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)

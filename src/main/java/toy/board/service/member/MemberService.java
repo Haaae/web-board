@@ -44,7 +44,7 @@ public class MemberService {
      * 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      */
     public Member login(final String username, final String password) {
-        Member findMember = findMember(username);
+        Member findMember = findMemberByUsernameWithFetchJoinLogin(username);
 
         findMember.validateLoginType(LoginType.LOCAL_LOGIN);
         checkPassword(password, findMember.getPassword());
@@ -75,7 +75,7 @@ public class MemberService {
 
     @Transactional
     public void withdrawal(final Long loginMemberId) {
-        Member findMember = findMember(loginMemberId);
+        Member findMember = findMemberWithFetchJoinProfile(loginMemberId);
 
         findMember.changeAllPostAndCommentWriterToNull();
 
@@ -84,8 +84,8 @@ public class MemberService {
 
     @Transactional
     public void promoteMemberRole(Long masterId, Long targetId) {
-        Member master = findMember(masterId);
-        Member target = findMember(targetId);
+        Member master = findMemberWithFetchJoinProfile(masterId);
+        Member target = findMemberWithFetchJoinProfile(targetId);
 
         master.updateRole(target);
     }
@@ -136,13 +136,13 @@ public class MemberService {
         }
     }
 
-    private Member findMember(Long memberId) {
+    private Member findMemberWithFetchJoinProfile(Long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 
-    private Member findMember(String username) {
-        return memberRepository.findMemberByUsername(username)
+    private Member findMemberByUsernameWithFetchJoinLogin(String username) {
+        return memberRepository.findMemberByUsernameWithFetchJoinLogin(username)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
     }
 }

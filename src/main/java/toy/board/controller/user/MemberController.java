@@ -19,8 +19,6 @@ import toy.board.domain.user.Member;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.member.MemberService;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/users")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
@@ -93,10 +91,10 @@ public class MemberController {
 
     @GetMapping("/usernames/{username}/exist")
     public ResponseEntity<ExistResponse> findUserByUsername(@PathVariable final String username) {
-        Optional<Member> member = memberRepository.findMemberByUsername(username);
+        boolean isExists = memberRepository.existsByUsername(username);
 
         return ResponseEntity.ok(
-                new ExistResponse(member.isPresent())
+                new ExistResponse(isExists)
         );
     }
 

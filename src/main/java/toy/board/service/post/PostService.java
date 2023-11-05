@@ -27,8 +27,8 @@ public class PostService {
 
     @Transactional
     public Long update(final String content, final Long postId, final Long memberId) {
-        Post post = findPost(postId);
-        Member member = findMember(memberId);
+        Post post = findPostWithFetchJoinWriterAndProfile(postId);
+        Member member = findMemberWithFetchJoinProfile(memberId);
         post.update(content, member);
         return post.getId();
     }
@@ -45,7 +45,7 @@ public class PostService {
     @Transactional
     public PostDetailDto getPostDetail(final Long postId) {
         // Post, Post.writer, Post.writer.profile, Profile.comments를 fetch join으로 가져옴
-        Post post = findPostWithFetchComments(postId);
+        Post post = findPostWithFetchJoinWriterAndProfileAndComments(postId);
 
         post.increaseHits();
 
@@ -58,7 +58,7 @@ public class PostService {
 
     @Transactional
     public Long create(final String title, final String content, final Long memberId) {
-        Member member = findMember(memberId);
+        Member member = findMemberWithFetchJoinProfile(memberId);
 
         Post post = new Post(member, title, content);
         Post savedPost = postRepository.save(post);
@@ -75,8 +75,8 @@ public class PostService {
      */
     @Transactional
     public void delete(final Long postId, final Long memberId) {
-        Post post = findPost(postId);
-        Member member = findMember(memberId);
+        Post post = findPostWithFetchJoinWriterAndProfile(postId);
+        Member member = findMemberWithFetchJoinProfile(memberId);
         post.validateRight(member);
         commentRepository.deleteCommentsByPostAndType(post, CommentType.REPLY);
         commentRepository.deleteCommentsByPost(post);
@@ -84,21 +84,21 @@ public class PostService {
     }
 
 
-    private Member findMember(final Long memberId) {
+    private Member findMemberWithFetchJoinProfile(final Long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)
                 );
     }
 
-    private Post findPost(final Long postId) {
+    private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
         return postRepository.findPostWithFetchJoinWriterAndProfile(postId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.POST_NOT_FOUND)
                 );
     }
 
-    private Post findPostWithFetchComments(final Long postId) {
+    private Post findPostWithFetchJoinWriterAndProfileAndComments(final Long postId) {
         return postRepository.findPostWithFetchJoinWriterAndProfileAndComments(postId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.POST_NOT_FOUND)

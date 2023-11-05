@@ -1,12 +1,5 @@
 package toy.board.service.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.util.ArrayList;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +19,14 @@ import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)   // 사용하지 않는 Mock 설정에 대해 오류를 발생하지 않도록 설정
@@ -57,8 +58,8 @@ class PostServiceTest {
         Post post = new Post(member, title, content);
         CommentListDto commentListDto = new CommentListDto(new ArrayList<>());
 
-        given(postRepository.findPostById(eq(invalidPostId))).willReturn(Optional.empty());
-        given(postRepository.findPostById(eq(postId))).willReturn(Optional.of(post));
+        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(invalidPostId))).willReturn(Optional.empty());
+        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(postId))).willReturn(Optional.of(post));
         given(commentRepository.getCommentListDtoByPostId(postId)).willReturn(commentListDto);
 
         given(memberRepository.findMemberById(eq(notExistMemberId))).willReturn(Optional.empty());
@@ -75,7 +76,7 @@ class PostServiceTest {
 
         //when
         postService.getPostDetail(postId);
-        Post post = postRepository.findPostById(postId).get();
+        Post post = postRepository.findPostWithFetchJoinWriterAndProfile(postId).get();
 
         //then
         assertThat(post.getHits()).isEqualTo(expectedHits);

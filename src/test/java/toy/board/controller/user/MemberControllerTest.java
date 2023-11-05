@@ -15,20 +15,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+import toy.board.constant.SessionConst;
 import toy.board.controller.user.dto.request.JoinRequest;
 import toy.board.controller.user.dto.request.LoginRequest;
-import toy.board.controller.user.dto.request.WithdrawalRequest;
 import toy.board.domain.auth.Login;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.repository.user.MemberRepository;
-import toy.board.constant.SessionConst;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 // 사용하려면 security test 라이브러리 등록해야 함
 
 @Transactional
@@ -55,7 +54,7 @@ class MemberControllerTest {
 
     @DisplayName("회원탈퇴 성공")
     @Test
-    public void withdrawal_success() throws  Exception {
+    public void withdrawal_success() throws Exception {
         // given
         String username = "alsrbtls88@gmail.com";
         LoginType loginType = LoginType.LOCAL_LOGIN;
@@ -72,13 +71,10 @@ class MemberControllerTest {
         memberRepository.save(member);
         session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
 
-        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(password);
-        String content = mapper.writeValueAsString(withdrawalRequest);
 
         // then
         mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
                         .session(session)
-                        .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
@@ -89,19 +85,16 @@ class MemberControllerTest {
 
     @DisplayName("회원탈퇴 실패: 세션에 저장된 id에 해당하는 객체가 없는 경우")
     @Test
-    public void withdrawal_fail_cause_not_found() throws  Exception {
+    public void withdrawal_fail_cause_not_found() throws Exception {
         // given
         String password = "password1!";
 
         session.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
 
-        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(password);
-        String content = mapper.writeValueAsString(withdrawalRequest);
 
         // then
         mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
                         .session(session)
-                        .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
@@ -112,7 +105,7 @@ class MemberControllerTest {
 
     @DisplayName("회원탈퇴 실패: 객체의 비밀번호와 입력 비밀번호가 다를 경우")
     @Test
-    public void withdrawal_fail_cause_wrong_password() throws  Exception {
+    public void withdrawal_fail_cause_wrong_password() throws Exception {
         // given
         String username = "alsrbtls88@gmail.com";
         LoginType loginType = LoginType.LOCAL_LOGIN;
@@ -129,13 +122,10 @@ class MemberControllerTest {
         memberRepository.save(member);
         session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
 
-        WithdrawalRequest withdrawalRequest = new WithdrawalRequest(wrongPassword);
-        String content = mapper.writeValueAsString(withdrawalRequest);
 
         // then
         mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
                         .session(session)
-                        .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
 
@@ -146,7 +136,7 @@ class MemberControllerTest {
 
     @DisplayName("login 성공: 요청한 로그인 정보와 동일한 member 객체가 존재할 경우")
     @Test
-    public void login_success() throws  Exception {
+    public void login_success() throws Exception {
         // given
         String username = "username1@gmail.com";
         LoginType loginType = LoginType.LOCAL_LOGIN;
@@ -166,8 +156,8 @@ class MemberControllerTest {
         String content = mapper.writeValueAsString(loginRequest);
 
         mockMvc.perform(post(LOGIN_URL).with(csrf())
-                                .content(content)
-                                .contentType(MediaType.APPLICATION_JSON)
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON)
                 )
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -177,7 +167,7 @@ class MemberControllerTest {
 
     @DisplayName("login 실패: 요청한 로그인 정보와 동일한 member 객체가 존재하지 않을 경우")
     @Test
-    public void login_fail_cause_no_exists_member() throws  Exception {
+    public void login_fail_cause_no_exists_member() throws Exception {
         // given
         String username = "name";
         LoginType loginType = LoginType.LOCAL_LOGIN;
@@ -206,7 +196,7 @@ class MemberControllerTest {
 
     @DisplayName("logout 성공: seesion이 존재하는 경우")
     @Test
-    public void logout_success() throws  Exception {
+    public void logout_success() throws Exception {
         session.setAttribute(SessionConst.LOGIN_MEMBER, 1L);
 
         mockMvc.perform(post(LOGOUT_URL).with(csrf())
@@ -221,7 +211,7 @@ class MemberControllerTest {
 
     @DisplayName("logout 실패: seesion이 없는 경우")
     @Test
-    public void logout_fail_not_exists_session() throws  Exception {
+    public void logout_fail_not_exists_session() throws Exception {
 
         mockMvc.perform(post(LOGOUT_URL).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -251,7 +241,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 실패: 이메일이 형식에 맞지 않음")
     @Test
-    public void join_fail_cause_wrong_pattern_username() throws  Exception {
+    public void join_fail_cause_wrong_pattern_username() throws Exception {
         //given
         JoinRequest joinRequest = new JoinRequest("usernamegmail.com", "password1!", "nickname");
         String content = mapper.writeValueAsString(joinRequest);
@@ -269,7 +259,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 실패: 비밀번호가 형식에 맞지 않음")
     @Test
-    public void join_fail_cause_wrong_pattern_password() throws  Exception {
+    public void join_fail_cause_wrong_pattern_password() throws Exception {
         //given
         JoinRequest joinRequest1 = new JoinRequest("username@gmail.com", "password1", "nickname");
         String content1 = mapper.writeValueAsString(joinRequest1);
@@ -315,7 +305,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 실패: 이메일이 전달되지 않음")
     @Test
-    public void join_fail_cause_empty_username() throws  Exception {
+    public void join_fail_cause_empty_username() throws Exception {
         //given
         JoinRequest joinRequest1 = new JoinRequest("", "password1", "nickname");
         String content1 = mapper.writeValueAsString(joinRequest1);
@@ -347,7 +337,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 실패: 비밀번호가 전달되지 않음")
     @Test
-    public void join_fail_cause_empty_password() throws  Exception {
+    public void join_fail_cause_empty_password() throws Exception {
         //given
         JoinRequest joinRequest1 = new JoinRequest("alssdf33@gmail.com", "", "nickname");
         String content1 = mapper.writeValueAsString(joinRequest1);
@@ -379,7 +369,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 실패: 닉네임이 전달되지 않음")
     @Test
-    public void join_fail_cause_empty_nickname() throws  Exception {
+    public void join_fail_cause_empty_nickname() throws Exception {
         //given
         JoinRequest joinRequest1 = new JoinRequest("alssdf33@gmail.com", "password", "");
         String content1 = mapper.writeValueAsString(joinRequest1);
@@ -411,7 +401,7 @@ class MemberControllerTest {
 
     @DisplayName("회원가입 실패: 닉네임 길이가 형식에 맞지 않음")
     @Test
-    public void join_fail_cause_size_miss_nickname() throws  Exception {
+    public void join_fail_cause_size_miss_nickname() throws Exception {
         //given
         JoinRequest joinRequest1 = new JoinRequest("alssdf33@gmail.com", "password", "s");
         String content1 = mapper.writeValueAsString(joinRequest1);

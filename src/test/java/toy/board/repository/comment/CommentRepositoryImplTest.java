@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
@@ -20,6 +21,7 @@ import toy.board.domain.user.UserRole;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 class CommentRepositoryImplTest {
 
     @Autowired

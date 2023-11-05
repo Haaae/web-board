@@ -19,6 +19,13 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport
         super(Post.class);
     }
 
+    /**
+     * Post 반환 시 Member, Profile, comments을 fetch join한다. ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고, 연계하여 fetch
+     * join할 수 있다. 하나의 켈렉션에 대해 fetch join할 수 있다.
+     *
+     * @param postId must not be {@literal null}.
+     * @return
+     */
     @Override
     public Optional<Post> findPostWithFetchJoinWriterAndProfileAndComments(Long postId) {
         return Optional.ofNullable(
@@ -33,7 +40,7 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport
      * Post 반환 시 Member, Profile을 fetch join한다. ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고, 연계하여 fetch
      * join할 수 있다.
      *
-     * @param id must not be {@literal null}.
+     * @param postId must not be {@literal null}.
      * @return
      */
     @Override

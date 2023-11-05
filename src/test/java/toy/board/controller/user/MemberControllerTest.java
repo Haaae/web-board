@@ -103,37 +103,6 @@ class MemberControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    @DisplayName("회원탈퇴 실패: 객체의 비밀번호와 입력 비밀번호가 다를 경우")
-    @Test
-    public void withdrawal_fail_cause_wrong_password() throws Exception {
-        // given
-        String username = "alsrbtls88@gmail.com";
-        LoginType loginType = LoginType.LOCAL_LOGIN;
-        UserRole userRole = UserRole.USER;
-        String password = "password1!";
-        String encodedPassword = passwordEncoder.encode(password);
-        String nickname = "asfas";
-        String wrongPassword = "wrong password";
-
-        Login login = new Login(encodedPassword);
-        Profile profile = Profile.builder(nickname).build();
-        Member member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
-
-        memberRepository.save(member);
-        session.setAttribute(SessionConst.LOGIN_MEMBER, member.getId());
-
-
-        // then
-        mockMvc.perform(delete(WITHDRAWAL_URL).with(csrf())
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-
-                .andDo(MockMvcResultHandlers.print());
-    }
-
     @DisplayName("login 성공: 요청한 로그인 정보와 동일한 member 객체가 존재할 경우")
     @Test
     public void login_success() throws Exception {

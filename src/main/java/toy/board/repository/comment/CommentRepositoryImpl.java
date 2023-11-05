@@ -9,6 +9,7 @@ import toy.board.repository.comment.dto.CommentDto;
 import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static toy.board.domain.post.QComment.comment;
@@ -78,32 +79,31 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
      * @return CommentDto
      */
     private CommentDto convertToDto(final Comment comment) {
-//        return new CommentDto(
-//                comment.getId(),
-//                comment.getWriterId(),
-//                comment.getWriterNickname(),
-//                comment.getContent(),
-//                comment.getType(),
-//                comment.isDeleted(),
-//                comment.isModified(),
-//                comment.getCreatedDate(),
-//                new CommentListDto(
-//                        comment.getReplies().stream().sorted(
-//                                Comparator.comparing(Comment::getCreatedDate)
-//                        ).map(reply ->
-//                                new CommentDto(
-//                                        reply.getId(),
-//                                        reply.getWriterId(),
-//                                        reply.getWriterNickname(),
-//                                        reply.getContent(),
-//                                        reply.getType(),
-//                                        reply.isDeleted(),
-//                                        reply.isModified(),
-//                                        reply.getCreatedDate(),
-//                                        null)
-//                        ).toList()
-//                )
-//        );
-        return CommentDto.createCommentTypeFrom(comment);
+        return new CommentDto(
+                comment.getId(),
+                comment.getWriterId(),
+                comment.getWriterNickname(),
+                comment.getContent(),
+                comment.getType(),
+                comment.isDeleted(),
+                comment.isModified(),
+                comment.getCreatedDate(),
+                new CommentListDto(
+                        comment.getReplies().stream().sorted(
+                                Comparator.comparing(Comment::getCreatedDate)
+                        ).map(reply ->
+                                new CommentDto(
+                                        reply.getId(),
+                                        reply.getWriterId(),
+                                        reply.getWriterNickname(),
+                                        reply.getContent(),
+                                        reply.getType(),
+                                        reply.isDeleted(),
+                                        reply.isModified(),
+                                        reply.getCreatedDate(),
+                                        null)
+                        ).toList()
+                )
+        );
     }
 }

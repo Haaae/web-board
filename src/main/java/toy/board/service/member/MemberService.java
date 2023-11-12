@@ -57,7 +57,6 @@ public class MemberService {
                 .build();
         member.changeLogin(login);
 
-        // TODO: 동시성 문제는 DataIntegrityViolationException을 ControllerAdvice에서 공통 처리한다.
         // save. cascade로 인해 member만 저장해도 profile과 login이 저장된다.
         memberRepository.save(member);
         return member;

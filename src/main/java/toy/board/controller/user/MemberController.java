@@ -25,6 +25,7 @@ import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.ApiDuplicationError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
+import toy.board.controller.api.response.annotation.ApiLoginTypeError;
 import toy.board.controller.user.dto.request.JoinRequest;
 import toy.board.controller.user.dto.request.LoginRequest;
 import toy.board.controller.user.dto.response.ExistResponse;
@@ -57,6 +58,7 @@ public class MemberController {
     )
     @ApiBadRequestArgError
     @ApiAuthenticationError
+    @ApiLoginTypeError
     @Operation(summary = "로그인", description = "로그인을 시도합니다.")
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(

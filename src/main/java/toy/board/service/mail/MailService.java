@@ -20,14 +20,16 @@ import toy.board.service.redis.RedisService;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MailService {
 
-    private final JavaMailSender mailSender;
-    private final RedisService redisService;
-    private final MemberService memberService;
-
+    public static final int AUTH_CODE_LENGTH = 6;
+    public static final int AUTH_CODE_BOUND = 10;
     @Value("${spring.mail.properties.auth-code-expiration-millis}")
     private long authCodeExpirationMillis;
     private final String REDIS_PREFIX = "AuthCode";
     private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
+
+    private final JavaMailSender mailSender;
+    private final RedisService redisService;
+    private final MemberService memberService;
 
     @Transactional
     public void sendCodeToEmail(final String email) {
@@ -45,12 +47,14 @@ public class MailService {
     }
 
     private String createAuthCode() {
-        int length = 6;
         try {
             Random random = SecureRandom.getInstanceStrong();
             StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
+
+            for (int i = 0; i < AUTH_CODE_LENGTH; i++) {
+                builder.append(
+                        random.nextInt(AUTH_CODE_BOUND)
+                );
             }
             return builder.toString();
         } catch (NoSuchAlgorithmException e) {

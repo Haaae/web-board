@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,15 +31,11 @@ import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
-import toy.board.controller.post.dto.CommentCreationRequest;
-import toy.board.controller.post.dto.CommentIdDto;
-import toy.board.controller.post.dto.CommentUpdateDto;
 import toy.board.controller.post.dto.PostCreationRequest;
 import toy.board.controller.post.dto.PostIdDto;
 import toy.board.controller.post.dto.PostUpdateDto;
 import toy.board.domain.post.Post;
 import toy.board.repository.post.PostRepository;
-import toy.board.service.comment.CommentService;
 import toy.board.service.post.PostService;
 import toy.board.service.post.dto.PostDetailDto;
 import toy.board.service.post.dto.PostDto;
@@ -52,11 +47,8 @@ import toy.board.service.post.dto.PostDto;
 public class PostController {
 
     private final PostService postService;
-    private final CommentService commentService;
     private final PostRepository postRepository;
-
-    // read
-
+    
     /*
      * size == 0 or (page and size < (0 or String)) -> 400 error
      *
@@ -111,8 +103,6 @@ public class PostController {
         return ResponseEntity.ok(postDetail);
     }
 
-    // createComment
-
     @ApiResponse(
             responseCode = "201",
             description = "게시물 생성 성공",
@@ -141,42 +131,6 @@ public class PostController {
 
         return new ResponseEntity<>(
                 PostIdDto.from(postId),
-                HttpStatus.CREATED
-        );
-    }
-
-    @ApiResponse(
-            responseCode = "201",
-            description = "댓글 생성 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                            implementation = CommentIdDto.class
-                    )
-            )
-    )
-    @ApiBadRequestArgError
-    @ApiAuthenticationError
-    @Operation(summary = "댓글 생성", description = "댓글을 생성합니다.")
-    @Parameter(name = "postId", description = "생성할 댓글이 소속된 게시물 Id")
-    @PostMapping("/{postId}/comments")
-    public ResponseEntity<CommentIdDto> createComment(
-            @RequestBody @Valid final CommentCreationRequest commentCreationRequest,
-            @PathVariable("postId") final Long postId,
-            final HttpServletRequest request
-    ) {
-        HttpSession session = request.getSession(false);
-        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-        Long commentId = commentService.create(
-                commentCreationRequest.content(),
-                commentCreationRequest.type(),
-                Optional.ofNullable(commentCreationRequest.parentId()),
-                postId,
-                memberId
-        );
-
-        return new ResponseEntity<>(
-                CommentIdDto.of(commentId),
                 HttpStatus.CREATED
         );
     }
@@ -218,43 +172,6 @@ public class PostController {
         );
     }
 
-    // TODO: 2023-11-10 commentController로 분리 
-    @ApiResponse(
-            responseCode = "200",
-            description = "댓글 수정 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                            implementation = CommentIdDto.class
-                    )
-            )
-    )
-    @ApiBadRequestArgError
-    @ApiAuthorityError
-    @ApiAuthenticationError
-    @ApiFoundError
-    @Operation(summary = "댓글 수정", description = "댓글을 수정합니다.")
-    @Parameter(name = "postId", description = "수정할 댓글이 소속된 게시물 Id")
-    @Parameter(name = "commentId", description = "수정할 댓글 Id")
-    @PatchMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<CommentIdDto> updateComment(
-            @PathVariable("commentId") final Long commentId,
-            @RequestBody @Valid final CommentUpdateDto commentUpdateDto,
-            final HttpServletRequest request
-
-    ) {
-        HttpSession session = request.getSession(false);
-        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-        Long updatedCommentId = commentService.update(
-                commentId, commentUpdateDto.content(), memberId
-        );
-
-        return ResponseEntity.ok(
-                CommentIdDto.of(updatedCommentId)
-        );
-    }
-
-    // delete
 
     @ApiResponse(
             responseCode = "200",
@@ -274,29 +191,6 @@ public class PostController {
         HttpSession session = request.getSession(false);
         Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
         postService.delete(postId, memberId);
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @ApiResponse(
-            responseCode = "200",
-            description = "댓글 삭제 성공"
-    )
-    @ApiBadRequestArgError
-    @ApiAuthenticationError
-    @ApiAuthorityError
-    @ApiFoundError
-    @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
-    @Parameter(name = "postId", description = "삭제할 댓글이 소속된 게시물 Id")
-    @Parameter(name = "commentId", description = "삭제할 댓글 Id")
-    @DeleteMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity deleteComment(
-            @PathVariable("commentId") final Long commentId,
-            final HttpServletRequest request
-    ) {
-        HttpSession session = request.getSession(false);
-        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-        commentService.delete(commentId, memberId);
 
         return new ResponseEntity(HttpStatus.OK);
     }

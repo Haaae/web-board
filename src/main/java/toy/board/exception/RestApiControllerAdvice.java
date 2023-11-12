@@ -2,6 +2,7 @@ package toy.board.exception;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class RestApiControllerAdvice {
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            final DataIntegrityViolationException e) {
+        ExceptionCode code = ExceptionCode.INTEGRITY_VIOLATION;
+
+        log(e, code);
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        code.getCode(),
+                        code.getDescription()
+                ),
+                HttpStatus.valueOf(
+                        code.getStatus()
+                )
+        );
+    }
 
     /**
      * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리. Bean Validation 중 발생한 오류는 자동으로 BindingReslut에 담기므로 BindingResult의 모든
@@ -31,8 +49,13 @@ public class RestApiControllerAdvice {
         String message = buildMessage(e);
 
         return new ResponseEntity<>(
-                new ErrorResponse(errorCode.getCode(), message),
-                HttpStatus.valueOf(errorCode.getStatus())
+                new ErrorResponse(
+                        errorCode.getCode()
+                        , message
+                ),
+                HttpStatus.valueOf(
+                        errorCode.getStatus()
+                )
         );
     }
 
@@ -83,16 +106,18 @@ public class RestApiControllerAdvice {
         );
     }
 
+    private void logAll(final MethodArgumentNotValidException e) {
+        logAllExceptionInfo(
+                e.getBindingResult()
+                        .getFieldErrors()
+        );
+        logStackTrace(e.getStackTrace());
+    }
+
     private static void logStackTrace(final StackTraceElement[] stackTrace) {
         for (StackTraceElement stackTraceElement : stackTrace) {
             log.info("{}", stackTraceElement);
         }
-    }
-
-    private void logAll(final MethodArgumentNotValidException e) {
-        logAllExceptionInfo(e.getBindingResult().getFieldErrors());
-        logStackTrace(e.getStackTrace());
-
     }
 
     private void logAllExceptionInfo(List<FieldError> fieldErrors) {

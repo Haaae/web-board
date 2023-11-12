@@ -10,6 +10,7 @@ public enum ExceptionCode {
     NOT_FOUND(400, "COMMON-004", "대상을 찾을 수 없음"),
     INVALID_AUTHORITY(403, "COMMON-005", "권한 부족"),
     BAD_REQUEST_DUPLICATE(400, "COMMON-006", "중복에 의한 실패"),
+    INTEGRITY_VIOLATION(500, "COMMON-007", "데이터 동시성 문제 발생"),
 
     UNABLE_TO_SEND_EMAIL(500, "LOGIN-001", "이메일 검증 코드 발송 실패"),
     BAD_REQUEST_LOGIN_TYPE(400, "LOGIN-002", "로그인 타입이 일치하지 않음"),
@@ -17,7 +18,6 @@ public enum ExceptionCode {
 
     BAD_REQUEST_COMMENT_TYPE(400, "COMMENT-001", "유효하지 않은 댓글 타입"),
     BAD_REQUEST_POST_OF_COMMENT(400, "COMMENT-002", "댓글과 답글의 게시물 불일치"),
-
     ;
 
     private final int status;

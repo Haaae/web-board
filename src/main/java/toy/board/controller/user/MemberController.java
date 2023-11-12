@@ -22,17 +22,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
 import toy.board.controller.api.response.annotation.ApiAuthenticationError;
-import toy.board.controller.api.response.annotation.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
-import toy.board.controller.api.response.annotation.ApiCodeSendError;
 import toy.board.controller.api.response.annotation.ApiDuplicationError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
-import toy.board.controller.user.dto.request.EmailVerificationRequest;
 import toy.board.controller.user.dto.request.JoinRequest;
 import toy.board.controller.user.dto.request.LoginRequest;
-import toy.board.controller.user.dto.request.RolePromotionRequest;
-import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
-import toy.board.controller.user.dto.response.EmailVerificationResponse;
 import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.controller.user.dto.response.JoinResponse;
 import toy.board.controller.user.dto.response.LoginResponse;
@@ -188,74 +182,8 @@ public class MemberController {
     @GetMapping("/nicknames/{nickname}/exist")
     public ResponseEntity<ExistResponse> existNickname(@PathVariable final String nickname) {
         boolean isExists = memberRepository.existsByNickname(nickname);
-        // TODO: 2023-11-10 profileController로 이동
         return ResponseEntity.ok(
                 new ExistResponse(isExists)
         );
-    }
-
-    @ApiResponse(
-            responseCode = "200",
-            description = "이메일 검증 코드 발송 성공"
-    )
-    @ApiBadRequestArgError
-    @ApiFoundError
-    @ApiCodeSendError
-    @Operation(summary = "이메일 검증 코드 발송", description = "입력한 이메일로 검증 코드를 발송합니다.")
-    @PostMapping("/emails/verification-requests")
-    public ResponseEntity sendMessage(@RequestBody @Valid final SendEmailVerificationRequest request) {
-        memberService.sendCodeToEmail(request.email());
-        // TODO: 2023-11-10 UsernameController로 이동
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @ApiResponse(
-            responseCode = "200",
-            description = "이메일 검증 성공",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(
-                            implementation = ExistResponse.class
-                    )
-            )
-    )
-    @ApiBadRequestArgError
-    @ApiDuplicationError
-    @Operation(summary = "이메일 검증", description = "입력 코드가 검증 코드와 같은지 확인합니다.")
-    @PostMapping("/emails/verifications")
-    public ResponseEntity<EmailVerificationResponse> verificationEmail(
-            @RequestBody @Valid final EmailVerificationRequest request) {
-        boolean result = memberService.verifiedCode(request.email(), request.authCode());
-        // TODO: 2023-11-10 UsernameController로 이동
-        return ResponseEntity.ok(
-                EmailVerificationResponse.of(result)
-        );
-    }
-
-    @ApiResponse(
-            responseCode = "200",
-            description = "권한 변경 성공"
-    )
-    @ApiBadRequestArgError
-    @ApiAuthenticationError
-    @ApiAuthorityError
-    @ApiFoundError
-    @Operation(summary = "권한 변경", description = "사용자의 권한을 변경합니다.")
-    @PostMapping("/roles/promotion")
-    public ResponseEntity promoteRole(
-            @RequestBody @Valid final RolePromotionRequest rolePromotionDto,
-            final HttpServletRequest request
-    ) {
-
-        HttpSession session = request.getSession(false);
-        Long masterId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
-        // TODO: 2023-11-10 roleController로 분리
-        memberService.promoteMemberRole(
-                masterId,
-                rolePromotionDto.id()
-        );
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

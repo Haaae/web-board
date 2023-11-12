@@ -1,11 +1,7 @@
 package toy.board.service.member;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +13,6 @@ import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
-import toy.board.service.mail.MailService;
-import toy.board.service.redis.RedisService;
 
 @Transactional(readOnly = true)
 @Service
@@ -28,13 +22,6 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
-    private final MailService mailService;
-    private final RedisService redisService;
-
-    @Value("${spring.mail.properties.auth-code-expiration-millis}")
-    private long authCodeExpirationMillis;
-    private final String REDIS_PREFIX = "AuthCode";
-    private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
 
     /**
      * @param username
@@ -85,43 +72,7 @@ public class MemberService {
         memberRepository.deleteById(loginMemberId);
     }
 
-    @Transactional
-    public void promoteMemberRole(Long masterId, Long targetId) {
-        Member master = findMemberWithFetchJoinProfile(masterId);
-        Member target = findMemberWithFetchJoinProfile(targetId);
-
-        master.updateRole(target);
-    }
-
-    public void sendCodeToEmail(final String email) {
-        checkUsernameDuplication(email);
-        String authCode = createAuthCode();
-        mailService.sendMail(email, EMAIL_TITLE, authCode);
-        // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-        redisService.setValues(REDIS_PREFIX + email, authCode, authCodeExpirationMillis);
-    }
-
-    @Transactional
-    public boolean verifiedCode(final String email, final String authCode) {
-        checkUsernameDuplication(email);
-        return redisService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
-    }
-
-    private String createAuthCode() {
-        int length = 6;
-        try {
-            Random random = SecureRandom.getInstanceStrong();
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                builder.append(random.nextInt(10));
-            }
-            return builder.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new BusinessException(ExceptionCode.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private void checkUsernameDuplication(final String username) {
+    public void checkUsernameDuplication(final String username) {
         if (memberRepository.existsByUsername(username)) {
             throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
         }
@@ -139,7 +90,7 @@ public class MemberService {
         }
     }
 
-    private Member findMemberWithFetchJoinProfile(Long memberId) {
+    public Member findMemberWithFetchJoinProfile(Long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }

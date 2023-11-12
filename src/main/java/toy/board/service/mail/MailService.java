@@ -5,7 +5,6 @@ import java.security.SecureRandom;
 import java.util.Random;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -19,7 +18,6 @@ import toy.board.service.redis.RedisService;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Slf4j
 public class MailService {
 
     private final JavaMailSender mailSender;
@@ -60,15 +58,12 @@ public class MailService {
         }
     }
 
-    public void sendMail(final String toEMail, final String title, final String text) {
+    private void sendMail(final String toEMail, final String title, final String text) {
         SimpleMailMessage emailForm = createEmailForm(toEMail, title, text);
 
-        // TODO: 2023-11-10 핸들러로 분리 
         try {
             mailSender.send(emailForm);
         } catch (MailException e) {
-            log.debug("MailService.sendEmail exception occur toEmail: {}, " +
-                    "title: {}, text: {}", toEMail, title, text);
             throw new BusinessException(ExceptionCode.UNABLE_TO_SEND_EMAIL);
         }
     }

@@ -1,4 +1,4 @@
-package toy.board.controller.api.response.annotation;
+package toy.board.controller.api.response.annotation.comment;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import toy.board.exception.ErrorResponse;
 @Documented
 @ApiResponse(
         responseCode = "400",
-        description = "유효하지 않은 요청값",
+        description = "유효하지 않은 댓글 타입",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(
@@ -23,5 +23,5 @@ import toy.board.exception.ErrorResponse;
                 )
         )
 )
-public @interface ApiBadRequestArgError {
+public @interface ApiCommentTypeError {
 }

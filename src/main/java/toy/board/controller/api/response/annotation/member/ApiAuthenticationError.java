@@ -1,4 +1,4 @@
-package toy.board.controller.api.response.annotation;
+package toy.board.controller.api.response.annotation.member;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,8 +14,8 @@ import toy.board.exception.ErrorResponse;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @ApiResponse(
-        responseCode = "400",
-        description = "권한 부족",
+        responseCode = "401",
+        description = "회원 인증 실패",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(
@@ -23,5 +23,6 @@ import toy.board.exception.ErrorResponse;
                 )
         )
 )
-public @interface ApiAuthorityError {
+public @interface ApiAuthenticationError {
+
 }

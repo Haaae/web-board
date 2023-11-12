@@ -1,4 +1,4 @@
-package toy.board.controller.api.response.annotation;
+package toy.board.controller.api.response.annotation.common;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import toy.board.exception.ErrorResponse;
 @Documented
 @ApiResponse(
         responseCode = "400",
-        description = "대상을 찾을 수 없음",
+        description = "권한 부족",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(
@@ -23,6 +23,5 @@ import toy.board.exception.ErrorResponse;
                 )
         )
 )
-public @interface ApiFoundError {
-
+public @interface ApiAuthorityError {
 }

@@ -1,4 +1,4 @@
-package toy.board.controller.api.response.annotation;
+package toy.board.controller.api.response.annotation.common;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,8 +14,8 @@ import toy.board.exception.ErrorResponse;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @ApiResponse(
-        responseCode = "500",
-        description = "이메일 검증 코드 발송 실패",
+        responseCode = "400",
+        description = "유효하지 않은 요청값",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(
@@ -23,5 +23,5 @@ import toy.board.exception.ErrorResponse;
                 )
         )
 )
-public @interface ApiCodeSendError {
+public @interface ApiBadRequestArgError {
 }

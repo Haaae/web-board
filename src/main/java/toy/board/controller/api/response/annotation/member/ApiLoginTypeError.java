@@ -1,4 +1,4 @@
-package toy.board.controller.api.response.annotation;
+package toy.board.controller.api.response.annotation.member;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +15,7 @@ import toy.board.exception.ErrorResponse;
 @Documented
 @ApiResponse(
         responseCode = "400",
-        description = "중복에 의한 실패",
+        description = "로그인 타입 불일치",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(
@@ -23,5 +23,5 @@ import toy.board.exception.ErrorResponse;
                 )
         )
 )
-public @interface ApiDuplicationError {
+public @interface ApiLoginTypeError {
 }

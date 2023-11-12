@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
-import toy.board.controller.api.response.annotation.ApiAuthenticationError;
-import toy.board.controller.api.response.annotation.ApiAuthorityError;
-import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
-import toy.board.controller.api.response.annotation.ApiFoundError;
+import toy.board.controller.api.response.annotation.common.ApiAuthorityError;
+import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError;
+import toy.board.controller.api.response.annotation.common.ApiFoundError;
+import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
 import toy.board.controller.user.dto.request.RolePromotionRequest;
 import toy.board.service.role.RoleService;
 

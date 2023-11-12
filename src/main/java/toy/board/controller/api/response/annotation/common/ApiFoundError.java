@@ -1,4 +1,4 @@
-package toy.board.controller.api.response.annotation;
+package toy.board.controller.api.response.annotation.common;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,8 +14,8 @@ import toy.board.exception.ErrorResponse;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @ApiResponse(
-        responseCode = "401",
-        description = "회원 인증 실패",
+        responseCode = "400",
+        description = "대상을 찾을 수 없음",
         content = @Content(
                 mediaType = "application/json",
                 schema = @Schema(
@@ -23,6 +23,6 @@ import toy.board.exception.ErrorResponse;
                 )
         )
 )
-public @interface ApiAuthenticationError {
+public @interface ApiFoundError {
 
 }

@@ -1,18 +1,15 @@
 package toy.board.service.post.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import toy.board.repository.comment.dto.CommentListDto;
 
-import java.util.HashMap;
-import java.util.Map;
-
+@Schema(description = "게시물 상세 조회 DTO")
 public record PostDetailDto(
-        Map<String, Object> postDetail
+
+        @Schema(description = "게시물 상세")
+        PostDto post,
+        @Schema(description = "댓글 목록")
+        CommentListDto comments
 ) {
 
-    public static PostDetailDto of(final PostDto postDto, final CommentListDto commentListDto) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("post", postDto);
-        map.put("comments", commentListDto.commentDtos());
-        return new PostDetailDto(map);
-    }
 }

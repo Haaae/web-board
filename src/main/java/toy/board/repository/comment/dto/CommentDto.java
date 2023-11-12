@@ -1,20 +1,33 @@
 package toy.board.repository.comment.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Positive;
+import java.time.LocalDateTime;
+import java.util.List;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+@Schema(description = "댓글 조회 정보 DTO")
 public record CommentDto(
+        @Schema(description = "댓글 Id", example = "1")
+        @Positive
         Long commentId,
+        @Schema(description = "작성자 Id", example = "1", nullable = true)
+        @Positive
         Long writerId,
+        @Schema(description = "작성자 닉네임", nullable = true)
         String writer,
+        @Schema(description = "본문")
         String content,
+        @Schema(description = "댓글 타입:댓글, 답글", example = "REPLY")
         CommentType type,
+        @Schema(description = "삭제 여부")
         boolean isDeleted,
+        @Schema(description = "수정 여부")
         boolean isEdited,
+        @Schema(description = "생성 일자", example = "2021-11-08T11:44:30.327959")
         LocalDateTime createdDate,
+        @Schema(description = "답글 목록", nullable = true)
         CommentListDto replies
 ) {
 

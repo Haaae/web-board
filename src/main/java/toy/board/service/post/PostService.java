@@ -34,10 +34,8 @@ public class PostService {
     }
 
     /**
-     * PostDetail를 반환하는 메서드. Comment가 Comment 컬렉션을 내부적으로 가지고 있어
-     * 엔티티 그래프를 통해 재귀적으로 프로퍼티에 접근하면 불필요한 쿼리가 발생하기 때문에
-     * Post.Comment에 접근할 때는 Post.Comment.replies.replies에 접근하지 않도록 한다.
-     * 때문에 재귀적인 방식은 사용하지 않는다.
+     * PostDetail를 반환하는 메서드. Comment가 Comment 컬렉션을 내부적으로 가지고 있어 엔티티 그래프를 통해 재귀적으로 프로퍼티에 접근하면 불필요한 쿼리가 발생하기 때문에
+     * Post.Comment에 접근할 때는 Post.Comment.replies.replies에 접근하지 않도록 한다. 때문에 재귀적인 방식은 사용하지 않는다.
      *
      * @param postId
      * @return
@@ -53,7 +51,7 @@ public class PostService {
 
         PostDto postDto = PostDto.of(post);
 
-        return PostDetailDto.of(postDto, commentListDto);
+        return new PostDetailDto(postDto, commentListDto);
     }
 
     @Transactional
@@ -66,9 +64,8 @@ public class PostService {
     }
 
     /**
-     * post 삭제 시 repository를 통해 직접 reply, comment를 우선 삭제하고 post를 삭제한다.
-     * JPA에서 제공하는 OrhpanRemoval과 같은 기능을 사용하지 않는 이유는
-     * 재귀적인 comment와 reply의 관계로 인해 count(comment + reply)만큼의 select 쿼리가 발생하기 때문이다.
+     * post 삭제 시 repository를 통해 직접 reply, comment를 우선 삭제하고 post를 삭제한다. JPA에서 제공하는 OrhpanRemoval과 같은 기능을 사용하지 않는 이유는 재귀적인
+     * comment와 reply의 관계로 인해 count(comment + reply)만큼의 select 쿼리가 발생하기 때문이다.
      *
      * @param postId
      * @param memberId
@@ -87,21 +84,21 @@ public class PostService {
     private Member findMemberWithFetchJoinProfile(final Long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND)
+                        new BusinessException(ExceptionCode.NOT_FOUND)
                 );
     }
 
     private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
         return postRepository.findPostWithFetchJoinWriterAndProfile(postId)
                 .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.POST_NOT_FOUND)
+                        new BusinessException(ExceptionCode.NOT_FOUND)
                 );
     }
 
     private Post findPostWithFetchJoinWriterAndProfileAndComments(final Long postId) {
         return postRepository.findPostWithFetchJoinWriterAndProfileAndComments(postId)
                 .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.POST_NOT_FOUND)
+                        new BusinessException(ExceptionCode.NOT_FOUND)
                 );
     }
 }

@@ -25,7 +25,9 @@ import toy.board.constant.SessionConst;
 import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
+import toy.board.controller.api.response.annotation.ApiCommentTypeError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
+import toy.board.controller.api.response.annotation.ApiPostOfCommentError;
 import toy.board.controller.comment.dto.reponse.CommentIdResponse;
 import toy.board.controller.comment.dto.request.CommentCreationRequest;
 import toy.board.controller.comment.dto.request.CommentUpdateRequest;
@@ -51,6 +53,8 @@ public class CommentController {
     )
     @ApiBadRequestArgError
     @ApiAuthenticationError
+    @ApiCommentTypeError
+    @ApiPostOfCommentError
     @Operation(summary = "댓글 생성", description = "댓글을 생성합니다.")
     @Parameter(name = "postId", description = "생성할 댓글이 소속된 게시물 Id")
     @PostMapping("/{postId}/comments")

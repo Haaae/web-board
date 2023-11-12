@@ -1,5 +1,11 @@
 package toy.board.service.post;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,13 +23,6 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)   // 사용하지 않는 Mock 설정에 대해 오류를 발생하지 않도록 설정
@@ -90,7 +89,7 @@ class PostServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> postService.update(newContent, invalidPostId, memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.POST_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     @DisplayName("update 시 유효하지 않은 member id 사용하면 예외 발생")
@@ -101,7 +100,7 @@ class PostServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> postService.update(newContent, postId, invalidMemberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.POST_NOT_WRITER);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_AUTHORITY);
     }
 
     @DisplayName("post create 시 유효하지 않은 member id 사용하면 예외 발생")
@@ -112,7 +111,7 @@ class PostServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> postService.create(title, content, notExistMemberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.ACCOUNT_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     @DisplayName("post 삭제 시 유효하지 않은 postId 사용하면 예외 발생")
@@ -123,7 +122,7 @@ class PostServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> postService.delete(invalidPostId, memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.POST_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     @DisplayName("post 삭제 시 유효하지 않은 memberId 사용하면 예외 발생")
@@ -134,6 +133,6 @@ class PostServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> postService.delete(postId, invalidMemberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.POST_NOT_WRITER);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_AUTHORITY);
     }
 }

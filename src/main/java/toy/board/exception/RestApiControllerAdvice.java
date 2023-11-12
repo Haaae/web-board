@@ -1,5 +1,6 @@
 package toy.board.exception;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -10,16 +11,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.List;
-
 @Slf4j
 @RestControllerAdvice
 public class RestApiControllerAdvice {
 
     /**
-     * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리.
-     * Bean Validation 중 발생한 오류는 자동으로 BindingReslut에 담기므로
-     * BindingResult의 모든 필드에러를 RestResponse.object로 반환
+     * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리. Bean Validation 중 발생한 오류는 자동으로 BindingReslut에 담기므로 BindingResult의 모든
+     * 필드에러를 RestResponse.object로 반환
      *
      * @param e
      * @return
@@ -27,7 +25,7 @@ public class RestApiControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
             final MethodArgumentNotValidException e) {
-        ExceptionCode errorCode = ExceptionCode.INVALID_INPUT_VALUE;
+        ExceptionCode errorCode = ExceptionCode.BAD_REQUEST_ARG;
 
         logAll(e);
         String message = buildMessage(e);

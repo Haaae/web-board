@@ -1,5 +1,14 @@
 package toy.board.service.user;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.anyString;
+import static org.mockito.BDDMockito.doReturn;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,12 +28,6 @@ import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.member.MemberService;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)   // 사용하지 않는 Mock 설정에 대해 오류를 발생하지 않도록 설정
@@ -138,8 +141,9 @@ class MemberServiceTest {
         String wrongInput = "wrong input";
         //when
         //then
-        BusinessException e = assertThrows(BusinessException.class, () -> memberService.join(wrongInput, password, nickname));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.DUPLICATE_USERNAME);
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> memberService.join(wrongInput, password, nickname));
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_DUPLICATE);
     }
 
     @DisplayName("닉네임이 기존 닉네임과 중복일 경우: 예외발생")
@@ -150,7 +154,8 @@ class MemberServiceTest {
 
         //when
         //then
-        BusinessException e = assertThrows(BusinessException.class, () -> memberService.join(username, password, wrongInput));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.DUPLICATE_NICKNAME);
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> memberService.join(username, password, wrongInput));
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_DUPLICATE);
     }
 }

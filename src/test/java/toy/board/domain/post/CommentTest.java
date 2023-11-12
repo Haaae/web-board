@@ -58,14 +58,14 @@ class CommentTest {
                 () -> comment.validateRight(member)
         );
         assertThat(writerException.getCode())
-                .isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
 
         BusinessException invalidMemberException = assertThrows(
                 BusinessException.class,
                 () -> comment.validateRight(invalidMember)
         );
         assertThat(invalidMemberException.getCode())
-                .isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
 
         assertDoesNotThrow(() -> comment.validateRight(master));
         assertDoesNotThrow(() -> comment.validateRight(admin));
@@ -130,7 +130,7 @@ class CommentTest {
                 () -> comment.validateRight(invalidMember)
         );
         assertThat(e.getCode())
-                .isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
     }
 
     @DisplayName("게시물이 동일할 때 타입에 따른 생성자 구분으로 자동 양방향 매핑")
@@ -176,17 +176,17 @@ class CommentTest {
         // 댓글 생성 시 부모가 null이 아닐 경우
         BusinessException e1 = assertThrows(BusinessException.class,
                 () -> new Comment(post, post.getWriter(), content, commentType, reply));
-        assertThat(e1.getCode()).isEqualTo(ExceptionCode.INVALID_COMMENT_TYPE);
+        assertThat(e1.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
 
         // 답글 생성 시 부모가 null일 경우
         BusinessException e2 = assertThrows(BusinessException.class,
                 () -> new Comment(post, post.getWriter(), content, replyType, null));
-        assertThat(e2.getCode()).isEqualTo(ExceptionCode.INVALID_COMMENT_TYPE);
+        assertThat(e2.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
 
         // 답글 생성 시 부모가 답글일 경우
         BusinessException e3 = assertThrows(BusinessException.class,
                 () -> new Comment(post, post.getWriter(), content, replyType, reply));
-        assertThat(e3.getCode()).isEqualTo(ExceptionCode.INVALID_COMMENT_TYPE);
+        assertThat(e3.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
 
     }
 
@@ -211,7 +211,7 @@ class CommentTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> new Comment(otherPost, otherPost.getWriter(), content, replyType, parent));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_POST_OF_PARENT_COMMENT);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_POST_OF_COMMENT);
     }
 
     public static Comment create(Post post, CommentType commentType) {

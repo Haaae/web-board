@@ -82,7 +82,7 @@ class CommentServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.create(content, CommentType.COMMENT, parentId, invalidPostId,
                         memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.POST_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     @DisplayName("create 실패: memberId에 맞는 회원 닉네임이 존재하지 않음")
@@ -97,7 +97,7 @@ class CommentServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.create(content, CommentType.COMMENT, parentId, postId,
                         invalidMemberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.ACCOUNT_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     @DisplayName("create 실패: 대댓글 생성 시 주어진 CommentId에 해당하는 Comment가 존재하지 않음")
@@ -112,7 +112,7 @@ class CommentServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.create(content, CommentType.COMMENT, parentId, postId,
                         memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     @DisplayName("create 실패: 대댓글 생성 시 주어진 CommentId가 NULL임")
@@ -127,7 +127,7 @@ class CommentServiceTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.create(content, CommentType.REPLY, parentId, postId,
                         memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_COMMENT_TYPE);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
     }
 
     // update
@@ -157,7 +157,7 @@ class CommentServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.update(commentId, updateContent, invalidMember.getId()));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_AUTHORITY);
     }
 
     @DisplayName("update 실패: comment id에 해당하는 comment가 없음")
@@ -170,7 +170,7 @@ class CommentServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.update(invalidCommentId, updateContent, memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     // remove
@@ -198,7 +198,7 @@ class CommentServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.delete(commentId, invalidMember.getId()));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_WRITER);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.INVALID_AUTHORITY);
     }
 
     @DisplayName("delete 실패: comment id에 해당하는 comment가 없음")
@@ -210,7 +210,7 @@ class CommentServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> commentService.delete(invalidCommentId, memberId));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.COMMENT_NOT_FOUND);
+        assertThat(e.getCode()).isEqualTo(ExceptionCode.NOT_FOUND);
     }
 
     private Long createComment() {

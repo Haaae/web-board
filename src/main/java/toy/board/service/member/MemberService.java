@@ -1,5 +1,8 @@
 package toy.board.service.member;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +19,6 @@ import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
 import toy.board.service.mail.MailService;
 import toy.board.service.redis.RedisService;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Random;
 
 @Transactional(readOnly = true)
 @Service
@@ -40,8 +39,7 @@ public class MemberService {
     /**
      * @param username
      * @param password
-     * @return member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서
-     * 항상 exception이 발생하므로 return된 member는 항상 not null이다.
+     * @return member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      */
     public Member login(final String username, final String password) {
         Member findMember = findMemberByUsernameWithFetchJoinLogin(username);
@@ -57,13 +55,18 @@ public class MemberService {
      */
     @Transactional
     public Member join(final String username, final String password, final String nickname) {
-        checkUsernameDuplication(username); // username 중복 검사
-        checkNicknameDuplication(nickname); // nickname 중복 검사
+        checkUsernameDuplication(username);
+        checkNicknameDuplication(nickname);
 
         Profile profile = Profile.builder(nickname).build();
         Login login = new Login(passwordEncoder.encode(password));
-        Member member = Member
-                .builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER)
+        Member member = Member.builder(
+                        username,
+                        login,
+                        profile,
+                        LoginType.LOCAL_LOGIN,
+                        UserRole.USER
+                )
                 .build();
         member.changeLogin(login);
 
@@ -120,29 +123,29 @@ public class MemberService {
 
     private void checkUsernameDuplication(final String username) {
         if (memberRepository.existsByUsername(username)) {
-            throw new BusinessException(ExceptionCode.DUPLICATE_USERNAME);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
         }
     }
 
     private void checkNicknameDuplication(final String nickname) {
         if (memberRepository.existsByNickname(nickname)) {
-            throw new BusinessException(ExceptionCode.DUPLICATE_NICKNAME);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
         }
     }
 
     private void checkPassword(final String enteredPassword, final String password) {
         if (!passwordEncoder.matches(enteredPassword, password)) {
-            throw new BusinessException(ExceptionCode.NOT_MATCH_PASSWORD);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_AUTHENTICATION);
         }
     }
 
     private Member findMemberWithFetchJoinProfile(Long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 
     private Member findMemberByUsernameWithFetchJoinLogin(String username) {
         return memberRepository.findMemberByUsernameWithFetchJoinLogin(username)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 }

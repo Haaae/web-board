@@ -1,5 +1,6 @@
 package toy.board.service.comment;
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,6 @@ import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -64,16 +63,16 @@ public class CommentService {
 
     private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
         return postRepository.findPostWithFetchJoinWriterAndProfile(postId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 
     private Comment findCommentWithFetchJoinWriterAndProfile(final Long commentId) {
         return commentRepository.findCommentWithFetchJoinWriterAndProfile(commentId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.COMMENT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 
     private Member findMemberWithFetchJoinProfile(final Long memberId) {
         return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.ACCOUNT_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 }

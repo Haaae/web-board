@@ -1,8 +1,19 @@
 package toy.board.domain.post;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +22,6 @@ import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Getter
@@ -104,13 +111,13 @@ public class Comment extends BaseDeleteEntity {
 
     private void validateType(final Comment parent) {
         if (isNotValidType(parent)) {
-            throw new BusinessException(ExceptionCode.INVALID_COMMENT_TYPE);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
         }
     }
 
     private void validatePostOfParentComment(final Comment parent) {
         if (!parent.post.equals(this.post)) {
-            throw new BusinessException(ExceptionCode.INVALID_POST_OF_PARENT_COMMENT);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_POST_OF_COMMENT);
         }
     }
 
@@ -139,7 +146,7 @@ public class Comment extends BaseDeleteEntity {
         }
 
         if (!writer.equals(this.writer)) {
-            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
+            throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
         }
     }
 

@@ -83,7 +83,7 @@ public class PostTest {
         BusinessException e = assertThrows(BusinessException.class,
                 () -> post.validateRight(user));
         assertThat(e.getCode())
-                .isEqualTo(ExceptionCode.POST_NOT_WRITER);
+                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
     }
 
     @DisplayName("수정 삭제 등 권한 검증 테스트: 작성자 탈퇴한 게시물")
@@ -125,13 +125,13 @@ public class PostTest {
                 () -> post.validateRight(writer)
         );
         assertThat(writerException.getCode())
-                .isEqualTo(ExceptionCode.POST_NOT_WRITER);
+                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
 
         BusinessException invalidMemberException = assertThrows(
                 BusinessException.class,
                 () -> post.validateRight(invalidMember)
         );
-        assertThat(invalidMemberException.getCode()).isEqualTo(ExceptionCode.POST_NOT_WRITER);
+        assertThat(invalidMemberException.getCode()).isEqualTo(ExceptionCode.INVALID_AUTHORITY);
 
         assertDoesNotThrow(() -> post.validateRight(master));
         assertDoesNotThrow(() -> post.validateRight(admin));
@@ -151,7 +151,7 @@ public class PostTest {
         //then
         assertThrows(BusinessException.class,
                 () -> post.update(newContent, invalidWriter),
-                ExceptionCode.POST_NOT_WRITER.getDescription()
+                ExceptionCode.INVALID_AUTHORITY.getDescription()
         );
     }
 

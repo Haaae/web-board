@@ -30,7 +30,7 @@ import toy.board.controller.api.response.annotation.ApiFoundError;
 import toy.board.controller.user.dto.request.EmailVerificationRequest;
 import toy.board.controller.user.dto.request.JoinRequest;
 import toy.board.controller.user.dto.request.LoginRequest;
-import toy.board.controller.user.dto.request.RolePromotionDto;
+import toy.board.controller.user.dto.request.RolePromotionRequest;
 import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
 import toy.board.controller.user.dto.response.EmailVerificationResponse;
 import toy.board.controller.user.dto.response.ExistResponse;
@@ -243,7 +243,7 @@ public class MemberController {
     @Operation(summary = "권한 변경", description = "사용자의 권한을 변경합니다.")
     @PostMapping("/roles/promotion")
     public ResponseEntity promoteRole(
-            @RequestBody @Valid final RolePromotionDto rolePromotionDto,
+            @RequestBody @Valid final RolePromotionRequest rolePromotionDto,
             final HttpServletRequest request
     ) {
 

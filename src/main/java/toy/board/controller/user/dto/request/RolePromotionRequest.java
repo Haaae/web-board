@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 @Schema(description = "권한 변경 요청 DTO")
-public record RolePromotionDto(
+public record RolePromotionRequest(
         @Schema(description = "권한 변경 대상 Id")
         @NotNull
         @Positive

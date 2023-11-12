@@ -26,9 +26,9 @@ import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
-import toy.board.controller.comment.dto.reponse.CommentIdDto;
+import toy.board.controller.comment.dto.reponse.CommentIdResponse;
 import toy.board.controller.comment.dto.request.CommentCreationRequest;
-import toy.board.controller.comment.dto.request.CommentUpdateDto;
+import toy.board.controller.comment.dto.request.CommentUpdateRequest;
 import toy.board.service.comment.CommentService;
 
 @Tag(name = "Comment", description = "Comment API Document")
@@ -45,7 +45,7 @@ public class CommentController {
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            implementation = CommentIdDto.class
+                            implementation = CommentIdResponse.class
                     )
             )
     )
@@ -54,7 +54,7 @@ public class CommentController {
     @Operation(summary = "댓글 생성", description = "댓글을 생성합니다.")
     @Parameter(name = "postId", description = "생성할 댓글이 소속된 게시물 Id")
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<CommentIdDto> createComment(
+    public ResponseEntity<CommentIdResponse> createComment(
             @RequestBody @Valid final CommentCreationRequest commentCreationRequest,
             @PathVariable("postId") final Long postId,
             final HttpServletRequest request
@@ -70,7 +70,7 @@ public class CommentController {
         );
 
         return new ResponseEntity<>(
-                CommentIdDto.of(commentId),
+                CommentIdResponse.of(commentId),
                 HttpStatus.CREATED
         );
     }
@@ -81,7 +81,7 @@ public class CommentController {
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            implementation = CommentIdDto.class
+                            implementation = CommentIdResponse.class
                     )
             )
     )
@@ -93,9 +93,9 @@ public class CommentController {
     @Parameter(name = "postId", description = "수정할 댓글이 소속된 게시물 Id")
     @Parameter(name = "commentId", description = "수정할 댓글 Id")
     @PatchMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<CommentIdDto> updateComment(
+    public ResponseEntity<CommentIdResponse> updateComment(
             @PathVariable("commentId") final Long commentId,
-            @RequestBody @Valid final CommentUpdateDto commentUpdateDto,
+            @RequestBody @Valid final CommentUpdateRequest commentUpdateDto,
             final HttpServletRequest request
 
     ) {
@@ -106,7 +106,7 @@ public class CommentController {
         );
 
         return ResponseEntity.ok(
-                CommentIdDto.of(updatedCommentId)
+                CommentIdResponse.of(updatedCommentId)
         );
     }
 

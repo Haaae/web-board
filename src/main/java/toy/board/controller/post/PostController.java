@@ -31,9 +31,9 @@ import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
-import toy.board.controller.post.dto.PostCreationRequest;
-import toy.board.controller.post.dto.PostIdDto;
-import toy.board.controller.post.dto.PostUpdateDto;
+import toy.board.controller.post.dto.reponse.PostIdResponse;
+import toy.board.controller.post.dto.request.PostCreationRequest;
+import toy.board.controller.post.dto.request.PostUpdateRequest;
 import toy.board.domain.post.Post;
 import toy.board.repository.post.PostRepository;
 import toy.board.service.post.PostService;
@@ -48,7 +48,7 @@ public class PostController {
 
     private final PostService postService;
     private final PostRepository postRepository;
-    
+
     /*
      * size == 0 or (page and size < (0 or String)) -> 400 error
      *
@@ -109,7 +109,7 @@ public class PostController {
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            implementation = PostIdDto.class
+                            implementation = PostIdResponse.class
                     )
             )
     )
@@ -117,7 +117,7 @@ public class PostController {
     @ApiAuthenticationError
     @Operation(summary = "게시물 생성", description = "게시물을 생성합니다.")
     @PostMapping
-    public ResponseEntity<PostIdDto> createPost(
+    public ResponseEntity<PostIdResponse> createPost(
             @RequestBody @Valid final PostCreationRequest postCreationRequest,
             final HttpServletRequest request
     ) {
@@ -130,7 +130,7 @@ public class PostController {
         );
 
         return new ResponseEntity<>(
-                PostIdDto.from(postId),
+                PostIdResponse.from(postId),
                 HttpStatus.CREATED
         );
     }
@@ -143,7 +143,7 @@ public class PostController {
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            implementation = PostIdDto.class
+                            implementation = PostIdResponse.class
                     )
             )
     )
@@ -154,8 +154,8 @@ public class PostController {
     @Operation(summary = "게시물 수정", description = "게시물을 수정합니다.")
     @Parameter(name = "postId", description = "수정할 게시물 Id")
     @PatchMapping("/{postId}")
-    public ResponseEntity<PostIdDto> updatePost(
-            @RequestBody @Valid final PostUpdateDto postUpdateDto,
+    public ResponseEntity<PostIdResponse> updatePost(
+            @RequestBody @Valid final PostUpdateRequest postUpdateDto,
             @PathVariable("postId") final Long postId,
             final HttpServletRequest request
     ) {
@@ -168,7 +168,7 @@ public class PostController {
         );
 
         return ResponseEntity.ok(
-                PostIdDto.from(updatedPostId)
+                PostIdResponse.from(updatedPostId)
         );
     }
 

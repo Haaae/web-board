@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
 import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
-import toy.board.controller.mypage.dto.MyCommentDto;
-import toy.board.controller.mypage.dto.MyInfoDto;
-import toy.board.controller.mypage.dto.MyPostDto;
+import toy.board.controller.mypage.dto.response.MyCommentResponse;
+import toy.board.controller.mypage.dto.response.MyInfoResponse;
+import toy.board.controller.mypage.dto.response.MyPostResponse;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.Member;
@@ -48,7 +48,7 @@ public class MyPageController {
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            implementation = MyInfoDto.class
+                            implementation = MyInfoResponse.class
                     )
             )
     )
@@ -57,13 +57,13 @@ public class MyPageController {
     @Operation(summary = "내 정보", description = "mypage에 사용되는 내 정보를 불러옵니다.")
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<MyInfoDto> load(final HttpServletRequest request) {
+    public ResponseEntity<MyInfoResponse> load(final HttpServletRequest request) {
         Long memberId = getMemberIdFrom(request);
 
         Member member = findMemberWithFetchJoinProfile(memberId);
 
         return ResponseEntity.ok(
-                MyInfoDto.of(member)
+                MyInfoResponse.of(member)
         );
     }
 
@@ -81,7 +81,7 @@ public class MyPageController {
     @Operation(summary = "내가 작성한 게시물 목록 조회", description = "회원이 작성한 게시물 목록을 불러옵니다.")
     @GetMapping("/posts")
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<MyPostDto>> getPosts(
+    public ResponseEntity<Page<MyPostResponse>> getPosts(
             @PageableDefault(
                     size = 5,
                     page = 0,
@@ -94,7 +94,7 @@ public class MyPageController {
         Page<Post> page = postRepository.findAllByWriterIdFetchJoinWriterAndProfile(memberId,
                 pageable);
         return ResponseEntity.ok(
-                page.map(MyPostDto::of)
+                page.map(MyPostResponse::of)
         );
     }
 
@@ -112,7 +112,7 @@ public class MyPageController {
     @Operation(summary = "내가 작성한 댓글 목록 조회", description = "회원이 작성한 댓글 목록을 불러옵니다.")
     @GetMapping("/comments")
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<MyCommentDto>> getComments(
+    public ResponseEntity<Page<MyCommentResponse>> getComments(
             @PageableDefault(
                     size = 5,
                     page = 0,
@@ -127,7 +127,7 @@ public class MyPageController {
                         pageable);
 
         return ResponseEntity.ok(
-                page.map(MyCommentDto::of)
+                page.map(MyCommentResponse::of)
         );
 
     }

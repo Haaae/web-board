@@ -1,13 +1,13 @@
-package toy.board.controller.mypage.dto;
+package toy.board.controller.mypage.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import toy.board.domain.post.Post;
 
-@Schema(description = "사용자 작성 게시물 DTO")
-public record MyPostDto(
+@Schema(description = "사용자 작성 게시물 응답 DTO")
+public record MyPostResponse(
 
-        @Schema(description = "게시물 Id", example = "1")
+        @Schema(description = "게시물 Id")
         Long postId,
         @Schema(description = "제목")
         String title,
@@ -23,8 +23,8 @@ public record MyPostDto(
         int commentCount
 ) {
 
-    public static MyPostDto of(Post post) {
-        return new MyPostDto(
+    public static MyPostResponse of(Post post) {
+        return new MyPostResponse(
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),

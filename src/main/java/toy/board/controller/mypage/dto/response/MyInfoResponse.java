@@ -1,10 +1,10 @@
-package toy.board.controller.mypage.dto;
+package toy.board.controller.mypage.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import toy.board.domain.user.Member;
 
 @Schema(description = "내 정보 DTO")
-public record MyInfoDto(
+public record MyInfoResponse(
         @Schema(description = "사용자 아이디", example = "google@gmail.com")
         String username,
         @Schema(description = "사용자 닉네임", example = "ImUser")
@@ -15,8 +15,8 @@ public record MyInfoDto(
         long commentCount
 ) {
 
-    public static MyInfoDto of(Member member) {
-        return new MyInfoDto(
+    public static MyInfoResponse of(Member member) {
+        return new MyInfoResponse(
                 member.getUsername(),
                 member.getNickname(),
                 member.getPostCount(),

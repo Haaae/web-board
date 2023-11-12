@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import toy.board.domain.post.Post;
 
 @Schema(description = "게시물 조회 정보 DTO")
-public record PostDto(
+public record PostResponse(
         @Schema(description = "게시물 Id")
         @Positive
         Long postId,
@@ -28,8 +28,8 @@ public record PostDto(
         @Schema(description = "댓글수")
         int commentCount
 ) {
-    public static PostDto of(final Post post) {
-        return new PostDto(
+    public static PostResponse of(final Post post) {
+        return new PostResponse(
                 post.getId(),
                 post.getWriterId(),
                 post.getWriterNickname(),

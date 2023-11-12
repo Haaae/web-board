@@ -37,8 +37,8 @@ import toy.board.controller.post.dto.request.PostUpdateRequest;
 import toy.board.domain.post.Post;
 import toy.board.repository.post.PostRepository;
 import toy.board.service.post.PostService;
-import toy.board.service.post.dto.PostDetailDto;
-import toy.board.service.post.dto.PostDto;
+import toy.board.service.post.dto.PostDetailResponse;
+import toy.board.service.post.dto.PostResponse;
 
 @Tag(name = "Post", description = "Post API Document")
 @Controller
@@ -71,7 +71,7 @@ public class PostController {
     @Operation(summary = "모든 게시물 목록 조회", description = "모든 게시물을 페이징하여 조회합니다.")
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<Page<PostDto>> getPosts(
+    public ResponseEntity<Page<PostResponse>> getPosts(
             @PageableDefault(
                     size = 5,
                     page = 0,
@@ -81,7 +81,7 @@ public class PostController {
     ) {
         Page<Post> page = postRepository.findAllWithFetchJoinWriterAndProfile(pageable);
         return ResponseEntity.ok(
-                page.map(PostDto::of)
+                page.map(PostResponse::of)
         );
     }
 
@@ -91,15 +91,15 @@ public class PostController {
             content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(
-                            implementation = PostDetailDto.class
+                            implementation = PostDetailResponse.class
                     )
             )
     )
     @Operation(summary = "게시물 상세 조회", description = "게시물 상세 정보를 조회합니다.")
     @Parameter(name = "postId", description = "조회할 게시물 Id")
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDetailDto> getPost(@PathVariable("postId") final Long postId) {
-        PostDetailDto postDetail = postService.getPostDetail(postId);
+    public ResponseEntity<PostDetailResponse> getPost(@PathVariable("postId") final Long postId) {
+        PostDetailResponse postDetail = postService.getPostDetail(postId);
         return ResponseEntity.ok(postDetail);
     }
 

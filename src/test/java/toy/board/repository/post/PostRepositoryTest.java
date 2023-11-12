@@ -27,7 +27,7 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-import toy.board.service.post.dto.PostDto;
+import toy.board.service.post.dto.PostResponse;
 
 @SpringBootTest
 @Transactional
@@ -167,9 +167,9 @@ class PostRepositoryTest {
 
         assertThatNoException()
                 .isThrownBy(() ->
-                        PostDto.of(findPostGet)
+                        PostResponse.of(findPostGet)
                 );
-        PostDto postDto = PostDto.of(findPostGet);
+        PostResponse postDto = PostResponse.of(findPostGet);
         System.out.println("postDto = " + postDto);
     }
 

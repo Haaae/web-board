@@ -1,4 +1,4 @@
-package toy.board.repository.comment.dto;
+package toy.board.service.post.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
@@ -8,7 +8,7 @@ import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 
 @Schema(description = "댓글 조회 정보 DTO")
-public record CommentDto(
+public record CommentResponse(
         @Schema(description = "댓글 Id", example = "1")
         @Positive
         Long commentId,
@@ -28,7 +28,7 @@ public record CommentDto(
         @Schema(description = "생성 일자", example = "2021-11-08T11:44:30.327959")
         LocalDateTime createdDate,
         @Schema(description = "답글 목록", nullable = true)
-        CommentListDto replies
+        CommentsResponse replies
 ) {
 
     /**
@@ -37,8 +37,8 @@ public record CommentDto(
      * @param comment CommentType.COMMENT인 Comment
      * @return replies가 존재하는 CommentDto
      */
-    public static CommentDto createCommentTypeFrom(Comment comment) {
-        return new CommentDto(
+    public static CommentResponse createCommentTypeFrom(Comment comment) {
+        return new CommentResponse(
                 comment.getId(),
                 comment.getWriterId(),
                 comment.getWriterNickname(),
@@ -47,15 +47,15 @@ public record CommentDto(
                 comment.isDeleted(),
                 comment.isEdited(),
                 comment.getCreatedDate(),
-                new CommentListDto(
+                new CommentsResponse(
                         convertRepliesToCommentDtoCollection(comment.getReplies())
                 )
         );
     }
 
-    private static List<CommentDto> convertRepliesToCommentDtoCollection(List<Comment> replies) {
+    private static List<CommentResponse> convertRepliesToCommentDtoCollection(List<Comment> replies) {
         return replies.stream()
-                .map(CommentDto::createReplyTypeFrom)
+                .map(CommentResponse::createReplyTypeFrom)
                 .toList();
     }
 
@@ -65,8 +65,8 @@ public record CommentDto(
      * @param comment CommentType.REPLY인 Comment를 비롯한 replies에 접근할 필요없는 모든 Comment
      * @return replies가 null인 CommentDto
      */
-    public static CommentDto createReplyTypeFrom(Comment comment) {
-        return new CommentDto(
+    public static CommentResponse createReplyTypeFrom(Comment comment) {
+        return new CommentResponse(
                 comment.getId(),
                 comment.getWriterId(),
                 comment.getWriterNickname(),

@@ -1,4 +1,4 @@
-package toy.board.repository.comment.dto;
+package toy.board.service.post.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -6,12 +6,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
 
-// TODO: 2023-11-10 CommentListDto -> CommentsDto로 변경
-@Schema(description = "댓글 컬렉션 dto")
-public record CommentListDto(
+@Schema(description = "댓글 컬렉션 응답 dto")
+public record CommentsResponse(
         @Schema(description = "댓글 컬렉션")
-        List<CommentDto> commentDtos
+        List<CommentResponse> commentDtos,
+        int count
 ) {
+
+    public CommentsResponse(List<CommentResponse> commentDtos) {
+        this(commentDtos, countTotalComment(commentDtos));
+    }
 
     /**
      * Post 엔티티를 가져올 때 해당 Post의 모든 Comment를 fetch join으로 가져온다. Comment는 Comment와 Reply 두 타입으로 나뉜다. Reply 타입은 replies
@@ -23,37 +27,32 @@ public record CommentListDto(
      * @param post 해당 post의 Comment를 CommentListDto로 변환
      * @return 타입에 따라 계층적으로 구성된 CommentListDto
      */
-    public static CommentListDto of(Post post) {
-        return new CommentListDto(
+    public static CommentsResponse of(Post post) {
+        return new CommentsResponse(
                 post.getComments()
                         .stream()
                         .filter(Comment::isCommentType)
-                        .map(CommentDto::createCommentTypeFrom)
-                        .toList()
+                        .map(CommentResponse::createCommentTypeFrom)
+                        .toList(),
+                post.commentCount()
         );
     }
 
     // TODO: 2023-11-10 생성자에서 List<CommentDto>를 받았을 때 한번만 처리하도록 변경
-    public int countTotalComment() {
-        return commentDtos.size() + calculateRepliesCount();
+    private static int countTotalComment(List<CommentResponse> commentDtos) {
+        return commentDtos.size() + calculateRepliesCount(commentDtos);
     }
 
-    private int calculateRepliesCount() {
+    private static int calculateRepliesCount(List<CommentResponse> commentDtos) {
         AtomicInteger countTotal = new AtomicInteger();
         commentDtos.stream()
-                .filter(CommentDto::isCommentType)
+                .filter(CommentResponse::isCommentType)
                 .forEach(c ->
                         countTotal.addAndGet(
                                 c.replies()
-                                        .countTotalComment()
+                                        .count()
                         )
                 );
         return countTotal.get();
-    }
-
-    private long countCommentType() {
-        return commentDtos.stream()
-                .filter(CommentDto::isCommentType)
-                .count();
     }
 }

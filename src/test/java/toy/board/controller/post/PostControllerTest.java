@@ -21,10 +21,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.constant.SessionConst;
-import toy.board.controller.post.dto.CommentCreationRequest;
-import toy.board.controller.post.dto.CommentUpdateDto;
-import toy.board.controller.post.dto.PostCreationRequest;
-import toy.board.controller.post.dto.PostUpdateDto;
+import toy.board.controller.post.dto.request.PostCreationRequest;
+import toy.board.controller.post.dto.request.PostUpdateRequest;
 import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
@@ -236,255 +234,6 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    @DisplayName("댓글 생성: 성공")
-    @Test
-    public void whenCreateCommentWithSession_thenUnauthorizedFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.COMMENT, null);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("대댓글 생성: 성공")
-    @Test
-    public void createComment_success() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long commentId = this.commentId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.REPLY, commentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    // 세션 없음
-    @DisplayName("Comment 생성 실패: 세션 없음")
-    @Test
-    public void whenCreateCommentWithNoSession_thenExceptionThrow() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long commentId = this.commentId;
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.REPLY, commentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("Comment 생성 실패: comment 생성 시 commentId가 null이 아님")
-    @Test
-    public void PostControllerTest() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long commentId = this.commentId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.COMMENT, commentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("Comment 생성 실패: postId가 유효하지 않음")
-    @Test
-    public void whenCreateCommentInvalidPostId_theFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long invalidPostId = -1L;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.COMMENT, null);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + invalidPostId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment 생성 실패: reply 생성 시 commentId가 유효하지 않음")
-    @Test
-    public void whenCreateCommentInvalidCommentId_theFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long invalidCommentId = -1L;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.COMMENT, invalidCommentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment 생성 실패: reply 생성 시 commentId의 타입이 reply")
-    @Test
-    public void whenCreateCommentInvalidCommentType_theFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long replyId = this.replyId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.REPLY, replyId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment 생성 실패: reply 생성 시 commentId가 null임")
-    @Test
-    public void whenCreateCommentInvalidCommentIsNull_theFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", CommentType.REPLY, null);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment 생성 실패: empty content")
-    @Test
-    public void whenCreateCommentEmptyContent_theFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long commentId = this.commentId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest(null, CommentType.REPLY, commentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment 생성 실패: content length 초과")
-    @Test
-    public void whenCreateCommentTooLongLength_theFail() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long commentId = this.commentId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest(tooLongContent, CommentType.REPLY, commentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("댓글 생성 실패: null type")
-    @Test
-    public void whenCreateCommentTypeNull() throws Exception {
-        //given
-        Long memberId = this.memberId;
-        Long postId = this.postId;
-        Long commentId = this.commentId;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        CommentCreationRequest request =
-                new CommentCreationRequest("content", null, commentId);
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments";
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.post(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
     // update post 성공
     @DisplayName("update post 성공")
     @Test
@@ -495,7 +244,7 @@ class PostControllerTest {
         Long writerId = post.getWriterId();
         session.setAttribute(SessionConst.LOGIN_MEMBER, writerId);
         //when
-        PostUpdateDto request = new PostUpdateDto("content");
+        PostUpdateRequest request = new PostUpdateRequest("content");
         String content = mapper.writeValueAsString(request);
         String url = POST_URL + "/" + postId;
         //then
@@ -515,7 +264,7 @@ class PostControllerTest {
         Long postId = this.postId;
         Post post = em.find(Post.class, postId);
         //when
-        PostUpdateDto request = new PostUpdateDto("content");
+        PostUpdateRequest request = new PostUpdateRequest("content");
         String content = mapper.writeValueAsString(request);
         String url = POST_URL + "/" + postId;
         //then
@@ -536,7 +285,7 @@ class PostControllerTest {
         Long memberId = post.getWriterId() + 1;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         //when
-        PostUpdateDto request = new PostUpdateDto("content");
+        PostUpdateRequest request = new PostUpdateRequest("content");
         String content = mapper.writeValueAsString(request);
         String url = POST_URL + "/" + postId;
         //then
@@ -557,7 +306,7 @@ class PostControllerTest {
         Long memberId = this.memberId;
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         //when
-        PostUpdateDto request = new PostUpdateDto("content");
+        PostUpdateRequest request = new PostUpdateRequest("content");
         String content = mapper.writeValueAsString(request);
         String url = POST_URL + "/" + invalidPostId;
         //then
@@ -579,7 +328,7 @@ class PostControllerTest {
         Long memberId = post.getWriterId();
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         //when
-        PostUpdateDto request = new PostUpdateDto(
+        PostUpdateRequest request = new PostUpdateRequest(
                 tooLongContent +
                         tooLongContent +
                         tooLongContent +
@@ -612,159 +361,9 @@ class PostControllerTest {
         Long memberId = post.getWriterId();
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
         //when
-        PostUpdateDto request = new PostUpdateDto(null);
+        PostUpdateRequest request = new PostUpdateRequest(null);
         String content = mapper.writeValueAsString(request);
         String url = POST_URL + "/" + postId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.patch(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment update 성공")
-    @Test
-    public void commentUpdate_success() throws Exception {
-        //given
-        Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        Long commentId = this.commentId;
-        //when
-        CommentUpdateDto request = new CommentUpdateDto("content");
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.patch(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment update 실패 - 존재하지 않는 comment id")
-    @Test
-    public void whenCommentUpdateWithNoExistCommentId_theFail() throws Exception {
-        //given
-        Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        Long commentId = -1L;
-        //when
-        CommentUpdateDto request = new CommentUpdateDto("content");
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.patch(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment update 실패 - 세션 없음")
-    @Test
-    public void whenCommentUpdateWithNoSession_theFail() throws Exception {
-        //given
-        Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
-        Long commentId = this.commentId;
-        //when
-        CommentUpdateDto request = new CommentUpdateDto("content");
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.patch(url)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment update 실패 - 권한 없는 사용자")
-    @Test
-    public void whenCommentUpdateWithNoRightUser_theFail() throws Exception {
-        //given
-        Long postId = this.postId;
-
-        Member member = MemberTest.create("invalid", "invalid", UserRole.USER);
-        em.persist(member);
-        Long memberId = member.getId();
-
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        Long commentId = this.commentId;
-
-        //when
-        CommentUpdateDto request = new CommentUpdateDto("content");
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.patch(url)
-                        .content(content)
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isForbidden())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment update 실패 - 빈 본문")
-    @Test
-    public void whenUpdateCommentWithEmptyContent_theFail() throws Exception {
-        //given
-        Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        Long commentId = this.commentId;
-        //when
-        CommentUpdateDto request = new CommentUpdateDto("");
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.patch(url)
-                        .session(session)
-                        .content(content)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("comment update 실패 - 너무 긴 본문")
-    @Test
-    public void whenUpdateCommentWithTooLongContent_theFail() throws Exception {
-        //given
-        Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        Long commentId = this.commentId;
-        //when
-        CommentUpdateDto request = new CommentUpdateDto(
-                tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent +
-                        tooLongContent
-        );
-        String content = mapper.writeValueAsString(request);
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
         //then
         mockMvc.perform(MockMvcRequestBuilders.patch(url)
                         .session(session)
@@ -869,27 +468,7 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    @DisplayName("존재하지 않는 commentId")
-    @Test
-    public void whenDeleteNoExistCommentId_theFail() throws Exception {
-        //given
-        Long postId = this.postId;
-        Post post = em.find(Post.class, postId);
-        Long memberId = post.getWriterId();
-        Long commentId = -1L;
-        session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
-        //when
-        String url = POST_URL + "/" + postId + "/comments/" + commentId;
-        //then
-        mockMvc.perform(MockMvcRequestBuilders.delete(url)
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @DisplayName("세션 없음")
+    @DisplayName("게시물 삭제 실패: 세션 없음")
     @Test
     public void whenDeleteNoSession_theFail() throws Exception {
         //given
@@ -906,7 +485,7 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    @DisplayName("권한 없는 사용자")
+    @DisplayName("게시물 삭제 실패: 권한 없는 사용자")
     @Test
     public void whenDeleteNoRight_theFail() throws Exception {
         //given

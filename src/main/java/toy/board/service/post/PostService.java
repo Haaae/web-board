@@ -10,11 +10,11 @@ import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.repository.comment.CommentRepository;
-import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
-import toy.board.service.post.dto.PostDetailDto;
-import toy.board.service.post.dto.PostDto;
+import toy.board.service.post.dto.CommentsResponse;
+import toy.board.service.post.dto.PostDetailResponse;
+import toy.board.service.post.dto.PostResponse;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,17 +41,17 @@ public class PostService {
      * @return
      */
     @Transactional
-    public PostDetailDto getPostDetail(final Long postId) {
+    public PostDetailResponse getPostDetail(final Long postId) {
         // Post, Post.writer, Post.writer.profile, Profile.comments를 fetch join으로 가져옴
         Post post = findPostWithFetchJoinWriterAndProfileAndComments(postId);
 
         post.increaseHits();
 
-        CommentListDto commentListDto = CommentListDto.of(post);
+        CommentsResponse commentListDto = CommentsResponse.of(post);
 
-        PostDto postDto = PostDto.of(post);
+        PostResponse postDto = PostResponse.of(post);
 
-        return new PostDetailDto(postDto, commentListDto);
+        return new PostDetailResponse(postDto, commentListDto);
     }
 
     @Transactional

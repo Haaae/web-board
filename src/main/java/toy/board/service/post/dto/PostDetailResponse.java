@@ -1,15 +1,14 @@
 package toy.board.service.post.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import toy.board.repository.comment.dto.CommentListDto;
 
 @Schema(description = "게시물 상세 조회 DTO")
-public record PostDetailDto(
+public record PostDetailResponse(
 
         @Schema(description = "게시물 상세")
-        PostDto post,
+        PostResponse post,
         @Schema(description = "댓글 목록")
-        CommentListDto comments
+        CommentsResponse comments
 ) {
 
 }

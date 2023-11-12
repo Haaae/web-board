@@ -13,6 +13,7 @@ import toy.board.domain.post.Post;
 import toy.board.domain.post.PostTest;
 import toy.board.domain.user.Member;
 import toy.board.repository.post.PostRepository;
+import toy.board.service.post.dto.CommentsResponse;
 
 @SpringBootTest
 @Transactional
@@ -43,10 +44,10 @@ class CommentListDtoTest {
         //when
         int totalCommentCount = commentCount * (replyCount + 1);
         Post findPost = postRepository.findPostWithFetchJoinWriterAndProfile(postId).get();
-        CommentListDto commentListDto = CommentListDto.of(findPost);
+        CommentsResponse commentListDto = CommentsResponse.of(findPost);
 
         //then
-        Assertions.assertThat(commentListDto.countTotalComment()).isEqualTo(totalCommentCount);
+        Assertions.assertThat(commentListDto.count()).isEqualTo(totalCommentCount);
         Assertions.assertThat(post.getComments().size()).isEqualTo(totalCommentCount);
     }
 

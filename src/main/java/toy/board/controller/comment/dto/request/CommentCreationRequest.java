@@ -1,4 +1,4 @@
-package toy.board.controller.post.dto;
+package toy.board.controller.comment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

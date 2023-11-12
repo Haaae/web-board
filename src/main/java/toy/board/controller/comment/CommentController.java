@@ -26,9 +26,9 @@ import toy.board.controller.api.response.annotation.ApiAuthenticationError;
 import toy.board.controller.api.response.annotation.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.ApiFoundError;
-import toy.board.controller.post.dto.CommentCreationRequest;
-import toy.board.controller.post.dto.CommentIdDto;
-import toy.board.controller.post.dto.CommentUpdateDto;
+import toy.board.controller.comment.dto.reponse.CommentIdDto;
+import toy.board.controller.comment.dto.request.CommentCreationRequest;
+import toy.board.controller.comment.dto.request.CommentUpdateDto;
 import toy.board.service.comment.CommentService;
 
 @Tag(name = "Comment", description = "Comment API Document")

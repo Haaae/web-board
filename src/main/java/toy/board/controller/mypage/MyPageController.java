@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import toy.board.constant.SessionConst;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
+import toy.board.controller.api.response.annotation.common.ApiPageError;
 import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
 import toy.board.controller.mypage.dto.response.MyCommentResponse;
 import toy.board.controller.mypage.dto.response.MyInfoResponse;
@@ -78,6 +79,7 @@ public class MyPageController {
             )
     )
     @ApiAuthenticationError
+    @ApiPageError
     @Operation(summary = "내가 작성한 게시물 목록 조회", description = "회원이 작성한 게시물 목록을 불러옵니다.")
     @GetMapping("/posts")
     @Transactional(readOnly = true)
@@ -109,6 +111,7 @@ public class MyPageController {
             )
     )
     @ApiAuthenticationError
+    @ApiPageError
     @Operation(summary = "내가 작성한 댓글 목록 조회", description = "회원이 작성한 댓글 목록을 불러옵니다.")
     @GetMapping("/comments")
     @Transactional(readOnly = true)

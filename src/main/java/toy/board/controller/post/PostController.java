@@ -30,6 +30,7 @@ import toy.board.constant.SessionConst;
 import toy.board.controller.api.response.annotation.common.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
+import toy.board.controller.api.response.annotation.common.ApiPageError;
 import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
 import toy.board.controller.post.dto.reponse.PostIdResponse;
 import toy.board.controller.post.dto.request.PostCreationRequest;
@@ -68,6 +69,7 @@ public class PostController {
                     )
             )
     )
+    @ApiPageError
     @Operation(summary = "모든 게시물 목록 조회", description = "모든 게시물을 페이징하여 조회합니다.")
     @GetMapping
     @Transactional(readOnly = true)

@@ -38,7 +38,6 @@ public record CommentsResponse(
         );
     }
 
-    // TODO: 2023-11-10 생성자에서 List<CommentDto>를 받았을 때 한번만 처리하도록 변경
     private static int countTotalComment(List<CommentResponse> commentDtos) {
         return commentDtos.size() + calculateRepliesCount(commentDtos);
     }

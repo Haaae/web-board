@@ -160,7 +160,6 @@ public class MemberController {
     @GetMapping("/usernames/{username}/exist")
     public ResponseEntity<ExistResponse> findUserByUsername(@PathVariable final String username) {
         boolean isExists = memberRepository.existsByUsername(username);
-        // TODO: 2023-11-10 UsernameController로 이동
         return ResponseEntity.ok(
                 new ExistResponse(isExists)
         );

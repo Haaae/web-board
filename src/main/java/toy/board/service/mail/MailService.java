@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+import toy.board.service.cache.CacheService;
 import toy.board.service.member.MemberService;
-import toy.board.service.redis.RedisService;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +28,7 @@ public class MailService {
     private final String EMAIL_TITLE = "My Poker Hand History 이메일 인증 번호";
 
     private final JavaMailSender mailSender;
-    private final RedisService redisService;
+    private final CacheService cacheService;
     private final MemberService memberService;
 
     @Transactional
@@ -37,13 +37,13 @@ public class MailService {
         String authCode = createAuthCode();
         sendMail(email, EMAIL_TITLE, authCode);
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
-        redisService.setValues(REDIS_PREFIX + email, authCode, authCodeExpirationMillis);
+        cacheService.setValues(REDIS_PREFIX + email, authCode, authCodeExpirationMillis);
     }
 
     @Transactional
     public boolean verifiedCode(final String email, final String authCode) {
         memberService.checkUsernameDuplication(email);
-        return redisService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
+        return cacheService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
     }
 
     private String createAuthCode() {

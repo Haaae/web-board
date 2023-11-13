@@ -1,4 +1,4 @@
-package toy.board.service.redis;
+package toy.board.service.cache;
 
 import java.util.Optional;
 import lombok.AccessLevel;
@@ -10,17 +10,17 @@ import toy.board.repository.redis.RedisRepository;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
-public class RedisService {
+public class RedisService implements CacheService {
 
     private final RedisRepository redisRepository;
 
     /**
-     *
      * @param key
      * @param values
      * @return return true if values exist in DB and same to parameter with delete it.
      */
     @Transactional
+    @Override
     public boolean deleteIfValueExistAndEqualTo(final String key, final String values) {
         boolean isDeleted = false;
         Optional<String> findValues = redisRepository.getValues(key);
@@ -33,7 +33,8 @@ public class RedisService {
     }
 
     @Transactional
-    public void setValues(final String key, final String value, final Long expiredTime) {
+    @Override
+    public void setValues(final String key, final String value, final long expiredTime) {
         redisRepository.setValues(key, value, expiredTime);
     }
 

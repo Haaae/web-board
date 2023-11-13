@@ -25,6 +25,7 @@ import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError
 import toy.board.controller.api.response.annotation.common.ApiDuplicationError;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
 import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
+import toy.board.controller.api.response.annotation.member.ApiLoginPasswordError;
 import toy.board.controller.api.response.annotation.member.ApiLoginTypeError;
 import toy.board.controller.user.dto.request.JoinRequest;
 import toy.board.controller.user.dto.request.LoginRequest;
@@ -57,7 +58,7 @@ public class MemberController {
             )
     )
     @ApiBadRequestArgError
-    @ApiAuthenticationError
+    @ApiLoginPasswordError
     @ApiLoginTypeError
     @Operation(summary = "로그인", description = "로그인을 시도합니다.")
     @PostMapping("/login")

@@ -108,7 +108,7 @@ public class PostPageControllerTest {
         Member member = Member.builder(
                 "member",
                 new Login("password"),
-                Profile.builder("nickname").build(),
+                new Profile("nickname"),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

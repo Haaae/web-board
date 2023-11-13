@@ -271,8 +271,7 @@ class PostRepositoryTest {
 
     private Member persistMember(int index) {
         Login login = new Login("password");
-        Profile profile = Profile.builder("nick" + index)
-                .build();
+        Profile profile = new Profile("nick" + index);
 
         Member member = Member.builder(
                 "email" + index,

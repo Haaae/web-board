@@ -1,6 +1,9 @@
 package toy.board.repository.user;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +17,6 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -41,7 +40,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void init() {
-        this.profile = Profile.builder(nickname).build();
+        this.profile = new Profile(nickname);
         this.login = new Login(password);
         this.member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
 

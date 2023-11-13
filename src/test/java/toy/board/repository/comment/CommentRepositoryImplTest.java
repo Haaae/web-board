@@ -1,5 +1,7 @@
 package toy.board.repository.comment;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,8 +19,6 @@ import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -94,7 +94,7 @@ class CommentRepositoryImplTest {
         Member member = Member.builder(
                 "member",
                 new Login("password"),
-                Profile.builder("nickname").build(),
+                new Profile("nickname"),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

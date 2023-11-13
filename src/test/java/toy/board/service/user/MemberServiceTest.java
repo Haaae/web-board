@@ -52,7 +52,7 @@ class MemberServiceTest {
 
     @BeforeEach
     void init() {
-        this.profile = Profile.builder(nickname).build();
+        this.profile = new Profile(nickname);
         this.login = new Login(password);
         this.member = Member.builder(username, login, profile, loginType, userRole).build();
 
@@ -115,7 +115,7 @@ class MemberServiceTest {
         Member member = Member.builder(
                 username,
                 new Login(password),
-                Profile.builder(nickname).build(),
+                new Profile(nickname),
                 loginType,
                 UserRole.USER
         ).build();

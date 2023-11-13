@@ -11,8 +11,8 @@ public class MemberTest {
     public static Member create(String username, String nickname, UserRole role) {
         return Member.builder(
                 username,
-                Login.builder().encodedPassword("password").build(),
-                Profile.builder(nickname).build(),
+                new Login("password"),
+                new Profile(nickname),
                 LoginType.LOCAL_LOGIN,
                 role
         ).build();

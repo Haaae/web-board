@@ -53,9 +53,7 @@ public class MemberControllerLoginTest {
                 new Login(
                         passwordEncoder.encode(password)
                 ),
-                Profile.builder(
-                        "nickname"
-                ).build(),
+                new Profile("nickname"),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

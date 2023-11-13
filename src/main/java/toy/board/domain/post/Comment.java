@@ -22,6 +22,7 @@ import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+import toy.board.validator.Validator;
 
 @Entity
 @Getter
@@ -69,6 +70,8 @@ public class Comment extends BaseDeleteEntity {
             @NotNull final CommentType type,
             final Comment parent
     ) {
+        validate(post, writer, content);
+
         addCommentTo(post);
         addCommentTo(writer);
         this.content = content;
@@ -81,6 +84,12 @@ public class Comment extends BaseDeleteEntity {
             validatePostOfParentComment(parent);
             this.leaveReply(parent);
         }
+    }
+
+    private void validate(final Post post, final Member writer, final String content) {
+        Validator.notNull(post);
+        Validator.notNull(writer);
+        Validator.hasTextAndLength(content, CONTENT_LENGTH);
     }
 
     /**
@@ -126,8 +135,7 @@ public class Comment extends BaseDeleteEntity {
     }
 
     private boolean isValidReply(final Comment parent) {
-        return this.type == CommentType.REPLY && parent != null
-                && parent.type == CommentType.COMMENT;
+        return this.type == CommentType.REPLY && parent != null && parent.type == CommentType.COMMENT;
     }
 
     private boolean isValidComment(final Comment parent) {

@@ -22,6 +22,7 @@ import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+import toy.board.validator.Validator;
 
 @Entity
 @Getter
@@ -63,11 +64,19 @@ public class Post extends BaseEntity {
             @NotBlank final String content
     ) {
 
+        validate(writer, title, content);
+
         addPostTo(writer);
         this.title = title;
         this.content = content;
         this.hits = 0L;
         this.isEdited = false;
+    }
+
+    private static void validate(final Member writer, final String title, final String content) {
+        Validator.notNull(writer);
+        Validator.hasTextAndLength(title, TITLE_MAX_LENGTH);
+        Validator.hasTextAndLength(content, CONTENT_MAX_LENGTH);
     }
 
     /**

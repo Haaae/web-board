@@ -30,6 +30,7 @@ import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+import toy.board.validator.Validator;
 
 @Entity
 @Getter
@@ -92,20 +93,34 @@ public class Member extends BaseEntity {
     private List<Comment> comments = new ArrayList<>();
 
     public static MemberBuilder builder(
-            final String username,
-            final Login login,
-            final Profile profile,
-            final LoginType loginType,
-            final UserRole userRole) {
+            @NotNull final String username,
+            @NotNull final Login login,
+            @NotNull final Profile profile,
+            @NotNull final LoginType loginType,
+            @NotNull final UserRole userRole) {
+
+        validate(username, login, profile, loginType, userRole);
 
         return innerBuilder()
                 .username(username)
                 .login(login)
                 .profile(profile)
                 .loginType(loginType)
-                .role(userRole)
-                .comments(new ArrayList<>())
-                .posts(new ArrayList<>());
+                .role(userRole);
+    }
+
+    private static void validate(
+            final String username,
+            final Login login,
+            final Profile profile,
+            final LoginType loginType,
+            final UserRole userRole
+    ) {
+        Validator.hasTextAndLength(username, USER_ID_LENGTH);
+        Validator.notNull(login);
+        Validator.notNull(profile);
+        Validator.notNull(loginType);
+        Validator.notNull(userRole);
     }
 
     public void changeLogin(@NotNull final Login login) {

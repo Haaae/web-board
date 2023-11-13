@@ -1,10 +1,17 @@
 package toy.board.domain.auth;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import org.springframework.util.Assert;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.base.BaseEntity;
+import toy.board.validator.Validator;
 
 @Entity
 @Getter
@@ -22,9 +29,8 @@ public class Login extends BaseEntity {
     @Column(name = "password", nullable = false, length = PASSWORD_LENGTH)
     private String password;
 
-    @Builder
     public Login(@NotNull final String encodedPassword) {
-        Assert.hasText(encodedPassword, "패스워드가 null이거나 비어있습니다. class: Login.class");
+        Validator.hasText(encodedPassword);
 
         this.password = encodedPassword;
     }

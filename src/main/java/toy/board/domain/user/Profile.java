@@ -1,14 +1,22 @@
 package toy.board.domain.user;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import toy.board.domain.base.BaseEntity;
+import toy.board.validator.Validator;
 
 @Entity
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@Builder(builderMethodName = "innerBuilder")
 public class Profile extends BaseEntity {
 
     public static final int NICKNAME_LENGTH = 8;
@@ -21,9 +29,9 @@ public class Profile extends BaseEntity {
     @Column(name = "nickname", length = NICKNAME_LENGTH, nullable = false, unique = true)
     private String nickname;
 
-    public static ProfileBuilder builder(final String nickname) {
-        ProfileBuilder builder = Profile.innerBuilder();
+    public Profile(@NotNull final String nickname) {
+        Validator.hasTextAndLength(nickname, NICKNAME_LENGTH);
 
-        return builder.nickname(nickname);
+        this.nickname = nickname;
     }
 }

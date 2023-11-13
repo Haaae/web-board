@@ -85,7 +85,7 @@ public class MemberService {
 
     private void checkPassword(final String enteredPassword, final String password) {
         if (!passwordEncoder.matches(enteredPassword, password)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_AUTHENTICATION);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_PASSWORD);
         }
     }
 

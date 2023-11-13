@@ -14,7 +14,8 @@ public enum ExceptionCode {
 
     UNABLE_TO_SEND_EMAIL(500, "LOGIN-001", "이메일 검증 코드 발송 실패"),
     BAD_REQUEST_LOGIN_TYPE(400, "LOGIN-002", "로그인 타입이 일치하지 않음"),
-    BAD_REQUEST_AUTHENTICATION(401, "LOGIN-003", "회원 인증 실패"),
+    BAD_REQUEST_PASSWORD(400, "LOGIN-003", "비밀번호 불일치"),
+    BAD_REQUEST_AUTHENTICATION(401, "LOGIN-004", "회원 인증 실패"),
 
     BAD_REQUEST_COMMENT_TYPE(400, "COMMENT-001", "유효하지 않은 댓글 타입"),
     BAD_REQUEST_POST_OF_COMMENT(400, "COMMENT-002", "댓글과 답글의 게시물 불일치"),

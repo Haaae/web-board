@@ -45,7 +45,7 @@ public class MemberService {
         checkUsernameDuplication(username);
         checkNicknameDuplication(nickname);
 
-        Profile profile = Profile.builder(nickname).build();
+        Profile profile = new Profile(nickname);
         Login login = new Login(passwordEncoder.encode(password));
         Member member = Member.builder(
                         username,

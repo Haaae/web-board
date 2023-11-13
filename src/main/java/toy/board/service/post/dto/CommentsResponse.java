@@ -9,7 +9,7 @@ import toy.board.domain.post.Post;
 @Schema(description = "댓글 컬렉션 응답 dto")
 public record CommentsResponse(
         @Schema(description = "댓글 컬렉션")
-        List<CommentResponse> commentDtos,
+        List<CommentResponse> comments,
         int count
 ) {
 

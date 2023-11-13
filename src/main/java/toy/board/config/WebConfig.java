@@ -29,6 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .maxAge(maxAge);
     }
+
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
@@ -38,7 +39,15 @@ public class WebConfig implements WebMvcConfigurer {
                         "/users/login",
                         "/users/usernames/**",
                         "/users/nicknames/**",
-                        "/users/emails/**/**"
+                        "/users/emails/**/**",
+
+                        // -- Static resources
+                        "/css/**", "/images/**", "/js/**"
+                        // -- Swagger UI v2
+                        , "/v2/api-docs", "/swagger-resources/**"
+                        , "/swagger-ui.html", "/webjars/**", "/swagger/**"
+                        // -- Swagger UI v3 (Open API)
+                        , "/v3/api-docs/**", "/swagger-ui/**"
                 );
     }
 

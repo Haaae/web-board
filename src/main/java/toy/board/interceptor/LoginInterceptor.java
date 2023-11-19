@@ -23,7 +23,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) throws Exception {
+                             Object handler) throws Exception {
 
         if (isRequestDoesNotNeedCheck(request)) {
             return true;
@@ -37,7 +37,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     private void validate(final HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
-            throw new BusinessException(ExceptionCode.NOT_LOGIN_USER);
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_AUTHENTICATION);
         }
     }
 

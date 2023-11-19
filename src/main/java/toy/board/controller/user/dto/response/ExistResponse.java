@@ -1,7 +1,10 @@
 package toy.board.controller.user.dto.response;
 
-import toy.board.domain.user.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "존재 여부 확인 응답 DTO")
 public record ExistResponse(
+        @Schema(description = "존재 여부")
         boolean exist
-) {}
+) {
+}

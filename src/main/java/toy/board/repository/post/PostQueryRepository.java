@@ -1,13 +1,19 @@
 package toy.board.repository.post;
 
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import toy.board.repository.post.dto.PostDto;
+import toy.board.domain.post.Post;
+
+import java.util.Optional;
 
 public interface PostQueryRepository {
 
-    Page<PostDto> findAllPost(Pageable pageable);
+    Optional<Post> findPostWithFetchJoinWriterAndProfileAndComments(final Long postId);
 
-    Optional<PostDto> getPostDtoById(Long postId);
+    Optional<Post> findPostWithFetchJoinWriterAndProfile(final Long postId);
+
+    Page<Post> findAllWithFetchJoinWriterAndProfile(final Pageable pageable);
+
+    Page<Post> findAllByWriterIdFetchJoinWriterAndProfile(final Long writerId, final Pageable pageable);
+
 }

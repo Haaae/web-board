@@ -12,10 +12,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -23,13 +22,12 @@ import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
+import toy.board.validator.Validator;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"replies"})
+@ToString
 public class Comment extends BaseDeleteEntity {
 
     public static final int CONTENT_LENGTH = 1000;
@@ -53,11 +51,15 @@ public class Comment extends BaseDeleteEntity {
     @JoinColumn(name = "writer")
     private Member writer;
 
+    @Column(name = "isEdited", nullable = false)
+    private boolean isEdited;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id", updatable = false)
+    @ToString.Exclude
     private Comment parent;
 
 
@@ -68,45 +70,123 @@ public class Comment extends BaseDeleteEntity {
             @NotNull final CommentType type,
             final Comment parent
     ) {
-        this.post = post;
-        this.writer = writer;
+        validate(post, writer, content);
+
+        addCommentTo(post);
+        addCommentTo(writer);
         this.content = content;
         this.type = type;
+        this.isEdited = false;
 
-        validate(parent);
+        validateType(parent);
 
         if (type == CommentType.REPLY) {
+            validatePostOfParentComment(parent);
             this.leaveReply(parent);
         }
     }
 
-    public void update(@NotBlank final String content, @NotNull final Long writerId) {
-        validateRight(writerId);
-        this.content = content;
+    private void validate(final Post post, final Member writer, final String content) {
+        Validator.notNull(post);
+        Validator.notNull(writer);
+        Validator.hasTextAndLength(content, CONTENT_LENGTH);
     }
 
-    public void validateRight(final Long writerId) {
-        if (!writerId.equals(this.writer.getId())) {
-            throw new BusinessException(ExceptionCode.COMMENT_NOT_WRITER);
-        }
+    /**
+     * Member와 Comment의 양방향 매핑을 위한 메서드.
+     *
+     * @param writer Comment 작성자.
+     */
+    private void addCommentTo(final Member writer) {
+        this.writer = writer;
+        writer.addComment(this);
     }
+
+    /**
+     * Post와 Comment의 양방향 매핑을 위한 메서드
+     *
+     * @param post Comment가 소속된 게시물.
+     */
+    private void addCommentTo(final Post post) {
+        this.post = post;
+        post.addComment(this);
+    }
+
 
     private void leaveReply(final Comment parent) {
         this.parent = parent;
         parent.replies.add(this);
     }
 
-    private void validate(final Comment parent) {
-        if (this.type == CommentType.COMMENT && parent != null) {
-            throw new BusinessException(ExceptionCode.COMMENT_CAN_NOT_HAVE_PARENT);
+    private void validateType(final Comment parent) {
+        if (isNotValidType(parent)) {
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
+        }
+    }
+
+    private void validatePostOfParentComment(final Comment parent) {
+        if (!parent.post.equals(this.post)) {
+            throw new BusinessException(ExceptionCode.BAD_REQUEST_POST_OF_COMMENT);
+        }
+    }
+
+    private boolean isNotValidType(final Comment parent) {
+        return !(isValidComment(parent) || isValidReply(parent));
+    }
+
+    private boolean isValidReply(final Comment parent) {
+        return this.type == CommentType.REPLY && parent != null && parent.type == CommentType.COMMENT;
+    }
+
+    private boolean isValidComment(final Comment parent) {
+        return this.type == CommentType.COMMENT && parent == null;
+    }
+
+    public void update(@NotBlank final String content, @NotNull final Member writer) {
+        validateRight(writer);
+        this.content = content;
+        this.isEdited = true;
+    }
+
+    public void validateRight(final Member writer) {
+        if (writer.hasDeleteRight()) {
+            return;
         }
 
-        if (this.type == CommentType.REPLY && parent == null) {
-            throw new BusinessException(ExceptionCode.NULL_COMMENT);
+        if (!writer.equals(this.writer)) {
+            throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
         }
+    }
 
-        if (this.type == CommentType.REPLY && parent.type == CommentType.REPLY) {
-            throw new BusinessException(ExceptionCode.INVALID_COMMENT_TYPE);
+    public void applyWriterWithdrawal() {
+        this.writer = null;
+    }
+
+    public boolean isCommentType() {
+        return this.type == CommentType.COMMENT;
+    }
+
+    public List<Comment> getReplies() {
+        return Collections.unmodifiableList(
+                this.replies
+        );
+    }
+
+    public Long getWriterId() {
+        if (this.writer == null) {
+            return null;
         }
+        return this.writer.getId();
+    }
+
+    public String getWriterNickname() {
+        if (this.writer == null) {
+            return null;
+        }
+        return this.writer.getNickname();
+    }
+
+    public Long getPostId() {
+        return this.post.getId();
     }
 }

@@ -1,6 +1,8 @@
 package toy.board.exception;
 
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -14,37 +16,60 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RestApiControllerAdvice {
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
+            final DataIntegrityViolationException e) {
+        ExceptionCode code = ExceptionCode.INTEGRITY_VIOLATION;
+
+        log(e, code);
+        return new ResponseEntity<>(
+                new ErrorResponse(
+                        code.getCode(),
+                        code.getDescription()
+                ),
+                HttpStatus.valueOf(
+                        code.getStatus()
+                )
+        );
+    }
+
     /**
-     * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리.
-     * Bean Validation 중 발생한 오류는 자동으로 BindingReslut에 담기므로
-     * BindingResult의 모든 필드에러를 RestResponse.object로 반환
+     * Bean Validation 방식의 유효성 평가 중 오류 발생 시 오류 처리. Bean Validation 중 발생한 오류는 자동으로 BindingReslut에 담기므로 BindingResult의 모든
+     * 필드에러를 RestResponse.object로 반환
+     *
      * @param e
      * @return
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
-            MethodArgumentNotValidException e) {
-        ExceptionCode errorCode = ExceptionCode.INVALID_INPUT_VALUE;
+            final MethodArgumentNotValidException e) {
+        ExceptionCode errorCode = ExceptionCode.BAD_REQUEST_ARG;
 
         logAll(e);
         String message = buildMessage(e);
 
         return new ResponseEntity<>(
-                new ErrorResponse(errorCode.getCode(), message),
-                HttpStatus.valueOf(errorCode.getStatus())
+                new ErrorResponse(
+                        errorCode.getCode()
+                        , message
+                ),
+                HttpStatus.valueOf(
+                        errorCode.getStatus()
+                )
         );
     }
 
     /**
      * controller에서 오류가 발생했을 때, 발생한 오류의 클래스타입에 따라 오류 처리 지정
+     *
      * @param e
      * @return
      */
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessLogicException(BusinessException e) {
+    public ResponseEntity<ErrorResponse> handleBusinessLogicException(final BusinessException e) {
         ExceptionCode code = e.getCode();
 
-        logging(e.getClass().getSimpleName(), code.getCode(), code.getDescription());
+        log(e, code);
 
         return new ResponseEntity<>(
                 new ErrorResponse(code.getCode(), code.getDescription()),
@@ -53,23 +78,59 @@ public class RestApiControllerAdvice {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
+    public ResponseEntity<ErrorResponse> handleRuntimeException(final RuntimeException e) {
         ExceptionCode code = ExceptionCode.INTERNAL_SERVER_ERROR;
 
-        logging(e.getClass().getSimpleName(), code.getCode(), code.getDescription());
+        log(e, code);
 
         ErrorResponse response = new ErrorResponse(code.getCode(), e.getMessage());
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(code.getStatus()));
     }
 
-    private void logAll(MethodArgumentNotValidException e) {
-        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            logging(fieldError.getObjectName(), fieldError.getField(),
-                    fieldError.getDefaultMessage());
+    private void log(final RuntimeException e, final ExceptionCode code) {
+        logExceptionInfo(
+                e.getClass()
+                        .getSimpleName(),
+                code.getCode(),
+                code.getDescription()
+        );
+        logStackTrace(e.getStackTrace());
+    }
+
+    private void logExceptionInfo(final String className, final String field, final String message) {
+        log.info(
+                "=== Occurs exception. exception class: {}, field: {}, error message: {} ===",
+                className,
+                field,
+                message
+        );
+    }
+
+    private void logAll(final MethodArgumentNotValidException e) {
+        logAllExceptionInfo(
+                e.getBindingResult()
+                        .getFieldErrors()
+        );
+        logStackTrace(e.getStackTrace());
+    }
+
+    private static void logStackTrace(final StackTraceElement[] stackTrace) {
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            log.info("{}", stackTraceElement);
         }
     }
 
-    private String buildMessage(MethodArgumentNotValidException e) {
+    private void logAllExceptionInfo(List<FieldError> fieldErrors) {
+        for (FieldError fieldError : fieldErrors) {
+            logExceptionInfo(
+                    fieldError.getObjectName(),
+                    fieldError.getField(),
+                    fieldError.getDefaultMessage()
+            );
+        }
+    }
+
+    private String buildMessage(final MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         StringBuilder builder = new StringBuilder();
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
@@ -80,9 +141,5 @@ public class RestApiControllerAdvice {
         }
         builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
-    }
-
-    private void logging(final String className, final String field, final String message) {
-        log.info("=== Occurs exception. exception class: {}, field: {}, error message: {} ===", className, field, message);
     }
 }

@@ -1,15 +1,15 @@
 package toy.board.repository.comment;
 
-import static toy.board.domain.post.QComment.comment;
-
-import java.util.Comparator;
-import java.util.List;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import toy.board.domain.post.Comment;
-import toy.board.domain.post.CommentType;
-import toy.board.domain.post.QComment;
-import toy.board.repository.comment.dto.CommentDto;
-import toy.board.repository.comment.dto.CommentListDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
+
+import java.util.Optional;
+
+import static toy.board.domain.post.QComment.comment;
 
 public class CommentRepositoryImpl extends Querydsl4RepositorySupport
         implements CommentQueryRepository {
@@ -18,52 +18,64 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
         super(Comment.class);
     }
 
+    /**
+     * Comment 반환 시 Member, Profile을 fetch join한다.
+     * ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고,
+     * 연계하여 fetch join할 수 있다.
+     *
+     * @param id must not be {@literal null}.
+     * @return
+     */
     @Override
-    public CommentListDto getCommentListDtoByPostId(final Long postId) {
-        return new CommentListDto(
-                getComments(postId)
-                        .stream()
-                        .map(this::convertToDto)
-                        .toList()
+    public Optional<Comment> findCommentWithFetchJoinWriterAndProfile(final Long id) {
+        return Optional.ofNullable(
+                selectFromCommentWithFetchJoinWriterAndProfile()
+                        .where(comment.id.eq(id))
+                        .fetchOne()
         );
     }
 
-    private List<Comment> getComments(final Long postId) {
-        QComment reply = new QComment("reply");
+    /**
+     * WriterId가 memberId와 같은 Comment를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile, Post를 fetch join한다.
+     *
+     * @param writerId writerId가 일치하는 Post들을 반환한다.
+     * @param pageable 페이징 정보
+     */
+    @Override
+    public Page<Comment> findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(
+            final Long writerId, final Pageable pageable) {
+        return applyPagination(
+                pageable,
+
+                contentQuery -> selectFromCommentWithFetchJoinPostAndWriterAndProfile()
+                        .where(isNotDeletedAndWroteBy(writerId)),
+
+                countQuery -> select(comment.count())
+                        .from(comment)
+                        .where(isWroteBy(writerId))
+        );
+    }
+
+    private static BooleanExpression isNotDeletedAndWroteBy(Long writerId) {
+        return isWroteBy(writerId).and(isNotDeleted());
+    }
+
+    private static BooleanExpression isNotDeleted() {
+        return comment.isDeleted.isFalse();
+    }
+
+    private static BooleanExpression isWroteBy(Long writerId) {
+        return comment.writer.id.eq(writerId);
+    }
+
+    private JPAQuery<Comment> selectFromCommentWithFetchJoinPostAndWriterAndProfile() {
+        return selectFromCommentWithFetchJoinWriterAndProfile()
+                .leftJoin(comment.post).fetchJoin();
+    }
+
+    private JPAQuery<Comment> selectFromCommentWithFetchJoinWriterAndProfile() {
         return selectFrom(comment)
-                .leftJoin(comment.replies, reply).fetchJoin()
-                .where(
-                        comment.post.id.eq(postId),
-                        comment.type.eq(CommentType.COMMENT)
-                )
-                .orderBy(comment.createdDate.asc())
-                .fetch();
-    }
-
-    private CommentDto convertToDto(final Comment comment) {
-        return new CommentDto(
-                comment.getId(),
-                comment.getWriter().getId(),
-                comment.getWriter().getProfile().getNickname(),
-                comment.getContent(),
-                comment.getType(),
-                comment.isDeleted(),
-                comment.isModified(),
-                comment.getCreatedDate(),
-                comment.getReplies().stream().sorted(
-                        Comparator.comparing(Comment::getCreatedDate)
-                ).map(reply ->
-                        new CommentDto(
-                                reply.getId(),
-                                reply.getWriter().getId(),
-                                reply.getWriter().getProfile().getNickname(),
-                                reply.getContent(),
-                                reply.getType(),
-                                reply.isDeleted(),
-                                reply.isModified(),
-                                reply.getCreatedDate(),
-                                null)
-                ).toList()
-        );
+                .leftJoin(comment.writer).fetchJoin()
+                .leftJoin(comment.writer.profile).fetchJoin();
     }
 }

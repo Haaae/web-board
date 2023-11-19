@@ -5,7 +5,13 @@ import lombok.Getter;
 
 @Getter
 public enum UserRole {
-    USER,
-    ADMIN,
-    MASTER
+    USER(false),
+    ADMIN(true),
+    MASTER(true);
+
+    private final boolean deleteRight;
+
+    UserRole(boolean deleteRight) {
+        this.deleteRight = deleteRight;
+    }
 }

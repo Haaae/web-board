@@ -1,17 +1,16 @@
 package toy.board.repository.post;
 
-import static toy.board.domain.post.QComment.comment;
-import static toy.board.domain.post.QPost.post;
-
-import com.querydsl.core.types.ConstructorExpression;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import java.util.Optional;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import toy.board.domain.post.Post;
-import toy.board.repository.post.dto.PostDto;
 import toy.board.repository.support.Querydsl4RepositorySupport;
+
+import java.util.Optional;
+
+import static toy.board.domain.post.QPost.post;
+import static toy.board.domain.user.QMember.member;
 
 public class PostRepositoryImpl extends Querydsl4RepositorySupport
         implements PostQueryRepository {
@@ -20,50 +19,89 @@ public class PostRepositoryImpl extends Querydsl4RepositorySupport
         super(Post.class);
     }
 
+    /**
+     * Post 반환 시 Member, Profile, comments을 fetch join한다. ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고, 연계하여 fetch
+     * join할 수 있다. 하나의 켈렉션에 대해 fetch join할 수 있다.
+     *
+     * @param postId must not be {@literal null}.
+     * @return
+     */
     @Override
-    public Page<PostDto> findAllPost(final Pageable pageable) {
-        return applyPagination(pageable,
-                contentQuery -> contentQuery
-                        .select(getPostDtoConstructorExpression())
-                        .from(post)
-                        .leftJoin(comment).on(comment.post.eq(post))
-                        .groupBy(post)
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize()),
-
-                countQuery -> countQuery
-                        .select(post.count())
-                        .from(post)
-        );
-    }
-
-    @Override
-    public Optional<PostDto> getPostDtoById(final Long postId) {
+    public Optional<Post> findPostWithFetchJoinWriterAndProfileAndComments(final Long postId) {
         return Optional.ofNullable(
-                select(getPostDtoConstructorExpression())
-                        .from(post)
-                        .where(post.id.eq(postId))
-                        .leftJoin(comment).on(comment.post.eq(post))
-                        .groupBy(post)
+                selectFromPostWithFetchJoinWriterAndProfile()
+                        .leftJoin(post.comments).fetchJoin()
+                        .where(equalsPostId(postId))
                         .fetchOne()
         );
     }
 
-    private ConstructorExpression<PostDto> getPostDtoConstructorExpression() {
-        return Projections.constructor(PostDto.class,
-                post.id.as("postId"),
-                post.writer.id,
-                post.writer.profile.nickname,
-                post.title,
-                post.content,
-                post.hits,
-                post.createdDate,
-                new CaseBuilder()
-                        .when(post.createdDate.eq(post.lastModifiedDate))
-                        .then(false)
-                        .otherwise(true)
-                        .as("isModified"),
-                comment.count().as("commentNum")
+    /**
+     * Post 반환 시 Member, Profile을 fetch join한다. ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고, 연계하여 fetch
+     * join할 수 있다.
+     *
+     * @param postId must not be {@literal null}.
+     * @return
+     */
+    @Override
+    public Optional<Post> findPostWithFetchJoinWriterAndProfile(final Long postId) {
+        return Optional.ofNullable(
+                selectFromPostWithFetchJoinWriterAndProfile()
+                        .where(equalsPostId(postId))
+                        .fetchOne()
         );
+    }
+
+    /**
+     * Post를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile을 fetch join한다.
+     *
+     * @param pageable the pageable to request a paged result,
+     *                 can be {@link Pageable#unpaged()},
+     *                 must not be {@literal null}.
+     */
+    @Override
+    public Page<Post> findAllWithFetchJoinWriterAndProfile(final Pageable pageable) {
+        return applyPagination(
+                pageable,
+                contentQuery -> selectFromPostWithFetchJoinWriterAndProfile(),
+                countQuery -> selectFromPostCount()
+        );
+    }
+
+    /**
+     * WriterId가 memberId와 같은 Post를 페이징 처리하여 Page<Post>로 반환한다. 이때 Member와 Profile을 fetch join한다.
+     *
+     * @param writerId writerId가 일치하는 Post들을 반환한다.
+     * @param pageable 페이징 정보
+     */
+    @Override
+    public Page<Post> findAllByWriterIdFetchJoinWriterAndProfile(final Long writerId, final Pageable pageable) {
+        return applyPagination(
+                pageable,
+                contentQuery -> selectFromPostWithFetchJoinWriterAndProfile()
+                        .where(equalsPostWriterId(writerId)),
+                countQuery -> selectFromPostCount()
+                        .where(equalsPostWriterId(writerId))
+        );
+    }
+
+    private JPAQuery<Post> selectFromPostWithFetchJoinWriterAndProfile() {
+        return selectFrom(post)
+                .leftJoin(post.writer, member).fetchJoin()
+                .leftJoin(member.profile).fetchJoin();
+    }
+
+    private JPAQuery<Long> selectFromPostCount() {
+        return select(post.count())
+                .from(post);
+    }
+
+    private static BooleanExpression equalsPostId(final Long postId) {
+        return post.id
+                .eq(postId);
+    }
+
+    private static BooleanExpression equalsPostWriterId(final Long writerId) {
+        return post.writer.id.eq(writerId);
     }
 }

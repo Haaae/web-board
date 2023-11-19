@@ -40,7 +40,7 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void init() {
-        this.profile = Profile.builder(nickname).build();
+        this.profile = new Profile(nickname);
         this.login = new Login(password);
         this.member = Member.builder(username, login, profile, LoginType.LOCAL_LOGIN, UserRole.USER).build();
 
@@ -52,41 +52,15 @@ class MemberRepositoryTest {
 
     @DisplayName("memberId로 멤버 찾을 때 profile도 가져옴")
     @Test
-    public void MemberRepositoryTest() throws  Exception {
+    public void MemberRepositoryTest() throws Exception {
         //given
 
         //when
-        Optional<Member> findMember = memberRepository.findMemberById(member.getId());
+        Optional<Member> findMember = memberRepository.findMemberWithFetchJoinProfile(member.getId());
 
         //then
         assertThat(findMember.isPresent()).isTrue();
         assertThat(findMember.get().getProfile()).isNotNull();
-    }
-
-    @DisplayName("닉네임으로 멤버 찾기 성공:멤버와 함께 profile도 fetch join으로 가져옴")
-    @Test
-    public void find_member_by_nickname_success() throws  Exception {
-        // give
-
-        //when
-        Member findMember = memberRepository.findMemberByNickname(member.getProfile().getNickname()).get();
-
-        //then
-        assertThat(findMember).isNotNull();
-        assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
-    }
-
-    @DisplayName("닉네임으로 멤버 가져오기 실패: 해당 닉네임과 일치하는 닉네임을 가진 멤버가 없음")
-    @Test
-    public void find_member_by_nickname_fail_cause_not_exists_nickname() throws  Exception {
-        // give
-        String wrongNickname = "wrong nickname";
-
-        //when
-        Optional<Member> findMember = memberRepository.findMemberByNickname(wrongNickname);
-
-        //then
-        assertThat(findMember.isEmpty()).isTrue();
     }
 
     @DisplayName("cascade: member만 저장해도 profile과 login이 같이 save됨")
@@ -101,22 +75,16 @@ class MemberRepositoryTest {
         - memberRepository.save(member) => 이 메서드만 수행하면 위 두 메서드를 같이 수행한 것과 같다.
          */
 
-
-        //when
-        Optional<Member> findMember = memberRepository.findMemberByUsername(member.getUsername());
-        Optional<Login> findLogin = findMember.map(Member::getLogin);
-        Optional<Profile> findProfile = findMember.map(Member::getProfile);
-
+        //given
         // then
-        assertThat(findLogin.isEmpty()).isFalse();
-        assertThat(findLogin.get().getPassword()).isEqualTo(login.getPassword());
-        assertThat(findProfile.isEmpty()).isFalse();
-        assertThat(findProfile.get().getNickname()).isEqualTo(profile.getNickname());
+        assertThat(member.getId()).isNotNull();
+        assertThat(profile.getId()).isNotNull();
+        assertThat(login.getId()).isNotNull();
     }
 
     @DisplayName("username으로 member 존재여부 확인 - 성공")
     @Test
-    public void exists_member_by_username_success() throws  Exception {
+    public void exists_member_by_username_success() throws Exception {
         //given
 
         //when
@@ -128,7 +96,7 @@ class MemberRepositoryTest {
 
     @DisplayName("nickname으로 member 존재여부 확인 - 성공")
     @Test
-    public void exists_member_by_nickname_success() throws  Exception {
+    public void exists_member_by_nickname_success() throws Exception {
         //given
 
         //when
@@ -140,7 +108,7 @@ class MemberRepositoryTest {
 
     @DisplayName("nickanem으로 member 존재여부 확인 - 실패")
     @Test
-    public void exists_member_by_nickname_fail() throws  Exception {
+    public void exists_member_by_nickname_fail() throws Exception {
         //given
         String wrong_input = "adsfasdf";
 
@@ -153,7 +121,7 @@ class MemberRepositoryTest {
 
     @DisplayName("username으로 member 존재여부 확인 - 성공")
     @Test
-    public void exists_member_by_username_fail() throws  Exception {
+    public void exists_member_by_username_fail() throws Exception {
         //given
         String wrong_input = "adsfasdf";
 

@@ -1,6 +1,6 @@
 package toy.board.domain.user;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,5 @@ class UserRoleTest {
         System.out.println("role2 = " + System.identityHashCode(role2));
         assertThat(role1).isEqualTo(role2);
         assertThat(System.identityHashCode(role1)).isEqualTo(System.identityHashCode(role2));
-
     }
 }

@@ -54,7 +54,7 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "writer_id")
     private Member writer;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
     @ToString.Exclude
     private final List<Comment> comments = new ArrayList<>();
 

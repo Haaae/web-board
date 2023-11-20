@@ -54,7 +54,7 @@ public class Comment extends BaseDeleteEntity {
     @Column(name = "isEdited", nullable = false)
     private boolean isEdited;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")
     private List<Comment> replies = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

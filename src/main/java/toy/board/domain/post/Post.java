@@ -47,7 +47,7 @@ public class Post extends BaseEntity {
     @Column(name = "hits", nullable = false)
     private Long hits;
 
-    @Column(name = "isEdited", nullable = false)
+    @Column(name = "is_edited", nullable = false)
     private boolean isEdited;
 
     @ManyToOne(fetch = FetchType.LAZY)

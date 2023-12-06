@@ -51,7 +51,7 @@ public class Comment extends BaseDeleteEntity {
     @JoinColumn(name = "writer")
     private Member writer;
 
-    @Column(name = "isEdited", nullable = false)
+    @Column(name = "is_edited", nullable = false)
     private boolean isEdited;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent")

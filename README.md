@@ -39,7 +39,7 @@ API docs | [https://api.myboard.site/swagger-ui/index.html](https://api.myboard.
 
 # ERD
 
-![Untitled](https://furtive-stew-f33.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F67a2b885-3d38-4c9b-addb-009dedc7878f%2Fd3e6fd94-ec00-48cf-ace4-819890d95f8f%2FUntitled.png?table=block&id=1d4594bb-3c9f-4204-9572-136d5234fec0&spaceId=67a2b885-3d38-4c9b-addb-009dedc7878f&width=2000&userId=&cache=v2)
+![Untitled](https://furtive-stew-f33.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F67a2b885-3d38-4c9b-addb-009dedc7878f%2Fe9e4045b-83ca-450c-9cd7-3ec43e9638f7%2FUntitled.png?table=block&id=cb95fb80-78d9-4e17-8135-183a0693907d&spaceId=67a2b885-3d38-4c9b-addb-009dedc7878f&width=2000&userId=&cache=v2)
 
 # 개발 상세
 

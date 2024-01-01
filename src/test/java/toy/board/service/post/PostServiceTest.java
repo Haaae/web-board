@@ -61,10 +61,10 @@ class PostServiceTest {
         given(postRepository.findPostWithFetchJoinWriterAndComments(eq(postId)))
                 .willReturn(Optional.of(post));
 
-        given(memberRepository.findMemberWithFetchJoinProfile(eq(notExistMemberId))).willReturn(Optional.empty());
-        given(memberRepository.findMemberWithFetchJoinProfile(eq(invalidMemberId))).willReturn(
+        given(memberRepository.findById(eq(notExistMemberId))).willReturn(Optional.empty());
+        given(memberRepository.findById(eq(invalidMemberId))).willReturn(
                 Optional.of(invalidMember));
-        given(memberRepository.findMemberWithFetchJoinProfile(eq(memberId))).willReturn(Optional.of(member));
+        given(memberRepository.findById(eq(memberId))).willReturn(Optional.of(member));
     }
 
     @DisplayName("게시물 조회 시 게시물 조회 수 증가: 성공")

@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.util.Assert;
 import toy.board.domain.auth.Login;
-import toy.board.domain.auth.SocialLogin;
 import toy.board.domain.base.BaseEntity;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
@@ -68,10 +67,6 @@ public class Member extends BaseEntity {
     )
     @JoinColumn(name = "profile_id", nullable = false, unique = true, updatable = false)
     private Profile profile;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "social_login_id", unique = true)
-    private SocialLogin socialLogin;
 
     @OneToOne(
             fetch = FetchType.LAZY,

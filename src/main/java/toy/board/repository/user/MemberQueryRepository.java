@@ -1,8 +1,7 @@
 package toy.board.repository.user;
 
-import toy.board.domain.user.Member;
-
 import java.util.Optional;
+import toy.board.domain.user.Member;
 
 public interface MemberQueryRepository {
 

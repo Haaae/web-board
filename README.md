@@ -9,6 +9,9 @@
 - Spring Data JPA
 - QueryDSL
 
+- MySQL
+- Swagger
+
 배포환경
 - AWS EC2 Ubuntu 22.04.3 LTS
 

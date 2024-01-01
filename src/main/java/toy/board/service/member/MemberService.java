@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.auth.Login;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
@@ -45,12 +44,11 @@ public class MemberService {
         checkUsernameDuplication(username);
         checkNicknameDuplication(nickname);
 
-        Profile profile = new Profile(nickname);
         Login login = new Login(passwordEncoder.encode(password));
         Member member = Member.builder(
                         username,
+                        nickname,
                         login,
-                        profile,
                         LoginType.LOCAL_LOGIN,
                         UserRole.USER
                 )

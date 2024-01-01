@@ -40,6 +40,7 @@ import toy.board.validator.Validator;
 public class Member extends BaseEntity {
 
     public static final int USER_ID_LENGTH = 50;
+    public static final int NICKNAME_LENGTH = 8;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,13 +61,8 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.PERSIST,
-            orphanRemoval = true
-    )
-    @JoinColumn(name = "profile_id", nullable = false, unique = true, updatable = false)
-    private Profile profile;
+    @Column(name = "nickname", length = NICKNAME_LENGTH, nullable = false, unique = true)
+    private String nickname;
 
     @OneToOne(
             fetch = FetchType.LAZY,
@@ -89,31 +85,32 @@ public class Member extends BaseEntity {
 
     public static MemberBuilder builder(
             @NotNull final String username,
+            @NotNull final String nickname,
             @NotNull final Login login,
-            @NotNull final Profile profile,
             @NotNull final LoginType loginType,
             @NotNull final UserRole userRole) {
 
-        validate(username, login, profile, loginType, userRole);
+        validate(username, nickname, login, loginType, userRole);
 
         return innerBuilder()
                 .username(username)
+                .nickname(nickname)
                 .login(login)
-                .profile(profile)
                 .loginType(loginType)
                 .role(userRole);
     }
 
     private static void validate(
             final String username,
+            final String nickname,
             final Login login,
-            final Profile profile,
             final LoginType loginType,
             final UserRole userRole
     ) {
         Validator.hasTextAndLength(username, USER_ID_LENGTH);
+        Validator.hasTextAndLength(nickname, NICKNAME_LENGTH);
+
         Validator.notNull(login);
-        Validator.notNull(profile);
         Validator.notNull(loginType);
         Validator.notNull(userRole);
     }
@@ -145,6 +142,9 @@ public class Member extends BaseEntity {
         return this.login.getPassword();
     }
 
+    /**
+     * 유저 탈퇴 시 호출하여 작성했던 게시글과 댓글의 작성자를 null로 만드는 기능
+     */
     public void changeAllPostAndCommentWriterToNull() {
         this.posts.forEach(Post::applyWriterWithdrawal);
         this.comments.forEach(Comment::applyWriterWithdrawal);
@@ -168,10 +168,6 @@ public class Member extends BaseEntity {
 
     public List<Comment> getComments() {
         return Collections.unmodifiableList(this.comments);
-    }
-
-    public String getNickname() {
-        return this.profile.getNickname();
     }
 
     public long getPostCount() {

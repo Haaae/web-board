@@ -21,7 +21,6 @@ import toy.board.domain.auth.Login;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.repository.user.MemberRepository;
 
@@ -50,10 +49,10 @@ public class MemberControllerLoginTest {
 
         Member member = Member.builder(
                 username,
+                "nickname",
                 new Login(
                         passwordEncoder.encode(password)
                 ),
-                new Profile("nickname"),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

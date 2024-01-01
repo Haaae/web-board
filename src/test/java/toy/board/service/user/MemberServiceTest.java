@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import toy.board.domain.auth.Login;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
@@ -48,13 +47,18 @@ class MemberServiceTest {
     String nickname = "nickname";
     Member member;
     Login login;
-    Profile profile;
 
     @BeforeEach
     void init() {
-        this.profile = new Profile(nickname);
         this.login = new Login(password);
-        this.member = Member.builder(username, login, profile, loginType, userRole).build();
+        this.member = Member.builder(
+                        username,
+                        nickname,
+                        login,
+                        loginType,
+                        userRole
+                )
+                .build();
 
         member.changeLogin(login);
         memberRepository.save(member);
@@ -114,8 +118,8 @@ class MemberServiceTest {
     private Member createMember(LoginType loginType) {
         Member member = Member.builder(
                 username,
+                nickname,
                 new Login(password),
-                new Profile(nickname),
                 loginType,
                 UserRole.USER
         ).build();
@@ -143,7 +147,11 @@ class MemberServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> memberService.join(wrongInput, password, nickname));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_DUPLICATE);
+
+        assertThat(e.getCode())
+                .isEqualTo(
+                        ExceptionCode.BAD_REQUEST_DUPLICATE
+                );
     }
 
     @DisplayName("닉네임이 기존 닉네임과 중복일 경우: 예외발생")
@@ -156,6 +164,10 @@ class MemberServiceTest {
         //then
         BusinessException e = assertThrows(BusinessException.class,
                 () -> memberService.join(username, password, wrongInput));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_DUPLICATE);
+
+        assertThat(e.getCode())
+                .isEqualTo(
+                        ExceptionCode.BAD_REQUEST_DUPLICATE
+                );
     }
 }

@@ -25,7 +25,6 @@ import toy.board.domain.post.Post;
 import toy.board.domain.post.PostTest;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.service.post.dto.PostResponse;
 
@@ -271,12 +270,11 @@ class PostRepositoryTest {
 
     private Member persistMember(int index) {
         Login login = new Login("password");
-        Profile profile = new Profile("nick" + index);
 
         Member member = Member.builder(
                 "email" + index,
+                "nick" + index,
                 login,
-                profile,
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

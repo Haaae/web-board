@@ -17,7 +17,6 @@ import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
 import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 
 @SpringBootTest
@@ -93,8 +92,8 @@ class CommentRepositoryImplTest {
     private Member persistMember() {
         Member member = Member.builder(
                 "member",
+                "nickname",
                 new Login("password"),
-                new Profile("nickname"),
                 LoginType.LOCAL_LOGIN,
                 UserRole.USER
         ).build();

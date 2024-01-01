@@ -28,7 +28,8 @@ public class MemberService {
      * @return member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      */
     public Member login(final String username, final String password) {
-        Member findMember = findMemberByUsernameWithFetchJoinLogin(username);
+        Member findMember = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
         findMember.validateLoginType(LoginType.LOCAL_LOGIN);
         checkPassword(password, findMember.getPassword());
@@ -62,7 +63,8 @@ public class MemberService {
 
     @Transactional
     public void withdrawal(final Long loginMemberId) {
-        Member findMember = findMemberWithFetchJoinProfile(loginMemberId);
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
         findMember.changeAllPostAndCommentWriterToNull();
 
@@ -85,15 +87,5 @@ public class MemberService {
         if (!passwordEncoder.matches(enteredPassword, password)) {
             throw new BusinessException(ExceptionCode.BAD_REQUEST_PASSWORD);
         }
-    }
-
-    public Member findMemberWithFetchJoinProfile(Long memberId) {
-        return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
-    }
-
-    private Member findMemberByUsernameWithFetchJoinLogin(String username) {
-        return memberRepository.findMemberByUsernameWithFetchJoinLogin(username)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 }

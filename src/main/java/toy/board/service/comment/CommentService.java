@@ -28,7 +28,9 @@ public class CommentService {
     public Long create(final String content, final CommentType type,
                        final Optional<Long> parentId, final Long postId, final Long memberId) {
         Post post = findPostWithFetchJoinWriterAndProfile(postId);
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
+
         Comment parentComment = parentId.map(this::findCommentWithFetchJoinWriterAndProfile)
                 .orElse(null);  // parentId가 null이 아니면 해당 Comment를 찾아온다.
 
@@ -41,7 +43,8 @@ public class CommentService {
     @Transactional
     public Long update(final Long commentId, final String content, final Long memberId) {
         Comment comment = findCommentWithFetchJoinWriterAndProfile(commentId);
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
         comment.update(content, member);
         return commentId;
@@ -56,23 +59,20 @@ public class CommentService {
     @Transactional
     public void delete(final Long commentId, final Long memberId) {
         Comment comment = findCommentWithFetchJoinWriterAndProfile(commentId);
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
+
         comment.validateRight(member);
         comment.delete();
     }
 
     private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
-        return postRepository.findPostWithFetchJoinWriterAndProfile(postId)
+        return postRepository.findPostWithFetchJoinWriter(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 
     private Comment findCommentWithFetchJoinWriterAndProfile(final Long commentId) {
         return commentRepository.findCommentWithFetchJoinWriterAndProfile(commentId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
-    }
-
-    private Member findMemberWithFetchJoinProfile(final Long memberId) {
-        return memberRepository.findMemberWithFetchJoinProfile(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 }

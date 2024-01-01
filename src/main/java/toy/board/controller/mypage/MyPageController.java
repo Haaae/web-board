@@ -61,7 +61,10 @@ public class MyPageController {
     public ResponseEntity<MyInfoResponse> load(final HttpServletRequest request) {
         Long memberId = getMemberIdFrom(request);
 
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
 
         return ResponseEntity.ok(
                 MyInfoResponse.of(member)
@@ -93,7 +96,7 @@ public class MyPageController {
             final HttpServletRequest request) {
 
         Long memberId = getMemberIdFrom(request);
-        Page<Post> page = postRepository.findAllByWriterIdFetchJoinWriterAndProfile(memberId,
+        Page<Post> page = postRepository.findAllByWriterIdWithFetchWriter(memberId,
                 pageable);
         return ResponseEntity.ok(
                 page.map(MyPostResponse::of)
@@ -138,12 +141,5 @@ public class MyPageController {
     private Long getMemberIdFrom(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         return (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-    }
-
-    private Member findMemberWithFetchJoinProfile(long memberId) {
-        return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.NOT_FOUND)
-                );
     }
 }

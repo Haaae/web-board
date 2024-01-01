@@ -82,7 +82,7 @@ class MemberServiceTest {
     @Test
     public void login_member_no_exist_test() throws Exception {
         Optional<Member> findMember = Optional.ofNullable(null);
-        doReturn(findMember).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
+        doReturn(findMember).when(memberRepository).findByUsername(anyString());
 
         //then
         assertThrows(BusinessException.class,
@@ -95,7 +95,7 @@ class MemberServiceTest {
         Member findMember = createMember(LoginType.SOCIAL_LOGIN);
 
 //        doReturn(Optional.createComment(findMember)).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
-        given(memberRepository.findMemberByUsernameWithFetchJoinLogin(anyString()))
+        given(memberRepository.findByUsername(anyString()))
                 .willReturn(Optional.of(findMember));
 
         //then
@@ -106,7 +106,7 @@ class MemberServiceTest {
     @Test
     public void not_match_password() throws Exception {
         Member findMember = createMember(LoginType.LOCAL_LOGIN);
-        doReturn(Optional.of(findMember)).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
+        doReturn(Optional.of(findMember)).when(memberRepository).findByUsername(anyString());
 
         //when
         String wrongPassword = "not match password";

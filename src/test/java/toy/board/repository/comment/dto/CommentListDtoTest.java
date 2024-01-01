@@ -43,7 +43,7 @@ class CommentListDtoTest {
 
         //when
         int totalCommentCount = commentCount * (replyCount + 1);
-        Post findPost = postRepository.findPostWithFetchJoinWriterAndProfile(postId).get();
+        Post findPost = postRepository.findPostWithFetchJoinWriter(postId).get();
         CommentsResponse commentListDto = CommentsResponse.of(findPost);
 
         //then

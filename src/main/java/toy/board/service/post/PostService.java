@@ -28,7 +28,11 @@ public class PostService {
     @Transactional
     public Long update(final String content, final Long postId, final Long memberId) {
         Post post = findPostWithFetchJoinWriterAndProfile(postId);
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
+        
         post.update(content, member);
         return post.getId();
     }
@@ -56,7 +60,10 @@ public class PostService {
 
     @Transactional
     public Long create(final String title, final String content, final Long memberId) {
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
 
         Post post = new Post(member, title, content);
         Post savedPost = postRepository.save(post);
@@ -73,30 +80,26 @@ public class PostService {
     @Transactional
     public void delete(final Long postId, final Long memberId) {
         Post post = findPostWithFetchJoinWriterAndProfile(postId);
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
+
         post.validateRight(member);
         commentRepository.deleteCommentsByPostAndType(post, CommentType.REPLY);
         commentRepository.deleteCommentsByPost(post);
         postRepository.delete(post);
     }
 
-
-    private Member findMemberWithFetchJoinProfile(final Long memberId) {
-        return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.NOT_FOUND)
-                );
-    }
-
     private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
-        return postRepository.findPostWithFetchJoinWriterAndProfile(postId)
+        return postRepository.findPostWithFetchJoinWriter(postId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.NOT_FOUND)
                 );
     }
 
     private Post findPostWithFetchJoinWriterAndProfileAndComments(final Long postId) {
-        return postRepository.findPostWithFetchJoinWriterAndProfileAndComments(postId)
+        return postRepository.findPostWithFetchJoinWriterAndComments(postId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.NOT_FOUND)
                 );

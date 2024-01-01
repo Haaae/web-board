@@ -51,14 +51,14 @@ class PostServiceTest {
         Member invalidMember = MemberTest.create("other", "sdf", UserRole.USER);
         Post post = new Post(member, title, content);
 
-        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(invalidPostId)))
+        given(postRepository.findPostWithFetchJoinWriter(eq(invalidPostId)))
                 .willReturn(Optional.empty());
-        given(postRepository.findPostWithFetchJoinWriterAndProfile(eq(postId)))
+        given(postRepository.findPostWithFetchJoinWriter(eq(postId)))
                 .willReturn(Optional.of(post));
 
-        given(postRepository.findPostWithFetchJoinWriterAndProfileAndComments(eq(invalidPostId)))
+        given(postRepository.findPostWithFetchJoinWriterAndComments(eq(invalidPostId)))
                 .willReturn(Optional.empty());
-        given(postRepository.findPostWithFetchJoinWriterAndProfileAndComments(eq(postId)))
+        given(postRepository.findPostWithFetchJoinWriterAndComments(eq(postId)))
                 .willReturn(Optional.of(post));
 
         given(memberRepository.findMemberWithFetchJoinProfile(eq(notExistMemberId))).willReturn(Optional.empty());
@@ -75,7 +75,7 @@ class PostServiceTest {
 
         //when
         postService.getPostDetail(postId);
-        Post post = postRepository.findPostWithFetchJoinWriterAndProfile(postId).get();
+        Post post = postRepository.findPostWithFetchJoinWriter(postId).get();
 
         //then
         assertThat(post.getHits()).isEqualTo(expectedHits);

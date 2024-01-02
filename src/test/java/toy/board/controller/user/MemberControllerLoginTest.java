@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.controller.user.dto.request.LoginRequest;
-import toy.board.domain.auth.Login;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
 import toy.board.domain.user.UserRole;
@@ -50,10 +48,7 @@ public class MemberControllerLoginTest {
         Member member = Member.builder(
                 username,
                 "nickname",
-                new Login(
-                        passwordEncoder.encode(password)
-                ),
-                LoginType.LOCAL_LOGIN,
+                passwordEncoder.encode(password),
                 UserRole.USER
         ).build();
 

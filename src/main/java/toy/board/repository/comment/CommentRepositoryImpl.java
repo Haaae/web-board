@@ -1,15 +1,14 @@
 package toy.board.repository.comment;
 
+import static toy.board.domain.post.QComment.comment;
+
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import toy.board.domain.post.Comment;
 import toy.board.repository.support.Querydsl4RepositorySupport;
-
-import java.util.Optional;
-
-import static toy.board.domain.post.QComment.comment;
 
 public class CommentRepositoryImpl extends Querydsl4RepositorySupport
         implements CommentQueryRepository {
@@ -19,9 +18,7 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
     }
 
     /**
-     * Comment 반환 시 Member, Profile을 fetch join한다.
-     * ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고,
-     * 연계하여 fetch join할 수 있다.
+     * Comment 반환 시 Member를 fetch join한다. ~ToOne 매핑관계에 대한 fetch join은 별명을 사용할 수 있고, 연계하여 fetch join할 수 있다.
      *
      * @param id must not be {@literal null}.
      * @return
@@ -75,7 +72,6 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
 
     private JPAQuery<Comment> selectFromCommentWithFetchJoinWriterAndProfile() {
         return selectFrom(comment)
-                .leftJoin(comment.writer).fetchJoin()
-                .leftJoin(comment.writer.profile).fetchJoin();
+                .leftJoin(comment.writer).fetchJoin();
     }
 }

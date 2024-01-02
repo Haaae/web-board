@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.UserRole;
 
@@ -31,21 +29,17 @@ class MemberRepositoryTest {
     String password = "password";
 
     Member member;
-    Login login;
 
     @BeforeEach
     void init() {
-        this.login = new Login(password);
         this.member = Member.builder(
                         username,
                         nickname,
-                        login,
-                        LoginType.LOCAL_LOGIN,
+                        password,
                         UserRole.USER
                 )
                 .build();
 
-        member.changeLogin(login);
         memberRepository.save(member);
 
         em.clear();

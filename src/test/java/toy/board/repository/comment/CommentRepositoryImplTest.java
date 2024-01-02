@@ -11,11 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.UserRole;
 
@@ -93,8 +91,7 @@ class CommentRepositoryImplTest {
         Member member = Member.builder(
                 "member",
                 "nickname",
-                new Login("password"),
-                LoginType.LOCAL_LOGIN,
+                "password",
                 UserRole.USER
         ).build();
         em.persist(member);

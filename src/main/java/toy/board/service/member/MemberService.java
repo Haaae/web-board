@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
@@ -31,7 +29,6 @@ public class MemberService {
         Member findMember = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
-        findMember.validateLoginType(LoginType.LOCAL_LOGIN);
         checkPassword(password, findMember.getPassword());
         return findMember;
     }
@@ -45,18 +42,14 @@ public class MemberService {
         checkUsernameDuplication(username);
         checkNicknameDuplication(nickname);
 
-        Login login = new Login(passwordEncoder.encode(password));
         Member member = Member.builder(
                         username,
                         nickname,
-                        login,
-                        LoginType.LOCAL_LOGIN,
+                        passwordEncoder.encode(password),
                         UserRole.USER
                 )
                 .build();
-        member.changeLogin(login);
 
-        // save. cascade로 인해 member만 저장해도 profile과 login이 저장된다.
         memberRepository.save(member);
         return member;
     }

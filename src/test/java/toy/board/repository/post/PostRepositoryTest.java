@@ -18,12 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
 import toy.board.domain.post.PostTest;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.UserRole;
 import toy.board.service.post.dto.PostResponse;
@@ -269,13 +267,10 @@ class PostRepositoryTest {
     }
 
     private Member persistMember(int index) {
-        Login login = new Login("password");
-
         Member member = Member.builder(
                 "email" + index,
                 "nick" + index,
-                login,
-                LoginType.LOCAL_LOGIN,
+                "password",
                 UserRole.USER
         ).build();
 

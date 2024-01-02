@@ -2,7 +2,6 @@ package toy.board.domain.user;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
 
 @SpringBootTest
 @Transactional
@@ -12,8 +11,7 @@ public class MemberTest {
         return Member.builder(
                 username,
                 nickname,
-                new Login("password"),
-                LoginType.LOCAL_LOGIN,
+                "password",
                 role
         ).build();
     }

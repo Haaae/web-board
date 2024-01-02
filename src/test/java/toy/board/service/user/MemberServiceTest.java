@@ -19,8 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import toy.board.domain.auth.Login;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
@@ -41,26 +39,21 @@ class MemberServiceTest {
     private PasswordEncoder passwordEncoder;
 
     String username = "name";
-    LoginType loginType = LoginType.LOCAL_LOGIN;
     UserRole userRole = UserRole.USER;
     String password = "password";
     String nickname = "nickname";
     Member member;
-    Login login;
 
     @BeforeEach
     void init() {
-        this.login = new Login(password);
         this.member = Member.builder(
                         username,
                         nickname,
-                        login,
-                        loginType,
+                        password,
                         userRole
                 )
                 .build();
 
-        member.changeLogin(login);
         memberRepository.save(member);
 
         given(memberRepository.save(any())).willReturn(member);
@@ -92,7 +85,7 @@ class MemberServiceTest {
     @DisplayName("멤버의 로그인 타입이 로컬로그인이 아닐 때 throw exception")
     @Test
     public void login_not_match_member_login_type() throws Exception {
-        Member findMember = createMember(LoginType.SOCIAL_LOGIN);
+        Member findMember = createMember();
 
 //        doReturn(Optional.createComment(findMember)).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
         given(memberRepository.findByUsername(anyString()))
@@ -105,7 +98,7 @@ class MemberServiceTest {
     @DisplayName("패스워드 불일치 시 throw exception")
     @Test
     public void not_match_password() throws Exception {
-        Member findMember = createMember(LoginType.LOCAL_LOGIN);
+        Member findMember = createMember();
         doReturn(Optional.of(findMember)).when(memberRepository).findByUsername(anyString());
 
         //when
@@ -115,15 +108,13 @@ class MemberServiceTest {
         assertThrows(BusinessException.class, () -> memberService.login(username, wrongPassword));
     }
 
-    private Member createMember(LoginType loginType) {
+    private Member createMember() {
         Member member = Member.builder(
                 username,
                 nickname,
-                new Login(password),
-                loginType,
+                password,
                 UserRole.USER
         ).build();
-        member.changeLogin(login);
         return member;
     }
 

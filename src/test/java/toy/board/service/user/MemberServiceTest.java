@@ -7,6 +7,8 @@ import static org.mockito.BDDMockito.anyString;
 import static org.mockito.BDDMockito.doReturn;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
-import toy.board.exception.ExceptionCode;
 import toy.board.repository.user.MemberRepository;
+import toy.board.service.member.MemberCheckService;
 import toy.board.service.member.MemberService;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,6 +39,9 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private MemberCheckService memberCheckService;
 
     String username = "name";
     UserRole userRole = UserRole.USER;
@@ -69,59 +74,59 @@ class MemberServiceTest {
                 .willReturn(true);
 
         given(passwordEncoder.encode(anyString())).willReturn(password);
+        given(passwordEncoder.encode(anyString())).willReturn(password);
     }
 
     @DisplayName("입력한 아이디와 일치하는 멤버가 없을 때 throw exception")
     @Test
     public void login_member_no_exist_test() throws Exception {
-        Optional<Member> findMember = Optional.ofNullable(null);
-        doReturn(findMember).when(memberRepository).findByUsername(anyString());
+        doThrow(BusinessException.class)
+                .when(memberCheckService)
+                .checkUsernameDuplication(username);
 
         //then
         assertThrows(BusinessException.class,
                 () -> memberService.login(username, password));
     }
 
-    @DisplayName("멤버의 로그인 타입이 로컬로그인이 아닐 때 throw exception")
-    @Test
-    public void login_not_match_member_login_type() throws Exception {
-        Member findMember = createMember();
-
-//        doReturn(Optional.createComment(findMember)).when(memberRepository).findMemberByUsernameWithFetchJoinLogin(anyString());
-        given(memberRepository.findByUsername(anyString()))
-                .willReturn(Optional.of(findMember));
-
-        //then
-        assertThrows(BusinessException.class, () -> memberService.login(username, password));
-    }
-
     @DisplayName("패스워드 불일치 시 throw exception")
     @Test
     public void not_match_password() throws Exception {
         Member findMember = createMember();
-        doReturn(Optional.of(findMember)).when(memberRepository).findByUsername(anyString());
+        doReturn(Optional.of(findMember))
+                .when(memberRepository)
+                .findByUsername(anyString());
 
         //when
         String wrongPassword = "not match password";
+        doThrow(BusinessException.class)
+                .when(memberCheckService)
+                .checkPassword(eq(wrongPassword), anyString());
 
         //then
         assertThrows(BusinessException.class, () -> memberService.login(username, wrongPassword));
     }
 
     private Member createMember() {
-        Member member = Member.builder(
+        return Member.builder(
                 username,
                 nickname,
                 password,
                 UserRole.USER
         ).build();
-        return member;
     }
 
     @DisplayName("이메일과 닉네임이 모두 기존에 존재하지 않음: 통과")
     @Test
     public void MemberServiceTest() throws Exception {
         //given
+        doNothing()
+                .when(memberCheckService)
+                .checkUsernameDuplication(anyString());
+
+        doNothing()
+                .when(memberCheckService)
+                .checkNicknameDuplication(anyString());
 
         //when
         Member result = memberService.join(username, password, nickname);
@@ -135,14 +140,17 @@ class MemberServiceTest {
         //given
         String wrongInput = "wrong input";
         //when
-        //then
-        BusinessException e = assertThrows(BusinessException.class,
-                () -> memberService.join(wrongInput, password, nickname));
+        doThrow(BusinessException.class)
+                .when(memberCheckService)
+                .checkUsernameDuplication(eq(wrongInput));
 
-        assertThat(e.getCode())
-                .isEqualTo(
-                        ExceptionCode.BAD_REQUEST_DUPLICATE
-                );
+        doNothing()
+                .when(memberCheckService)
+                .checkNicknameDuplication(anyString());
+
+        //then
+        assertThrows(BusinessException.class,
+                () -> memberService.join(wrongInput, password, nickname));
     }
 
     @DisplayName("닉네임이 기존 닉네임과 중복일 경우: 예외발생")
@@ -152,13 +160,16 @@ class MemberServiceTest {
         String wrongInput = "wrong input";
 
         //when
-        //then
-        BusinessException e = assertThrows(BusinessException.class,
-                () -> memberService.join(username, password, wrongInput));
+        doThrow(BusinessException.class)
+                .when(memberCheckService)
+                .checkNicknameDuplication(eq(wrongInput));
 
-        assertThat(e.getCode())
-                .isEqualTo(
-                        ExceptionCode.BAD_REQUEST_DUPLICATE
-                );
+        doNothing()
+                .when(memberCheckService)
+                .checkUsernameDuplication(anyString());
+
+        //then
+        assertThrows(BusinessException.class,
+                () -> memberService.join(username, password, wrongInput));
     }
 }

@@ -19,6 +19,7 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final MemberCheckService memberCheckService;
 
     /**
      * @param username
@@ -29,7 +30,7 @@ public class MemberService {
         Member findMember = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
-        checkPassword(password, findMember.getPassword());
+        memberCheckService.checkPassword(password, findMember.getPassword());
         return findMember;
     }
 
@@ -39,8 +40,8 @@ public class MemberService {
      */
     @Transactional
     public Member join(final String username, final String password, final String nickname) {
-        checkUsernameDuplication(username);
-        checkNicknameDuplication(nickname);
+        memberCheckService.checkUsernameDuplication(username);
+        memberCheckService.checkNicknameDuplication(nickname);
 
         Member member = Member.builder(
                         username,
@@ -62,23 +63,5 @@ public class MemberService {
         findMember.changeAllPostAndCommentWriterToNull();
 
         memberRepository.deleteById(loginMemberId);
-    }
-
-    public void checkUsernameDuplication(final String username) {
-        if (memberRepository.existsByUsername(username)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
-        }
-    }
-
-    private void checkNicknameDuplication(final String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
-        }
-    }
-
-    private void checkPassword(final String enteredPassword, final String password) {
-        if (!passwordEncoder.matches(enteredPassword, password)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_PASSWORD);
-        }
     }
 }

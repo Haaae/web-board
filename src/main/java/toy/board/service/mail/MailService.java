@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 import toy.board.service.cache.CacheService;
-import toy.board.service.member.MemberService;
+import toy.board.service.member.MemberCheckService;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,11 +29,11 @@ public class MailService {
 
     private final JavaMailSender mailSender;
     private final CacheService cacheService;
-    private final MemberService memberService;
+    private final MemberCheckService memberCheckService;
 
     @Transactional
     public void sendCodeToEmail(final String email) {
-        memberService.checkUsernameDuplication(email);
+        memberCheckService.checkUsernameDuplication(email);
         String authCode = createAuthCode();
         sendMail(email, EMAIL_TITLE, authCode);
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
@@ -42,7 +42,7 @@ public class MailService {
 
     @Transactional
     public boolean verifiedCode(final String email, final String authCode) {
-        memberService.checkUsernameDuplication(email);
+        memberCheckService.checkUsernameDuplication(email);
         return cacheService.deleteIfValueExistAndEqualTo(REDIS_PREFIX + email, authCode);
     }
 

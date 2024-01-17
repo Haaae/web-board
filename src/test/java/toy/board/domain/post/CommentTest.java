@@ -1,223 +1,508 @@
 package toy.board.domain.post;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
-@SpringBootTest
-@Transactional
 class CommentTest {
 
-    @Autowired
-    private EntityManager em;
+    @Nested
+    class CreateTest {
 
-    @DisplayName("권한 검증: 작성자가 탈퇴한 댓글")
-    @Test
-    public void 권한_테스트_작성자_탈퇴() throws Exception {
-        //given
-        Comment comment = create(
-                PostTest.create("username", "emankcin"),
-                CommentType.COMMENT
-        );
-        Member member = comment.getWriter();
+        /*
+        - 생성 성공
+        - 생성 실패 : Post가 null인 경우
+        - 생성 실패 : Writer가 null인 경우
+        - 생성 실패 : CommentType이 null인 경우
+        - 생성 실패 : Content가 빈 경우
+        - 생성 실패 : Content가 길이 제한을 초과한 경우
+        
+        - 생성 실패 : 유효하지 않은 댓글 타입
+        - 생성 실패 : 답글 생성시 답글과 부모 댓글의 게시물이 다른 경우
+         */
 
-        Member invalidMember = MemberTest.create(
-                "invalid",
-                "invalid",
-                UserRole.USER
-        );
+        @DisplayName("생성 실패 : Writer가 null인 경우")
+        @Test
+        void Writer가_null이면_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            //when
+            Member member = null;
 
-        Member master = MemberTest.create(
-                "Master",
-                "master",
-                UserRole.MASTER
-        );
-        Member admin = MemberTest.create(
-                "Master",
-                "master",
-                UserRole.ADMIN
-        );
-        //when
-        comment.applyWriterWithdrawal();
+            //then
+            assertThatThrownBy(() ->
+                    new Comment(
+                            post,
+                            member,
+                            "content",
+                            CommentType.COMMENT,
+                            null
+                    )
+            )
+                    .isInstanceOf(BusinessException.class);
+        }
 
-        //then
-        BusinessException writerException = assertThrows(
-                BusinessException.class,
-                () -> comment.validateRight(member)
-        );
-        assertThat(writerException.getCode())
-                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
+        @DisplayName("생성 실패 : Post가 null인 경우")
+        @Test
+        void Post가_null이면_실패() throws Exception {
+            //given
+            Member member = MemberTest.create("username", "nickname", UserRole.USER);
 
-        BusinessException invalidMemberException = assertThrows(
-                BusinessException.class,
-                () -> comment.validateRight(invalidMember)
-        );
-        assertThat(invalidMemberException.getCode())
-                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
+            //when
+            Post post = null;
 
-        assertDoesNotThrow(() -> comment.validateRight(master));
-        assertDoesNotThrow(() -> comment.validateRight(admin));
+            //then
+            assertThatThrownBy(() ->
+                    new Comment(
+                            post,
+                            member,
+                            "content",
+                            CommentType.COMMENT,
+                            null
+                    )
+            )
+                    .isInstanceOf(BusinessException.class);
+        }
+
+        @DisplayName("생성 실패 : CommentType이 null인 경우")
+        @Test
+        void CommentType이_null이면_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+
+            //when
+            CommentType type = null;
+
+            //then
+            assertThatThrownBy(() ->
+                    new Comment(
+                            post,
+                            post.getWriter(),
+                            "content",
+                            type,
+                            null
+                    )
+            )
+                    .isInstanceOf(BusinessException.class);
+        }
+
+        @DisplayName("생성 실패 : Content가 빈 경우")
+        @Test
+        void 본문이_빈문자열이면_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+
+            //when
+            String content = "";
+            //then
+            assertThatThrownBy(() ->
+                    new Comment(
+                            post,
+                            post.getWriter(),
+                            content,
+                            CommentType.COMMENT,
+                            null
+                    )
+            )
+                    .isInstanceOf(BusinessException.class);
+        }
+
+        @DisplayName("생성 실패 : Content가 길이 제한을 초과한 경우")
+        @Test
+        void 본문길이가_제한을_초과하면_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+
+            //when
+            String content =
+                    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                            + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+            //then
+            assertThatThrownBy(() ->
+                    new Comment(
+                            post,
+                            post.getWriter(),
+                            content,
+                            CommentType.COMMENT,
+                            null
+                    )
+            )
+                    .isInstanceOf(BusinessException.class);
+        }
+
+        @DisplayName("생성 실패 : 유효하지 않은 댓글 타입")
+        @Test
+        public void 유효하지_않은_댓글타입이면_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "emankcin");
+            String content = "content";
+
+            CommentType commentType = CommentType.COMMENT;
+            CommentType replyType = CommentType.REPLY;
+            Comment parent = new Comment(post, post.getWriter(), content, commentType, null);
+            Comment reply = new Comment(post, post.getWriter(), content, replyType, parent);
+
+            //when
+            //then
+
+            // 댓글 생성 시 부모가 null이 아닐 경우
+            BusinessException e1 = assertThrows(
+                    BusinessException.class,
+                    () -> new Comment(post, post.getWriter(), content, commentType, reply)
+            );
+            assertThat(e1.getCode())
+                    .isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
+
+            // 답글 생성 시 부모가 null일 경우
+            BusinessException e2 = assertThrows(
+                    BusinessException.class,
+                    () -> new Comment(post, post.getWriter(), content, replyType, null)
+            );
+            assertThat(e2.getCode())
+                    .isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
+
+            // 답글 생성 시 부모가 답글일 경우
+            BusinessException e3 = assertThrows(
+                    BusinessException.class,
+                    () -> new Comment(post, post.getWriter(), content, replyType, reply)
+            );
+            assertThat(e3.getCode())
+                    .isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
+        }
+
+        @DisplayName("생성 실패 : 답글 생성시 답글과 부모 댓글의 게시물이 다른 경우")
+        @Test
+        public void 답글과_부모댓글의_게시물이_다르면_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "emankcin");
+            String content = "content";
+
+            CommentType commentType = CommentType.COMMENT;
+            CommentType replyType = CommentType.REPLY;
+            Comment parent = new Comment(post, post.getWriter(), content, commentType, null);
+
+            //when
+            Post otherPost = PostTest.create("invalid", "invalid");
+
+            //then
+            BusinessException e = assertThrows(
+                    BusinessException.class,
+                    () -> new Comment(
+                            otherPost,
+                            otherPost.getWriter(),
+                            content,
+                            replyType,
+                            parent
+                    )
+            );
+            assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_POST_OF_COMMENT);
+        }
     }
 
-    @DisplayName("권한 검증: 권한 있는 다른 사용자")
-    @Test
-    public void 권한_테스트_권한_있는_다른_사용자() throws Exception {
-        //given
-        Comment comment = create(
-                PostTest.create("username", "emankcin"),
-                CommentType.COMMENT
-        );
+    @Nested
+    class UpdateTest {
 
-        //when
-        Member master = MemberTest.create(
-                "Master",
-                "master",
-                UserRole.MASTER
-        );
-        Member admin = MemberTest.create(
-                "Master",
-                "master",
-                UserRole.ADMIN
-        );
-        //then
-        assertDoesNotThrow(() -> comment.validateRight(master));
-        assertDoesNotThrow(() -> comment.validateRight(admin));
+        /*
+        - 업데이트 성공
+        - 업데이트 실패 : 빈 문자열
+        - 업데이트 실패 : 권한 없음 - 작성자 외 모든 사용자
+         */
+
+        @DisplayName("업데이트 성공")
+        @Test
+        void 업데이트_성공() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            String newContent = "new content";
+
+            //then
+            assertDoesNotThrow(() -> comment.update(newContent, writer));
+        }
+
+        @DisplayName("업데이트 실패 : 빈 문자열")
+        @Test
+        void 빈_문자열이면_없데이트_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            String emptyContent = "";
+
+            //then
+            assertThatThrownBy(() -> comment.update(emptyContent, writer))
+                    .isInstanceOf(BusinessException.class);
+        }
+
+        @DisplayName("업데이트 실패 : 권한 없음 - 작성자 외 모든 유형의 UserType")
+        @Test
+        void 작성자가_아니면_업데이트_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            String newContent = "new content";
+
+            Member nullMember = null;
+            Member master = MemberTest.create("username", "nickname", UserRole.MASTER);
+            Member admin = MemberTest.create("username", "nickname", UserRole.ADMIN);
+
+            //then
+            assertThatThrownBy(() -> comment.update(newContent, nullMember))
+                    .isInstanceOf(BusinessException.class);
+
+            assertThatThrownBy(() -> comment.update(newContent, admin))
+                    .isInstanceOf(BusinessException.class);
+
+            assertThatThrownBy(() -> comment.update(newContent, master))
+                    .isInstanceOf(BusinessException.class);
+        }
     }
 
-    @DisplayName("권한 검증: 작성자 성공")
-    @Test
-    public void whenValidateWithMemberId_thenValidateSuccess() throws Exception {
-        //given
-        Comment comment = create(
-                PostTest.create("username", "emankcin"),
-                CommentType.COMMENT
-        );
-        //when
-        Member member = comment.getWriter();
-        //then
-        assertDoesNotThrow(() -> comment.validateRight(member));
+    @Nested
+    class DeleteTest {
+
+        /*
+        - 삭제 성공 : 작성자
+        - 삭제 성공 : 작성자가 아닌 삭제 권한 있는 사용자
+        - 삭제 실패 : Member Null
+        - 삭제 실패 : 권한 없음 - 작성자 아닌 일반 사용자
+         */
+
+        @DisplayName("삭제 성공 : 작성자")
+        @Test
+        void 작성자라면_삭제_성공() throws Exception {
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+
+            //then
+            assertDoesNotThrow(() -> comment.deleteBy(writer));
+            assertThat(comment.isDeleted()).isTrue();
+        }
+
+        @DisplayName("삭제 성공 : 작성자가 아닌 삭제 권한 있는 사용자 - master")
+        @Test
+        void master_사용자라면_삭제_성공() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            Member master = MemberTest.create("username", "nickname", UserRole.MASTER);
+
+            //then
+            assertDoesNotThrow(() -> comment.deleteBy(master));
+            assertThat(comment.isDeleted()).isTrue();
+        }
+
+        @DisplayName("삭제 성공 : 작성자가 아닌 삭제 권한 있는 사용자 - admin")
+        @Test
+        void admin_사용자라면_삭제_성공() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            Member admin = MemberTest.create("username", "nickname", UserRole.ADMIN);
+
+            //then
+            assertDoesNotThrow(() -> comment.deleteBy(admin));
+            assertThat(comment.isDeleted()).isTrue();
+        }
+
+        @DisplayName("삭제 실패 : Member Null")
+        @Test
+        void 사용자가_null이면_삭제_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            //then
+            assertThatThrownBy(() -> comment.deleteBy(null))
+                    .isInstanceOf(BusinessException.class);
+        }
+
+        @DisplayName("삭제 실패 : 권한 없음 - 작성자 아닌 일반 사용자")
+        @Test
+        void 삭제권한없는_일반사용자라면_삭제_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            Member other = MemberTest.create("username", "other", UserRole.USER);
+
+            //then
+            assertThatThrownBy(() -> comment.deleteBy(other))
+                    .isInstanceOf(BusinessException.class);
+        }
     }
 
-    @DisplayName("권한 검증: 권한 없는 사용자 실패")
-    @Test
-    public void whenValidateWithInvalidMemberId_thenValidateFail() throws Exception {
-        //given
-        Comment comment = create(
-                PostTest.create("username", "emankcin"),
-                CommentType.COMMENT
-        );
-        //when
-        Member invalidMember = MemberTest.create(
-                "invalid",
-                "invalid",
-                UserRole.USER
-        );
-        //then
-        BusinessException e = assertThrows(
-                BusinessException.class,
-                () -> comment.validateRight(invalidMember)
-        );
-        assertThat(e.getCode())
-                .isEqualTo(ExceptionCode.INVALID_AUTHORITY);
+    @Nested
+    class WithdrawalTest {
+        /*
+        - 탈퇴 적용 성공
+        - 탈퇴 적용 실패 : 작성자가 아닌 사용자 - 모든 UserRole
+         */
+
+        @DisplayName("탈퇴 적용 성공 : 작성자")
+        @Test
+        void 작성자라면_탈퇴적용_성공() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+
+            //then
+            assertDoesNotThrow(() -> comment.applyWriterWithdrawal(writer));
+
+            assertThat(comment.getWriter())
+                    .isNull();
+        }
+
+        @DisplayName("탈퇴 적용 실패 : 작성자가 아닌 사용자 - 모든 UserRole")
+        @Test
+        void 작성자가_아니라면_탈퇴적용_실퍂() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            Member nullMember = null;
+            Member master = MemberTest.create("username", "nickname", UserRole.MASTER);
+            Member admin = MemberTest.create("username", "nickname", UserRole.ADMIN);
+
+            //then
+            assertThatThrownBy(() -> comment.applyWriterWithdrawal(nullMember))
+                    .isInstanceOf(BusinessException.class);
+            assertThat(comment.getWriter())
+                    .isNotNull();
+
+            assertThatThrownBy(() -> comment.applyWriterWithdrawal(master))
+                    .isInstanceOf(BusinessException.class);
+            assertThat(comment.getWriter())
+                    .isNotNull();
+
+            assertThatThrownBy(() -> comment.applyWriterWithdrawal(admin))
+                    .isInstanceOf(BusinessException.class);
+            assertThat(comment.getWriter())
+                    .isNotNull();
+        }
     }
 
-    @DisplayName("게시물이 동일할 때 타입에 따른 생성자 구분으로 자동 양방향 매핑")
-    @Test
-    public void CommentTypeTest() throws Exception {
-        //given
-        Post post = PostTest.create("username", "emankcin");
-        em.persist(post.getWriter());
-        em.persist(post);
-        String content = "content";
+    @Nested
+    class BothDirectionsTest {
+        /*
+        - Post에 대한 양방향 매핑
+        - Member에 대한 양방향 매핑
+        - reply 생성 시 parent.replies에 소속 및 parent는 reply.parent에 매핑 [x]
+         */
 
-        //when
-        CommentType commentType = CommentType.COMMENT;
-        CommentType replyType = CommentType.REPLY;
+        @DisplayName("Post에 대한 양방향 매핑")
+        @Test
+        void Post에_대한_양방향_매핑() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
 
-        //then
-        Comment parent = new Comment(post, post.getWriter(), content, commentType, null);
-        Comment reply = new Comment(post, post.getWriter(), content, replyType, parent);
+            //when
+            //then
+            assertThat(post.getComments()).contains(comment);
+            assertThat(comment.getPost()).isEqualTo(post);
+        }
 
-        System.out.println("parent = " + parent);
-        System.out.println("reply = " + reply);
-        assertThat(parent.getReplies().contains(reply)).isTrue();
-        assertThat(reply.getParent().equals(parent)).isTrue();
-    }
+        @DisplayName("Member에 대한 양방향 매핑")
+        @Test
+        void Member에_대한_양방향_매핑() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
 
-    @DisplayName("유효하지 않은 타입에 따른 댓글 생성 실패")
-    @Test
-    public void whenInvalidType_thenFailToCreateComment() throws Exception {
-        //given
-        Post post = PostTest.create("username", "emankcin");
-        em.persist(post.getWriter());
-        em.persist(post);
-        String content = "content";
+            //when
+            //then
+            assertThat(writer.getComments()).contains(comment);
+            assertThat(comment.getWriter()).isEqualTo(writer);
+        }
 
-        CommentType commentType = CommentType.COMMENT;
-        CommentType replyType = CommentType.REPLY;
-        Comment parent = new Comment(post, post.getWriter(), content, commentType, null);
-        Comment reply = new Comment(post, post.getWriter(), content, replyType, parent);
+        @DisplayName("부모 댓글에 대한 양방향 매핑: reply 생성 시 reply가 parent.replies에 소속 및 parent는 reply.parent에 매핑")
+        @Test
+        public void 부모_댓글에_대한_양방향매핑() throws Exception {
+            //given
+            Post post = PostTest.create("username", "emankcin");
+            String content = "content";
 
-        //when
-        //then
+            //when
+            CommentType commentType = CommentType.COMMENT;
+            CommentType replyType = CommentType.REPLY;
 
-        // 댓글 생성 시 부모가 null이 아닐 경우
-        BusinessException e1 = assertThrows(BusinessException.class,
-                () -> new Comment(post, post.getWriter(), content, commentType, reply));
-        assertThat(e1.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
+            //then
+            Comment parent = new Comment(post, post.getWriter(), content, commentType, null);
+            Comment reply = new Comment(post, post.getWriter(), content, replyType, parent);
 
-        // 답글 생성 시 부모가 null일 경우
-        BusinessException e2 = assertThrows(BusinessException.class,
-                () -> new Comment(post, post.getWriter(), content, replyType, null));
-        assertThat(e2.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
+            assertThat(
+                    parent.getReplies()
+                            .contains(reply)
+            ).isTrue();
 
-        // 답글 생성 시 부모가 답글일 경우
-        BusinessException e3 = assertThrows(BusinessException.class,
-                () -> new Comment(post, post.getWriter(), content, replyType, reply));
-        assertThat(e3.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
-
-    }
-
-    @DisplayName("답글 생성 시 답글과 댓글의 게시물이 다를 경우 생성 실패")
-    @Test
-    public void whenInvalidPostOfParent_thenFailToCreateReply() throws Exception {
-        //given
-        Post post = PostTest.create("username", "emankcin");
-        em.persist(post.getWriter());
-        em.persist(post);
-        String content = "content";
-
-        CommentType commentType = CommentType.COMMENT;
-        CommentType replyType = CommentType.REPLY;
-        Comment parent = new Comment(post, post.getWriter(), content, commentType, null);
-
-        //when
-        Post otherPost = PostTest.create("invalid", "invalid");
-        em.persist(otherPost.getWriter());
-        em.persist(otherPost);
-
-        //then
-        BusinessException e = assertThrows(BusinessException.class,
-                () -> new Comment(otherPost, otherPost.getWriter(), content, replyType, parent));
-        assertThat(e.getCode()).isEqualTo(ExceptionCode.BAD_REQUEST_POST_OF_COMMENT);
+            assertThat(
+                    reply.getParent()
+                            .equals(parent)
+            ).isTrue();
+        }
     }
 
     public static Comment create(Post post, CommentType commentType) {
-        return new Comment(
+        return create(
                 post,
                 post.getWriter(),
+                commentType
+        );
+    }
+
+    public static Comment create(Post post, Member writer, CommentType commentType) {
+        return new Comment(
+                post,
+                writer,
                 "content",
                 commentType,
                 null

@@ -1,10 +1,10 @@
-package toy.board.validator;
+package toy.board.utils;
 
 import org.springframework.util.StringUtils;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
-public class Validator {
+public class Assert {
 
     public static void notNull(final Object object) {
         if (object == null) {

@@ -2,9 +2,8 @@ package toy.board.domain.base;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
+import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 
 @MappedSuperclass
@@ -18,7 +17,7 @@ public class BaseDeleteEntity extends BaseEntity {
     @Column(name = "deleted_date")
     private LocalDateTime deletedDate;
 
-    public void delete() {
+    protected void delete() {
         this.isDeleted = true;
         deletedDate = LocalDateTime.now();
     }

@@ -24,7 +24,7 @@ import toy.board.domain.post.Comment;
 import toy.board.domain.post.Post;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.validator.Validator;
+import toy.board.utils.Assert;
 
 @Entity
 @Getter
@@ -90,11 +90,11 @@ public class Member extends BaseEntity {
             final String password,
             final UserRole userRole
     ) {
-        Validator.hasTextAndLength(username, USER_ID_LENGTH);
-        Validator.hasTextAndLength(nickname, NICKNAME_LENGTH);
-        Validator.hasTextAndLength(password, PASSWORD_LENGTH);
+        Assert.hasTextAndLength(username, USER_ID_LENGTH);
+        Assert.hasTextAndLength(nickname, NICKNAME_LENGTH);
+        Assert.hasTextAndLength(password, PASSWORD_LENGTH);
 
-        Validator.notNull(userRole);
+        Assert.notNull(userRole);
     }
 
     public void updateRole(Member target) {
@@ -119,7 +119,7 @@ public class Member extends BaseEntity {
      */
     public void changeAllPostAndCommentWriterToNull() {
         this.posts.forEach(Post::applyWriterWithdrawal);
-        this.comments.forEach(Comment::applyWriterWithdrawal);
+        this.comments.forEach(comment -> comment.applyWriterWithdrawal(this));
     }
 
     private void validateRoleEach(final Member target) {

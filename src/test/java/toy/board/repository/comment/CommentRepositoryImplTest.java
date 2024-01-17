@@ -60,7 +60,7 @@ class CommentRepositoryImplTest {
         Post post = persistPost(member);
 
         Comment comment = new Comment(post, member, "title", CommentType.COMMENT, null);
-        comment.delete();
+        comment.deleteBy(member);
         Long writer = comment.getWriterId();
         em.persist(comment);
 

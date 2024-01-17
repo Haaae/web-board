@@ -62,8 +62,7 @@ public class CommentService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
-        comment.validateRight(member);
-        comment.delete();
+        comment.deleteBy(member);
     }
 
     private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {

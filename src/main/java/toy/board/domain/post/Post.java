@@ -31,7 +31,7 @@ import toy.board.utils.Assert;
 public class Post extends BaseEntity {
 
     public static final int TITLE_MAX_LENGTH = 50;
-    public static final int CONTENT_MAX_LENGTH = 10000;
+    public static final int CONTENT_MAX_LENGTH = 10_000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,7 +104,7 @@ public class Post extends BaseEntity {
         Assert.hasTextAndLength(content, CONTENT_MAX_LENGTH);
         Assert.notNull(writer);
 
-        validateRight(writer);
+        validateIsWriter(writer);
 
         this.content = content;
         this.isEdited = true;

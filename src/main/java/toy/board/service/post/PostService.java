@@ -32,7 +32,7 @@ public class PostService {
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.NOT_FOUND)
                 );
-        
+
         post.update(content, member);
         return post.getId();
     }
@@ -86,7 +86,8 @@ public class PostService {
                 );
 
         post.validateRight(member);
-        commentRepository.deleteCommentsByPostAndType(post, CommentType.REPLY);
+
+        commentRepository.deleteCommentsByPostAndType(post, CommentType.REPLY); // 답글이 댓글을 참조하므로 먼저 삭제한다.
         commentRepository.deleteCommentsByPost(post);
         postRepository.delete(post);
     }

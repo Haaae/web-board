@@ -125,7 +125,7 @@ public class Post extends BaseEntity {
     }
 
     private void validateIsWriter(Member writer) {
-        if (!this.writer.equals(writer)) {
+        if (this.writer == null || !this.writer.equals(writer)) {
             throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
         }
     }

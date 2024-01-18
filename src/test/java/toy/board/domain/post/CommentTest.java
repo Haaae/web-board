@@ -294,6 +294,7 @@ class CommentTest {
         - 삭제 성공 : 작성자가 아닌 삭제 권한 있는 사용자
         - 삭제 실패 : Member Null
         - 삭제 실패 : 권한 없음 - 작성자 아닌 일반 사용자
+        - 삭제 실패 : 탈퇴한 회원의 댓글을 권한 없는 일반 사용자가 삭제 시도
          */
 
         @DisplayName("삭제 성공 : 작성자")
@@ -371,6 +372,23 @@ class CommentTest {
             assertThatThrownBy(() -> comment.deleteBy(other))
                     .isInstanceOf(BusinessException.class);
         }
+
+        @DisplayName("삭제 실패 : 탈퇴한 회원의 댓글을 권한 없는 일반 사용자가 삭제 시도할 때 NPE이 발생하지 않고 비즈니스 예외가 발생한다")
+        @Test
+        void 탈퇴회원의_댓글을_삭제권한없는_일반사용자라면_삭제_실패() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            comment.applyWriterWithdrawal(writer);
+            Member other = MemberTest.create("username", "other", UserRole.USER);
+
+            //then
+            assertThatThrownBy(() -> comment.deleteBy(other))
+                    .isInstanceOf(BusinessException.class);
+        }
     }
 
     @Nested
@@ -378,6 +396,7 @@ class CommentTest {
         /*
         - 탈퇴 적용 성공
         - 탈퇴 적용 실패 : 작성자가 아닌 사용자 - 모든 UserRole
+        - 탈퇴 적용 실패 : 이미 탈퇴 적용된 comment
          */
 
         @DisplayName("탈퇴 적용 성공 : 작성자")
@@ -425,6 +444,35 @@ class CommentTest {
                     .isInstanceOf(BusinessException.class);
             assertThat(comment.getWriter())
                     .isNotNull();
+        }
+
+        @DisplayName("탈퇴 적용 실패 : 이미 탈퇴 적용된 comment. NPE 대신 비즈니스 예외가 발생한다")
+        @Test
+        void 이미_탈퇴적용된_댓글은_탈퇴적용_실퍂() throws Exception {
+            //given
+            Post post = PostTest.create("username", "nickname");
+            Member writer = MemberTest.create("username", "nickname", UserRole.USER);
+            Comment comment = CommentTest.create(post, writer, CommentType.COMMENT);
+
+            //when
+            comment.applyWriterWithdrawal(writer);
+
+            Member nullMember = null;
+            Member master = MemberTest.create("username", "nickname", UserRole.MASTER);
+            Member admin = MemberTest.create("username", "nickname", UserRole.ADMIN);
+
+            //then
+            assertThat(comment.getWriter())
+                    .isNull();
+
+            assertThatThrownBy(() -> comment.applyWriterWithdrawal(nullMember))
+                    .isInstanceOf(BusinessException.class);
+
+            assertThatThrownBy(() -> comment.applyWriterWithdrawal(master))
+                    .isInstanceOf(BusinessException.class);
+
+            assertThatThrownBy(() -> comment.applyWriterWithdrawal(admin))
+                    .isInstanceOf(BusinessException.class);
         }
     }
 

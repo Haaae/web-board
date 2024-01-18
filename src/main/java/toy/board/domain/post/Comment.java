@@ -184,18 +184,18 @@ public class Comment extends BaseDeleteEntity {
         this.writer = null;
     }
 
-    private void validateIsWriter(Member writer) {
-        if (!this.writer.equals(writer)) {
-            throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
-        }
-    }
-
     private void validateDeleteRight(final Member writer) {
         if (writer.hasDeleteRight()) {
             return;
         }
 
         validateIsWriter(writer);
+    }
+    
+    private void validateIsWriter(Member writer) {
+        if (this.writer == null || !this.writer.equals(writer)) {
+            throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
+        }
     }
 
     public boolean isCommentType() {

@@ -118,7 +118,7 @@ public class PostTest {
                 UserRole.ADMIN
         );
         //when
-        post.applyWriterWithdrawal();
+        post.applyWriterWithdrawal(writer);
         //then
         BusinessException writerException = assertThrows(
                 BusinessException.class,

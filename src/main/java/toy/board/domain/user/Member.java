@@ -118,7 +118,7 @@ public class Member extends BaseEntity {
      * 유저 탈퇴 시 호출하여 작성했던 게시글과 댓글의 작성자를 null로 만드는 기능
      */
     public void changeAllPostAndCommentWriterToNull() {
-        this.posts.forEach(Post::applyWriterWithdrawal);
+        this.posts.forEach(post -> post.applyWriterWithdrawal(this));
         this.comments.forEach(comment -> comment.applyWriterWithdrawal(this));
     }
 
@@ -136,11 +136,11 @@ public class Member extends BaseEntity {
         return Collections.unmodifiableList(this.comments);
     }
 
-    public long getPostCount() {
+    public long countPosts() {
         return this.posts.size();
     }
 
-    public long getCommentCount() {
+    public long countComments() {
         return this.comments.stream()
                 .filter(c -> !c.isDeleted())
                 .count();

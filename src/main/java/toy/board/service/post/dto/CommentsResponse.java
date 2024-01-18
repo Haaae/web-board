@@ -34,7 +34,7 @@ public record CommentsResponse(
                         .filter(Comment::isCommentType)
                         .map(CommentResponse::createCommentTypeFrom)
                         .toList(),
-                post.commentCount()
+                post.countComments()
         );
     }
 

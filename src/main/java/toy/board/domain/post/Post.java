@@ -22,7 +22,7 @@ import toy.board.domain.base.BaseEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.validator.Validator;
+import toy.board.utils.Assert;
 
 @Entity
 @Getter
@@ -66,17 +66,19 @@ public class Post extends BaseEntity {
 
         validate(writer, title, content);
 
-        addPostTo(writer);
+        // Member writer에 대한 양방향 매핑
+        addTo(writer);
+
         this.title = title;
         this.content = content;
         this.hits = 0L;
         this.isEdited = false;
     }
 
-    private static void validate(final Member writer, final String title, final String content) {
-        Validator.notNull(writer);
-        Validator.hasTextAndLength(title, TITLE_MAX_LENGTH);
-        Validator.hasTextAndLength(content, CONTENT_MAX_LENGTH);
+    private void validate(final Member writer, final String title, final String content) {
+        Assert.notNull(writer);
+        Assert.hasTextAndLength(title, TITLE_MAX_LENGTH);
+        Assert.hasTextAndLength(content, CONTENT_MAX_LENGTH);
     }
 
     /**
@@ -88,8 +90,22 @@ public class Post extends BaseEntity {
         this.comments.add(comment);
     }
 
+    /**
+     * Post와 Member의 양방향 매핑을 위한 메서드.
+     *
+     * @param writer Post 작성자.
+     */
+    private void addTo(final Member writer) {
+        this.writer = writer;
+        writer.addPost(this);
+    }
+
     public void update(@NotBlank final String content, @NotNull final Member writer) {
+        Assert.hasTextAndLength(content, CONTENT_MAX_LENGTH);
+        Assert.notNull(writer);
+
         validateRight(writer);
+
         this.content = content;
         this.isEdited = true;
     }
@@ -99,7 +115,17 @@ public class Post extends BaseEntity {
             return;
         }
 
-        if (!writer.equals(this.writer)) {
+        validateIsWriter(writer);
+    }
+
+    public void applyWriterWithdrawal(final Member writer) {
+        validateIsWriter(writer);
+
+        this.writer = null;
+    }
+
+    private void validateIsWriter(Member writer) {
+        if (!this.writer.equals(writer)) {
             throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
         }
     }
@@ -108,22 +134,11 @@ public class Post extends BaseEntity {
         return this.hits++;
     }
 
-    /**
-     * Post와 Member의 양방향 매핑을 위한 메서드.
-     *
-     * @param writer Post 작성자.
-     */
-    private void addPostTo(final Member writer) {
-        this.writer = writer;
-        writer.addPost(this);
-    }
-
-    public void applyWriterWithdrawal() {
-        this.writer = null;
-    }
-
-    public int commentCount() {
-        return this.comments.size();
+    public int countComments() {
+        return (int) this.comments
+                .stream()
+                .filter(comment -> !comment.isDeleted())
+                .count();
     }
 
     public List<Comment> getComments() {

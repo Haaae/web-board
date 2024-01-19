@@ -298,10 +298,6 @@ public class PostTest {
             assertDoesNotThrow(() -> post.validateRight(master));
             assertDoesNotThrow(() -> post.validateRight(admin));
         }
-
-        public static Post create(String username, String nickname) {
-            return new Post(MemberTest.create(username, nickname, UserRole.USER), "title", "content");
-        }
     }
 
     @Nested
@@ -346,5 +342,9 @@ public class PostTest {
 
     public static Post create(String username, String nickname) {
         return new Post(MemberTest.create(username, nickname, UserRole.USER), "title", "content");
+    }
+
+    public static Post create(Member member) {
+        return new Post(member, "title", "content");
     }
 }

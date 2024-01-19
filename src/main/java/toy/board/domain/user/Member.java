@@ -92,6 +92,11 @@ public class Member extends BaseEntity {
         Assert.notNull(userRole);
     }
 
+    /**
+     * target Member의 userRole을 ADMIN으로 승격한다. MASTER MEMBER만 이 메서드를 사용할 수 있다.
+     *
+     * @param target
+     */
     public void updateRole(Member target) {
         validateRoleEach(target);
         target.role = UserRole.ADMIN;

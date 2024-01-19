@@ -51,13 +51,12 @@ class MemberServiceTest {
 
     @BeforeEach
     void init() {
-        this.member = Member.builder(
-                        username,
-                        nickname,
-                        password,
-                        userRole
-                )
-                .build();
+        this.member = new Member(
+                username,
+                nickname,
+                password,
+                userRole
+        );
 
         memberRepository.save(member);
 
@@ -108,12 +107,12 @@ class MemberServiceTest {
     }
 
     private Member createMember() {
-        return Member.builder(
+        return new Member(
                 username,
                 nickname,
                 password,
                 UserRole.USER
-        ).build();
+        );
     }
 
     @DisplayName("이메일과 닉네임이 모두 기존에 존재하지 않음: 통과")

@@ -32,13 +32,12 @@ class MemberRepositoryTest {
 
     @BeforeEach
     void init() {
-        this.member = Member.builder(
-                        username,
-                        nickname,
-                        password,
-                        UserRole.USER
-                )
-                .build();
+        this.member = new Member(
+                username,
+                nickname,
+                password,
+                UserRole.USER
+        );
 
         memberRepository.save(member);
 

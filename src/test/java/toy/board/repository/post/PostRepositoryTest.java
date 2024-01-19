@@ -267,12 +267,12 @@ class PostRepositoryTest {
     }
 
     private Member persistMember(int index) {
-        Member member = Member.builder(
+        Member member = new Member(
                 "email" + index,
                 "nick" + index,
                 "password",
                 UserRole.USER
-        ).build();
+        );
 
         em.persist(member);
         return member;

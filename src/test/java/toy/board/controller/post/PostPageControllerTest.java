@@ -102,12 +102,12 @@ public class PostPageControllerTest {
     }
 
     private Member persistNewMember() {
-        Member member = Member.builder(
+        Member member = new Member(
                 "member",
                 "nickname",
                 "password",
                 UserRole.USER
-        ).build();
+        );
         em.persist(member);
         return member;
     }

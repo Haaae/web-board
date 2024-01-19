@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -32,7 +31,6 @@ import toy.board.utils.Assert;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@Builder(builderMethodName = "innerBuilder")
 public class Member extends BaseEntity {
 
     public static final int USER_ID_LENGTH = 50;
@@ -62,34 +60,31 @@ public class Member extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
     @ToString.Exclude
-    @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "writer")
     @ToString.Exclude
-    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
-    public static MemberBuilder builder(
-            @NotNull final String username,
-            @NotNull final String nickname,
-            @NotNull final String password,
-            @NotNull final UserRole userRole) {
-
-        validate(username, nickname, password, userRole);
-
-        return innerBuilder()
-                .username(username)
-                .nickname(nickname)
-                .password(password)
-                .role(userRole);
-    }
-
-    private static void validate(
+    public Member(
             @NotBlank final String username,
             @NotBlank final String nickname,
             @NotBlank final String password,
             @NotNull final UserRole userRole
+    ) {
+        validate(username, nickname, password, userRole);
+
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+        this.role = userRole;
+    }
+
+    private static void validate(
+            final String username,
+            final String nickname,
+            final String password,
+            final UserRole userRole
     ) {
         Assert.hasTextAndLength(username, USER_ID_LENGTH);
         Assert.hasTextAndLength(nickname, NICKNAME_LENGTH);

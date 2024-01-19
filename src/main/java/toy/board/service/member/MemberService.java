@@ -43,13 +43,12 @@ public class MemberService {
         memberCheckService.checkUsernameDuplication(username);
         memberCheckService.checkNicknameDuplication(nickname);
 
-        Member member = Member.builder(
-                        username,
-                        nickname,
-                        passwordEncoder.encode(password),
-                        UserRole.USER
-                )
-                .build();
+        Member member = new Member(
+                username,
+                nickname,
+                passwordEncoder.encode(password),
+                UserRole.USER
+        );
 
         memberRepository.save(member);
         return member;

@@ -88,12 +88,12 @@ class CommentRepositoryImplTest {
     }
 
     private Member persistMember() {
-        Member member = Member.builder(
+        Member member = new Member(
                 "member",
                 "nickname",
                 "password",
                 UserRole.USER
-        ).build();
+        );
         em.persist(member);
         return member;
     }

@@ -45,12 +45,12 @@ public class MemberControllerLoginTest {
         String username = "username1@gmail.com";
         String password = "password1!";
 
-        Member member = Member.builder(
+        Member member = new Member(
                 username,
                 "nickname",
                 passwordEncoder.encode(password),
                 UserRole.USER
-        ).build();
+        );
 
         memberRepository.save(member);
 

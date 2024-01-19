@@ -19,8 +19,8 @@ public record MyInfoResponse(
         return new MyInfoResponse(
                 member.getUsername(),
                 member.getNickname(),
-                member.getPostCount(),
-                member.getCommentCount()
+                member.countPosts(),
+                member.countComments()
         );
     }
 }

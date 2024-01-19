@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,15 +86,14 @@ public class Member extends BaseEntity {
     }
 
     private static void validate(
-            final String username,
-            final String nickname,
-            final String password,
-            final UserRole userRole
+            @NotBlank final String username,
+            @NotBlank final String nickname,
+            @NotBlank final String password,
+            @NotNull final UserRole userRole
     ) {
         Assert.hasTextAndLength(username, USER_ID_LENGTH);
         Assert.hasTextAndLength(nickname, NICKNAME_LENGTH);
         Assert.hasTextAndLength(password, PASSWORD_LENGTH);
-
         Assert.notNull(userRole);
     }
 
@@ -102,10 +102,26 @@ public class Member extends BaseEntity {
         target.role = UserRole.ADMIN;
     }
 
+    private void validateRoleEach(final Member target) {
+        if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
+            throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
+        }
+    }
+
+    /**
+     * Post와의 양방향 매핑을 위함 메서드. Post에서 호출한다.
+     *
+     * @param post
+     */
     public void addPost(final Post post) {
         this.posts.add(post);
     }
 
+    /**
+     * Comment와의 양방향 매핑을 위한 메서드. Comment에서 호출한다.
+     *
+     * @param comment
+     */
     public void addComment(final Comment comment) {
         this.comments.add(comment);
     }
@@ -120,12 +136,6 @@ public class Member extends BaseEntity {
     public void changeAllPostAndCommentWriterToNull() {
         this.posts.forEach(post -> post.applyWriterWithdrawal(this));
         this.comments.forEach(comment -> comment.applyWriterWithdrawal(this));
-    }
-
-    private void validateRoleEach(final Member target) {
-        if (this.role != UserRole.MASTER || target.role == UserRole.MASTER) {
-            throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
-        }
     }
 
     public List<Post> getPosts() {

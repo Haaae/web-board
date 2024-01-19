@@ -14,7 +14,7 @@ import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
 
-class CommentTest {
+public class CommentTest {
 
     @Nested
     class CreateTest {

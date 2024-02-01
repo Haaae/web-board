@@ -9,10 +9,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class RedisRepository {
+public class RedisRepository implements CacheRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Override
     public Optional<String> getValues(final String key) {
         return Optional.ofNullable(
                 (String) redisTemplate
@@ -21,6 +22,7 @@ public class RedisRepository {
         );
     }
 
+    @Override
     public boolean deleteValues(final String key) {
         return Boolean.TRUE
                 .equals(
@@ -28,6 +30,7 @@ public class RedisRepository {
                 );
     }
 
+    @Override
     public void setValues(final String key, final String value, final Long expiredTime) {
         redisTemplate.opsForValue()
                 .set(

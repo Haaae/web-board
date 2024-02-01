@@ -129,7 +129,7 @@ public class MyPageController {
 
         Long memberId = getMemberIdFrom(request);
         Page<Comment> page = commentRepository
-                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(memberId,
+                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriter(memberId,
                         pageable);
 
         return ResponseEntity.ok(

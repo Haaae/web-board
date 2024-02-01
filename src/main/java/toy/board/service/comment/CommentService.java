@@ -32,7 +32,7 @@ public class CommentService {
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
         Comment parentComment = parentId.map(this::findCommentWithFetchJoinWriterAndProfile)
-                .orElse(null);  // parentId가 null이 아니면 해당 Comment를 찾아온다.
+                .orElse(null);  // parentId가 null이 아니면 해당 Comment를 찾아온다. parentId가 Optional.empty()인 경우  Comment를 찾지 않고 null을 할당한다.
 
         Comment comment = new Comment(post, member, content, type, parentComment);
 

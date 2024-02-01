@@ -2,8 +2,6 @@ package toy.board.repository.comment;
 
 import static toy.board.domain.post.QComment.comment;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +22,10 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
      * @return
      */
     @Override
-    public Optional<Comment> findCommentWithFetchJoinWriterAndProfile(final Long id) {
+    public Optional<Comment> findCommentWithFetchJoinWriter(final Long id) {
         return Optional.ofNullable(
-                selectFromCommentWithFetchJoinWriterAndProfile()
+                selectFrom(comment)
+                        .leftJoin(comment.writer).fetchJoin()
                         .where(comment.id.eq(id))
                         .fetchOne()
         );
@@ -39,39 +38,24 @@ public class CommentRepositoryImpl extends Querydsl4RepositorySupport
      * @param pageable 페이징 정보
      */
     @Override
-    public Page<Comment> findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(
+    public Page<Comment> findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriter(
             final Long writerId, final Pageable pageable) {
         return applyPagination(
                 pageable,
 
-                contentQuery -> selectFromCommentWithFetchJoinPostAndWriterAndProfile()
-                        .where(isNotDeletedAndWroteBy(writerId)),
+                contentQuery -> selectFrom(comment)
+                        .leftJoin(comment.writer).fetchJoin()
+                        .leftJoin(comment.post).fetchJoin()
+                        .where(
+                                comment.writer.id.eq(writerId)
+                                        .and(comment.isDeleted.isFalse())
+                        ),
 
                 countQuery -> select(comment.count())
                         .from(comment)
-                        .where(isWroteBy(writerId))
+                        .where(
+                                comment.writer.id.eq(writerId)
+                        )
         );
-    }
-
-    private static BooleanExpression isNotDeletedAndWroteBy(Long writerId) {
-        return isWroteBy(writerId).and(isNotDeleted());
-    }
-
-    private static BooleanExpression isNotDeleted() {
-        return comment.isDeleted.isFalse();
-    }
-
-    private static BooleanExpression isWroteBy(Long writerId) {
-        return comment.writer.id.eq(writerId);
-    }
-
-    private JPAQuery<Comment> selectFromCommentWithFetchJoinPostAndWriterAndProfile() {
-        return selectFromCommentWithFetchJoinWriterAndProfile()
-                .leftJoin(comment.post).fetchJoin();
-    }
-
-    private JPAQuery<Comment> selectFromCommentWithFetchJoinWriterAndProfile() {
-        return selectFrom(comment)
-                .leftJoin(comment.writer).fetchJoin();
     }
 }

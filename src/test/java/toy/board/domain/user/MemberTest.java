@@ -420,4 +420,8 @@ public class MemberTest {
                 role
         );
     }
+
+    public static Member create() {
+        return MemberTest.create("username", "nickname", UserRole.USER);
+    }
 }

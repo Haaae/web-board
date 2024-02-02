@@ -27,12 +27,15 @@ public class CommentService {
     @Transactional
     public Long create(final String content, final CommentType type,
                        final Optional<Long> parentId, final Long postId, final Long memberId) {
-        Post post = findPostWithFetchJoinWriterAndProfile(postId);
+        Post post = postRepository.findPostWithFetchJoinWriter(postId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
-        Comment parentComment = parentId.map(this::findCommentWithFetchJoinWriterAndProfile)
-                .orElse(null);  // parentId가 null이 아니면 해당 Comment를 찾아온다. parentId가 Optional.empty()인 경우  Comment를 찾지 않고 null을 할당한다.
+        // parentId가 null이 아니면 해당 Comment를 찾아온다. parentId가 Optional.empty()인 경우 Optional.empty()를 그대로 반환한다.
+        // 그후 orElse()를 통해 Optional 값을 가져온다. 만약 정상적으로 parentComment 객체를 저장소에서 가져오면 해당 객체가 할당된다.
+        Comment parentComment = parentId.flatMap(commentRepository::findCommentWithFetchJoinWriter)
+                .orElse(null);
 
         Comment comment = new Comment(post, member, content, type, parentComment);
 
@@ -42,7 +45,8 @@ public class CommentService {
 
     @Transactional
     public Long update(final Long commentId, final String content, final Long memberId) {
-        Comment comment = findCommentWithFetchJoinWriterAndProfile(commentId);
+        Comment comment = commentRepository.findCommentWithFetchJoinWriter(commentId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
@@ -58,20 +62,11 @@ public class CommentService {
      */
     @Transactional
     public void delete(final Long commentId, final Long memberId) {
-        Comment comment = findCommentWithFetchJoinWriterAndProfile(commentId);
+        Comment comment = commentRepository.findCommentWithFetchJoinWriter(commentId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
         comment.deleteBy(member);
-    }
-
-    private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
-        return postRepository.findPostWithFetchJoinWriter(postId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
-    }
-
-    private Comment findCommentWithFetchJoinWriterAndProfile(final Long commentId) {
-        return commentRepository.findCommentWithFetchJoinWriter(commentId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 }

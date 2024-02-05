@@ -25,8 +25,14 @@ public class CommentService {
     private final PostRepository postRepository;
 
     @Transactional
-    public Long create(final String content, final CommentType type,
-                       final Optional<Long> parentId, final Long postId, final Long memberId) {
+    public Long create(
+            final String content,
+            final CommentType type,
+            final Optional<Long> parentId,
+            final Long postId,
+            final Long memberId
+    ) {
+        
         Post post = postRepository.findPostWithFetchJoinWriter(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)
@@ -45,6 +51,7 @@ public class CommentService {
 
     @Transactional
     public Long update(final Long commentId, final String content, final Long memberId) {
+
         Comment comment = commentRepository.findCommentWithFetchJoinWriter(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)
@@ -62,6 +69,7 @@ public class CommentService {
      */
     @Transactional
     public void delete(final Long commentId, final Long memberId) {
+
         Comment comment = commentRepository.findCommentWithFetchJoinWriter(commentId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)

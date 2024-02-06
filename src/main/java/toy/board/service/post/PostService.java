@@ -27,7 +27,11 @@ public class PostService {
 
     @Transactional
     public Long update(final String content, final Long postId, final Long memberId) {
-        Post post = findPostWithFetchJoinWriterAndProfile(postId);
+        Post post = postRepository.findPostWithFetchJoinWriter(postId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.NOT_FOUND)
@@ -46,8 +50,11 @@ public class PostService {
      */
     @Transactional
     public PostDetailResponse getPostDetail(final Long postId) {
-        // Post, Post.writer, Post.writer.profile, Profile.comments를 fetch join으로 가져옴
-        Post post = findPostWithFetchJoinWriterAndProfileAndComments(postId);
+        // Post, Post.writer, Post.writer, Profile.comments를 fetch join으로 가져옴
+        Post post = postRepository.findPostWithFetchJoinWriterAndComments(postId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
 
         post.increaseHits();
 
@@ -79,7 +86,11 @@ public class PostService {
      */
     @Transactional
     public void delete(final Long postId, final Long memberId) {
-        Post post = findPostWithFetchJoinWriterAndProfile(postId);
+        Post post = postRepository.findPostWithFetchJoinWriter(postId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() ->
                         new BusinessException(ExceptionCode.NOT_FOUND)
@@ -90,19 +101,5 @@ public class PostService {
         commentRepository.deleteCommentsByPostAndType(post, CommentType.REPLY); // 답글이 댓글을 참조하므로 먼저 삭제한다.
         commentRepository.deleteCommentsByPost(post);
         postRepository.delete(post);
-    }
-
-    private Post findPostWithFetchJoinWriterAndProfile(final Long postId) {
-        return postRepository.findPostWithFetchJoinWriter(postId)
-                .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.NOT_FOUND)
-                );
-    }
-
-    private Post findPostWithFetchJoinWriterAndProfileAndComments(final Long postId) {
-        return postRepository.findPostWithFetchJoinWriterAndComments(postId)
-                .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.NOT_FOUND)
-                );
     }
 }

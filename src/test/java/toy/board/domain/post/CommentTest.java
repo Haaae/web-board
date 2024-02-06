@@ -547,6 +547,25 @@ public class CommentTest {
         );
     }
 
+    public static Comment create(Post post, CommentType commentType, Comment parent) {
+        return create(
+                post,
+                post.getWriter(),
+                commentType,
+                parent
+        );
+    }
+
+    public static Comment create(Post post, Member writer, CommentType commentType, Comment parent) {
+        return new Comment(
+                post,
+                writer,
+                "content",
+                commentType,
+                parent
+        );
+    }
+
     public static Comment create(Post post, Member writer, CommentType commentType) {
         return new Comment(
                 post,

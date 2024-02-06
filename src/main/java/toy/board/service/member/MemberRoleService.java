@@ -1,4 +1,4 @@
-package toy.board.service.role;
+package toy.board.service.member;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import toy.board.repository.user.MemberRepository;
 @Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
-public class RoleService {
+public class MemberRoleService {
 
     private final MemberRepository memberRepository;
 

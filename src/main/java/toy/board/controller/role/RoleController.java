@@ -20,7 +20,7 @@ import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
 import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
 import toy.board.controller.user.dto.request.RolePromotionRequest;
-import toy.board.service.role.RoleService;
+import toy.board.service.member.MemberRoleService;
 
 @Tag(name = "Role", description = "Role API Document")
 @Controller
@@ -28,7 +28,7 @@ import toy.board.service.role.RoleService;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoleController {
 
-    private final RoleService roleService;
+    private final MemberRoleService roleService;
 
     @ApiResponse(
             responseCode = "200",

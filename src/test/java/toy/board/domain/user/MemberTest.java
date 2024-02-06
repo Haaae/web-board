@@ -421,6 +421,10 @@ public class MemberTest {
         );
     }
 
+    public static Member create(UserRole role) {
+        return MemberTest.create("username", "nickname", role);
+    }
+
     public static Member create() {
         return MemberTest.create("username", "nickname", UserRole.USER);
     }

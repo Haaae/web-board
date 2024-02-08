@@ -51,7 +51,8 @@ gradle-app.setting
 out/
 .idea/
 
-###application.yml
+### application.yml
 *.yml
 src/main/generated
+src/main/java/toy/board/config/init
 MyTest.java

@@ -414,6 +414,10 @@ public class CommentTest {
 
             assertThat(comment.getWriter())
                     .isNull();
+            assertThat(comment.getWriterId())
+                    .isNull();
+            assertThat(comment.getWriterNickname())
+                    .isNull();
         }
 
         @DisplayName("탈퇴 적용 실패 : 작성자가 아닌 사용자 - 모든 UserRole")

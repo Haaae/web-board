@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.1'
     id 'io.spring.dependency-management' version '1.1.0'
+
     id 'jacoco'
 }
 
@@ -22,12 +23,27 @@ jacoco {
 }
 
 jacocoTestReport {
+    dependsOn(test)
+
     reports {
         // 원하는 리포트를 켜고 끌 수 있습니다.
         html.required = true
         xml.required = false
         csv.required = true
 
+        afterEvaluate {
+            classDirectories.setFrom(files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: [
+                        "toy/board/domain/**/Q**.*",
+
+                        "toy/board/BoardApplication.*",
+                        "toy/board/service/mail/MailService.*",
+                        "toy/board/domain/base/**.*",
+
+                        "toy/board/config/init/**.*",
+                ])
+            }))
+        }
 //  각 리포트 타입 마다 리포트 저장 경로를 설정할 수 있습니다.
 //  html.destination file("$buildDir/jacocoHtml")
 //  xml.destination file("$buildDir/jacoco.xml")
@@ -42,7 +58,7 @@ jacocoTestCoverageVerification {
             limit {
                 // 'counter'를 지정하지 않으면 default는 'INSTRUCTION'
                 // 'value'를 지정하지 않으면 default는 'COVEREDRATIO'
-                minimum = 0.30
+                minimum = 0.80
             }
         }
 

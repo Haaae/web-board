@@ -17,7 +17,7 @@ import toy.board.controller.api.response.annotation.common.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
 import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
-import toy.board.controller.user.dto.request.RolePromotionRequest;
+import toy.board.controller.role.dto.request.RolePromotionRequest;
 import toy.board.service.member.MemberRoleService;
 
 @Tag(name = "Role", description = "Role API Document")

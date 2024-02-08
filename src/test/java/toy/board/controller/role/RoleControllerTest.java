@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.constant.SessionConst;
-import toy.board.controller.user.dto.request.RolePromotionRequest;
+import toy.board.controller.role.dto.request.RolePromotionRequest;
 import toy.board.domain.user.Member;
 import toy.board.domain.user.MemberTest;
 import toy.board.domain.user.UserRole;

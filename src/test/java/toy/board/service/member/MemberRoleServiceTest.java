@@ -69,6 +69,59 @@ class MemberRoleServiceTest {
             assertThat(admin.getRole()).isEqualTo(UserRole.ADMIN);
         }
 
+        @DisplayName("등급 변경 실패 : master를 찾을 수 없으면 예외발생")
+        @Test
+        void master를_찾지_못하면_예외발생() throws Exception {
+            //given
+            long memberId = random.nextLong();
+            long masterId = random.nextLong();
+
+            Member member = MemberTest.create(UserRole.USER);
+
+            //when
+
+            given(memberRepository.findById(eq(memberId)))
+                    .willReturn(Optional.of(member));
+
+            given(memberRepository.findById(eq(masterId)))
+                    .willReturn(Optional.empty());
+
+            //then
+            BusinessException e = assertThrows(
+                    BusinessException.class,
+                    () -> memberRoleService.promoteMemberRole(masterId, memberId)
+            );
+
+            assertThat(e.getCode())
+                    .isEqualTo(ExceptionCode.NOT_FOUND);
+        }
+
+        @DisplayName("등급 변경 실패 : target을 찾을 수 없으면 예외발생")
+        @Test
+        void target을_찾지_못하면_예외발생() throws Exception {
+            //given
+            long memberId = random.nextLong();
+            long masterId = random.nextLong();
+
+            Member master = MemberTest.create(UserRole.MASTER);
+
+            //when
+            given(memberRepository.findById(eq(memberId)))
+                    .willReturn(Optional.empty());
+
+            given(memberRepository.findById(eq(masterId)))
+                    .willReturn(Optional.of(master));
+
+            //then
+            BusinessException e = assertThrows(
+                    BusinessException.class,
+                    () -> memberRoleService.promoteMemberRole(masterId, memberId)
+            );
+
+            assertThat(e.getCode())
+                    .isEqualTo(ExceptionCode.NOT_FOUND);
+        }
+
         @DisplayName("등급 변경 실패 : 권한 없는 사용자라면 예외발생")
         @Test
         void 등급_변경을_시도하는_사용자가_권한이_없다면_예외발생() throws Exception {

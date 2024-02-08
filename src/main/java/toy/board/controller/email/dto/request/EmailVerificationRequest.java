@@ -1,4 +1,4 @@
-package toy.board.controller.user.dto.request;
+package toy.board.controller.email.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

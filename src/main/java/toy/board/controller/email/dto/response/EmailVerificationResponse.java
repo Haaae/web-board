@@ -1,4 +1,4 @@
-package toy.board.controller.user.dto.response;
+package toy.board.controller.email.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

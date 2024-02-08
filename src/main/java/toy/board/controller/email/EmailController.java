@@ -16,9 +16,9 @@ import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError
 import toy.board.controller.api.response.annotation.common.ApiDuplicationError;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
 import toy.board.controller.api.response.annotation.email.ApiCodeSendError;
-import toy.board.controller.user.dto.request.EmailVerificationRequest;
-import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
-import toy.board.controller.user.dto.response.EmailVerificationResponse;
+import toy.board.controller.email.dto.request.EmailVerificationRequest;
+import toy.board.controller.email.dto.request.SendEmailVerificationRequest;
+import toy.board.controller.email.dto.response.EmailVerificationResponse;
 import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.service.mail.MailService;
 

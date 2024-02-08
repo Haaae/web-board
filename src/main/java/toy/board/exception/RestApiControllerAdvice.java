@@ -49,8 +49,8 @@ public class RestApiControllerAdvice {
 
         return new ResponseEntity<>(
                 new ErrorResponse(
-                        errorCode.getCode()
-                        , message
+                        errorCode.getCode(),
+                        message
                 ),
                 HttpStatus.valueOf(
                         errorCode.getStatus()

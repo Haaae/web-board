@@ -1,6 +1,5 @@
 package toy.board.service.member;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.user.Member;
@@ -10,7 +9,7 @@ import toy.board.repository.user.MemberRepository;
 
 @Transactional(readOnly = true)
 @Service
-@RequiredArgsConstructor
+@lombok.RequiredArgsConstructor
 public class MemberRoleService {
 
     private final MemberRepository memberRepository;

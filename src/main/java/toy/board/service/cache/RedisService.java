@@ -1,14 +1,12 @@
 package toy.board.service.cache;
 
 import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.repository.redis.CacheRepository;
 
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
 public class RedisService implements CacheService {
 

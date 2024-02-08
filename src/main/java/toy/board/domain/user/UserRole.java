@@ -1,9 +1,6 @@
 package toy.board.domain.user;
 
-import lombok.Getter;
-
-
-@Getter
+@lombok.Getter
 public enum UserRole {
     USER(false),
     ADMIN(true),

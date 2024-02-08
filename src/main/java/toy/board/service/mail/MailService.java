@@ -3,8 +3,6 @@ package toy.board.service.mail;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -17,7 +15,7 @@ import toy.board.service.cache.CacheService;
 import toy.board.service.member.MemberCheckService;
 
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class MailService {
 
     public static final int AUTH_CODE_LENGTH = 6;
@@ -36,7 +34,7 @@ public class MailService {
         memberCheckService.checkUsernameDuplication(email);
         String authCode = createAuthCode();
         sendMail(email, EMAIL_TITLE, authCode);
-        // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
+        // 이메일 인증 요청 시 인증 번호를 캐시에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         cacheService.setValues(REDIS_PREFIX + email, authCode, authCodeExpirationMillis);
     }
 

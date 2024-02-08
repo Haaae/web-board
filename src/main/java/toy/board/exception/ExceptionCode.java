@@ -1,8 +1,6 @@
 package toy.board.exception;
 
-import lombok.Getter;
-
-@Getter
+@lombok.Getter
 public enum ExceptionCode {
     BAD_REQUEST_ARG(400, "COMMON-001", "유효하지 않은 요청값"),
     BAD_REQUEST_PAGING_ARG(400, "COMMON-002", "유효하지 않은 페이징 파라미터(size, page)"),

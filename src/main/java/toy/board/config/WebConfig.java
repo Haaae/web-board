@@ -1,7 +1,6 @@
 package toy.board.config;
 
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,7 +11,7 @@ import toy.board.interceptor.LoginInterceptor;
 import toy.board.resolver.PageableVerificationArgumentResolver;
 
 @Configuration
-@RequiredArgsConstructor
+@lombok.RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private final PageableVerificationArgumentResolver pageableVerificationArgumentResolver;

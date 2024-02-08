@@ -14,10 +14,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import toy.board.domain.base.BaseEntity;
 import toy.board.domain.post.Comment;
@@ -27,9 +23,9 @@ import toy.board.exception.ExceptionCode;
 import toy.board.utils.Assert;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.Getter
+@lombok.NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@lombok.AllArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @ToString
 public class Member extends BaseEntity {
 

@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,7 +37,7 @@ import toy.board.service.member.MemberService;
 @Tag(name = "Member", description = "Member API Document")
 @Controller
 @RequestMapping("/users")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
 public class MemberController {
 
     private final MemberService memberService;

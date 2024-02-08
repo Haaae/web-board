@@ -3,11 +3,10 @@ package toy.board.domain.base;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
-import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 
 @MappedSuperclass
-@Getter
+@lombok.Getter
 public class BaseDeleteEntity extends BaseEntity {
 
     @Column(name = "is_deleted", nullable = false)

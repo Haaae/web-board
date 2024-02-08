@@ -14,9 +14,6 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
@@ -25,9 +22,9 @@ import toy.board.exception.ExceptionCode;
 import toy.board.utils.Assert;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@lombok.Getter
+@lombok.NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@lombok.ToString
 public class Comment extends BaseDeleteEntity {
 
     public static final int CONTENT_LENGTH = 1000;
@@ -191,7 +188,7 @@ public class Comment extends BaseDeleteEntity {
 
         validateIsWriter(writer);
     }
-    
+
     private void validateIsWriter(Member writer) {
         if (this.writer == null || !this.writer.equals(writer)) {
             throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);

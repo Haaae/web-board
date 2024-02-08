@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,7 +34,7 @@ import toy.board.repository.user.MemberRepository;
 
 @Tag(name = "MyPage", description = "MyPage API Document")
 @Controller
-@RequiredArgsConstructor
+@lombok.RequiredArgsConstructor
 @RequestMapping("/mypage")
 public class MyPageController {
 

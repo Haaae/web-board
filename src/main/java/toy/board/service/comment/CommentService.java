@@ -1,8 +1,6 @@
 package toy.board.service.comment;
 
 import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.Comment;
@@ -16,7 +14,7 @@ import toy.board.repository.post.PostRepository;
 import toy.board.repository.user.MemberRepository;
 
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
 public class CommentService {
 
@@ -32,7 +30,7 @@ public class CommentService {
             final Long postId,
             final Long memberId
     ) {
-        
+
         Post post = postRepository.findPostWithFetchJoinWriter(postId)
                 .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
         Member member = memberRepository.findById(memberId)

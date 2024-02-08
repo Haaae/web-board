@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,7 +25,7 @@ import toy.board.service.mail.MailService;
 @Tag(name = "Email", description = "Email Verification API Document")
 @Controller
 @RequestMapping("/users")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class EmailController {
 
     private final MailService mailService;

@@ -1,7 +1,5 @@
 package toy.board.service.post;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.board.domain.post.CommentType;
@@ -17,7 +15,7 @@ import toy.board.service.post.dto.PostDetailResponse;
 import toy.board.service.post.dto.PostResponse;
 
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
 public class PostService {
 

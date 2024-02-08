@@ -1,6 +1,5 @@
 package toy.board.service.member;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +9,7 @@ import toy.board.repository.user.MemberRepository;
 
 @Transactional(readOnly = true)
 @Service
-@RequiredArgsConstructor
+@lombok.RequiredArgsConstructor
 public class MemberCheckService {
 
     private final PasswordEncoder passwordEncoder;

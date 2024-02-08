@@ -2,13 +2,11 @@ package toy.board.repository.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class RedisRepository implements CacheRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;

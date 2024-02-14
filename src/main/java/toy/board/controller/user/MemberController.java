@@ -159,7 +159,7 @@ public class MemberController {
     @Operation(summary = "사용자 존재 여부 확인", description = "이메일로 사용자 존재 여부를 확인합니다.")
     @Parameter(name = "username", description = "존재 여부를 확인할 사용자 이메일")
     @GetMapping("/usernames/{username}/exist")
-    public ResponseEntity<ExistResponse> findUserByUsername(@PathVariable final String username) {
+    public ResponseEntity<ExistResponse> exitUsername(@PathVariable final String username) {
         boolean isExists = memberRepository.existsByUsername(username);
         return ResponseEntity.ok(
                 new ExistResponse(isExists)

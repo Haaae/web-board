@@ -92,7 +92,8 @@ public class MyPageController {
                     sort = "createdDate",
                     direction = Sort.Direction.DESC
             ) final Pageable pageable,
-            final HttpServletRequest request) {
+            final HttpServletRequest request
+    ) {
 
         Long memberId = getMemberIdFrom(request);
         Page<Post> page = postRepository.findAllByWriterIdWithFetchWriter(memberId,

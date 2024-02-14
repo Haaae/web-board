@@ -6,7 +6,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
 import java.util.Random;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,8 +33,6 @@ class EmailControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private MailService mailService;
-    @Autowired
-    private EntityManager em;
 
     private final MockHttpSession session = new MockHttpSession();
     private final ObjectMapper mapper = new ObjectMapper();

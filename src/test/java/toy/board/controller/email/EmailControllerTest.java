@@ -21,13 +21,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.transaction.annotation.Transactional;
 import toy.board.controller.email.dto.request.EmailVerificationRequest;
 import toy.board.controller.email.dto.request.SendEmailVerificationRequest;
 import toy.board.controller.email.dto.response.EmailVerificationResponse;
 import toy.board.service.mail.MailService;
 
-@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 class EmailControllerTest {

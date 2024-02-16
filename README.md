@@ -18,7 +18,10 @@ API docs | [https://api.myboard.site/swagger-ui/index.html](https://api.myboard.
 
 # 프로젝트 구조
 
-![Untitled](https://furtive-stew-f33.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F67a2b885-3d38-4c9b-addb-009dedc7878f%2Fd029941b-5a12-4593-bb17-e54fb2b63e20%2FUntitled.png?table=block&id=8496075c-9ade-475d-a29c-0577bdfd06c0&spaceId=67a2b885-3d38-4c9b-addb-009dedc7878f&width=2000&userId=&cache=v2)
+
+
+![Untitled](./resource/project-architecture.png)
+
 
 ### Spring boot를 이용한 BackEnd 구성
 
@@ -38,12 +41,11 @@ API docs | [https://api.myboard.site/swagger-ui/index.html](https://api.myboard.
 - DB: **AWS RDS**
 
 # ERD
-
-![Untitled](https://furtive-stew-f33.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F67a2b885-3d38-4c9b-addb-009dedc7878f%2Fe9e4045b-83ca-450c-9cd7-3ec43e9638f7%2FUntitled.png?table=block&id=cb95fb80-78d9-4e17-8135-183a0693907d&spaceId=67a2b885-3d38-4c9b-addb-009dedc7878f&width=2000&userId=&cache=v2)
+![Untitled](./resource/erd.png)
 
 # 개발 상세
 
-## 1. 계층형 테이블 구조를 통한 댓글과 답글 엔티티 간 그래프 사용
+## 1. 계층형 테이블 구조를 적용하여 동일 엔티티 간 그래프 사용
 
 - **이슈**
 
@@ -71,7 +73,7 @@ API docs | [https://api.myboard.site/swagger-ui/index.html](https://api.myboard.
 
 서비스 개발에 DB 관련 지식이 중요함을 인지해야 합니다. 다양한 서비스를 알맞게 제공하려면 프로그래밍 언어와 DB 같은 기본적인 지식이 핵심이며 밑바당되어 있어야 합니다. 그에 대한 지식은 방대하므로 지속적으로 학습해야 합니다.  
 
-## 2. Fetch Join과 게시물 전체 조회 쿼리의 필터링과 페이징
+## 2. Fetch Join을 사용한 엔티티 전체 조회 쿼리의 필터링과 페이징
 
 - **이슈**
 
@@ -115,7 +117,7 @@ JPA에서 `~ToMany` 관계의 엔티티를  `fetch join`함과 동시에 페이�
 
 JPA에서 `fetch join` 사용이 용이하지 않을 때는 `default_batch_fetch_size` 혹은 `join` + `Projection`를 사용하여 해결합니다. 객체를 객체답게 사용하려면 `default_batch_fetch_size` 방식을 사용합니다.
 
-## 3. Comment 삭제 시 FK 무결성 조건 충족 및 delete 벌크 연산
+## 3. 계층형 엔티티 벌크 삭제 시 FK 무결성 조건을 충족 및 벌크 연산 최적화화
 
 - **이슈**
 
@@ -147,7 +149,32 @@ JPA에서 지원하는 기능을 편리하다는 이유로 자세한 확인 없�
 
 `orphanRemoval` 기능은 부모 엔티티의 컬렉션에서 제외되어 부모 엔티티를 참조하지 않는 자식 엔티티를 자동으로 삭제해주는 기능이지만, 개념적으로 부모를 제거하면 자식이 참조하는 정보가 사라지므로 부모를 삭제할 때 자식도 함께 삭제됩니다. 이것은 `CasecadeType.REMOVE`처럼 동작하지만, `orphanRemoval`의 경우 컬렉션에서 제외하기만 해도 삭제된다는 차이가 있습니다.
 
-## 4. 세션쿠키 저장을 위한 Same-Site 문제 해결
+## 4. 라인, 분기점 테스트 커버리지 99% 달성
+
+- 이슈
+
+['토스'의 테스트 커버리지 100%](https://www.youtube.com/watch?v=jdlBu2vFv58&pp=ygUh7Yag7IqkIO2FjOyKpO2KuCDsu6TrsoTrpqzsp4AgMTAw)라는 영상을 보고, 부하 테스트 전 테스트 결과에 따른 코드 수정 시 안전을 보장하기 위해 단위 테스트 커버리지의 기준이 필요하다고 생각하게 되었습니다.
+
+- **이슈 해결 과정**
+
+가장 중요한 것은 테스트 커버리지 정도를 어느 정도로 유지할 것이냐,였습니다. 테스트 커버리지가 100%라면 더할 나위 없겠습니다만, 저는 단위 테스트는 코드를 읽기만 해도 결과를 알 수 있는 부분은 단위 테스트로 작성하지 않았기 때문에, 테스트 커버리지 100%를 달성하기 위해서는 제 기준에서 불필요한 코드의 작성이 필요했습니다. 따라서 테스트 커버리지 최소치를 90%로 설정했습니다. jacoco를 사용하여 테스트 커버리지를 측정했으며, gradle 설정을 통해 라인, 브랜치 테스트 커버리지가 90%를 넘지 않으면 빌드되지 않도록 설정했습니다. 테스트가 어렵거나 불필요한 패키지나 클래스는 제외했습니다.
+
+- **결론**
+
+안전한 코드 수정을 보장하기 위해서 자체적인 테스트 커버리지의 최소치를 설정했습니다. jacoco를 활용함으로써 추후 CI/CD를 적용했을 때 테스트 결과에 따른 자동 빌드/빌드 실패 하도록 설정할 수 있게 되었습니다.
+
+<details>
+<summary>jacoco 결과 이미지 보기</summary>
+<div markdown="1">
+
+![Untitled](./resource/jacoco-test-coverage.png)
+
+</div>
+</details>
+
+[jacoco html zip](./resource/test-coverage.zip)
+
+## 5. 세션쿠키 저장을 위한 Same-Site 문제 해결
 
 - 이슈
 

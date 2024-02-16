@@ -47,10 +47,7 @@ public record CommentsResponse(
         commentDtos.stream()
                 .filter(CommentResponse::isCommentType)
                 .forEach(c ->
-                        countTotal.addAndGet(
-                                c.replies()
-                                        .count()
-                        )
+                        countTotal.addAndGet(c.replies().count())
                 );
         return countTotal.get();
     }

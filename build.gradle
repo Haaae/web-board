@@ -33,15 +33,18 @@ jacocoTestReport {
 
         afterEvaluate {
             classDirectories.setFrom(files(classDirectories.files.collect {
-                fileTree(dir: it, exclude: [
-                        "toy/board/domain/**/Q**.*",
+                fileTree(dir: it,
+                        exclude: [
+                                "toy/board/domain/**/Q**.*",
 
-                        "toy/board/BoardApplication.*",
-                        "toy/board/service/mail/MailService.*",
-                        "toy/board/domain/base/**.*",
+                                "toy/board/exception/RestApiControllerAdvice.*",
+                                "toy/board/repository/support/Querydsl4RepositorySupport.*",
+                                "toy/board/BoardApplication.class",
+                                "toy/board/service/mail/MailService.*",
+                                "toy/board/domain/base/**.*",
 
-                        "toy/board/config/init/**.*",
-                ])
+                                "toy/board/config/init/**.*",
+                        ])
             }))
         }
 //  각 리포트 타입 마다 리포트 저장 경로를 설정할 수 있습니다.
@@ -51,6 +54,26 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+
+    // 테스트 커버리지 규약에서 제외할 목록 모음
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            "toy/board/domain/**/Q**.*",
+
+                            "toy/board/constant/**",
+                            "toy/board/exception/RestApiControllerAdvice.*",
+                            "toy/board/repository/support/Querydsl4RepositorySupport.*",
+                            "toy/board/BoardApplication.class",
+                            "toy/board/service/mail/MailService.*",
+                            "toy/board/domain/base/**.*",
+
+                            "toy/board/config/init/**.*",
+                    ])
+        }))
+    }
+
     violationRules {
         rule {
             // 'element'가 없으면 프로젝트의 전체 파일을 합친 값을 기준으로 합니다.
@@ -58,7 +81,7 @@ jacocoTestCoverageVerification {
             limit {
                 // 'counter'를 지정하지 않으면 default는 'INSTRUCTION'
                 // 'value'를 지정하지 않으면 default는 'COVEREDRATIO'
-                minimum = 0.80
+                minimum = 0.90
             }
         }
 
@@ -75,7 +98,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.80
+                minimum = 0.90
             }
 
             // 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한합니다.

@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,16 +16,16 @@ import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError
 import toy.board.controller.api.response.annotation.common.ApiDuplicationError;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
 import toy.board.controller.api.response.annotation.email.ApiCodeSendError;
-import toy.board.controller.user.dto.request.EmailVerificationRequest;
-import toy.board.controller.user.dto.request.SendEmailVerificationRequest;
-import toy.board.controller.user.dto.response.EmailVerificationResponse;
+import toy.board.controller.email.dto.request.EmailVerificationRequest;
+import toy.board.controller.email.dto.request.SendEmailVerificationRequest;
+import toy.board.controller.email.dto.response.EmailVerificationResponse;
 import toy.board.controller.user.dto.response.ExistResponse;
 import toy.board.service.mail.MailService;
 
 @Tag(name = "Email", description = "Email Verification API Document")
 @Controller
 @RequestMapping("/users")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class EmailController {
 
     private final MailService mailService;

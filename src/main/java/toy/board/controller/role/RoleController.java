@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,16 +17,16 @@ import toy.board.controller.api.response.annotation.common.ApiAuthorityError;
 import toy.board.controller.api.response.annotation.common.ApiBadRequestArgError;
 import toy.board.controller.api.response.annotation.common.ApiFoundError;
 import toy.board.controller.api.response.annotation.member.ApiAuthenticationError;
-import toy.board.controller.user.dto.request.RolePromotionRequest;
-import toy.board.service.role.RoleService;
+import toy.board.controller.role.dto.request.RolePromotionRequest;
+import toy.board.service.member.MemberRoleService;
 
 @Tag(name = "Role", description = "Role API Document")
 @Controller
 @RequestMapping("/users")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class RoleController {
 
-    private final RoleService roleService;
+    private final MemberRoleService roleService;
 
     @ApiResponse(
             responseCode = "200",

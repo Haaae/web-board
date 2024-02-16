@@ -2,17 +2,16 @@ package toy.board.repository.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class RedisRepository {
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+public class RedisRepository implements CacheRepository {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    @Override
     public Optional<String> getValues(final String key) {
         return Optional.ofNullable(
                 (String) redisTemplate
@@ -21,6 +20,7 @@ public class RedisRepository {
         );
     }
 
+    @Override
     public boolean deleteValues(final String key) {
         return Boolean.TRUE
                 .equals(
@@ -28,6 +28,7 @@ public class RedisRepository {
                 );
     }
 
+    @Override
     public void setValues(final String key, final String value, final Long expiredTime) {
         redisTemplate.opsForValue()
                 .set(

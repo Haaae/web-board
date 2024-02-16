@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -35,7 +34,7 @@ import toy.board.repository.user.MemberRepository;
 
 @Tag(name = "MyPage", description = "MyPage API Document")
 @Controller
-@RequiredArgsConstructor
+@lombok.RequiredArgsConstructor
 @RequestMapping("/mypage")
 public class MyPageController {
 
@@ -61,7 +60,10 @@ public class MyPageController {
     public ResponseEntity<MyInfoResponse> load(final HttpServletRequest request) {
         Long memberId = getMemberIdFrom(request);
 
-        Member member = findMemberWithFetchJoinProfile(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() ->
+                        new BusinessException(ExceptionCode.NOT_FOUND)
+                );
 
         return ResponseEntity.ok(
                 MyInfoResponse.of(member)
@@ -90,10 +92,11 @@ public class MyPageController {
                     sort = "createdDate",
                     direction = Sort.Direction.DESC
             ) final Pageable pageable,
-            final HttpServletRequest request) {
+            final HttpServletRequest request
+    ) {
 
         Long memberId = getMemberIdFrom(request);
-        Page<Post> page = postRepository.findAllByWriterIdFetchJoinWriterAndProfile(memberId,
+        Page<Post> page = postRepository.findAllByWriterIdWithFetchWriter(memberId,
                 pageable);
         return ResponseEntity.ok(
                 page.map(MyPostResponse::of)
@@ -126,7 +129,7 @@ public class MyPageController {
 
         Long memberId = getMemberIdFrom(request);
         Page<Comment> page = commentRepository
-                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(memberId,
+                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriter(memberId,
                         pageable);
 
         return ResponseEntity.ok(
@@ -138,12 +141,5 @@ public class MyPageController {
     private Long getMemberIdFrom(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         return (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
-    }
-
-    private Member findMemberWithFetchJoinProfile(long memberId) {
-        return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() ->
-                        new BusinessException(ExceptionCode.NOT_FOUND)
-                );
     }
 }

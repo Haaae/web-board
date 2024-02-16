@@ -14,20 +14,17 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import toy.board.domain.base.BaseDeleteEntity;
 import toy.board.domain.user.Member;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
-import toy.board.validator.Validator;
+import toy.board.utils.Assert;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@lombok.Getter
+@lombok.NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@lombok.ToString
 public class Comment extends BaseDeleteEntity {
 
     public static final int CONTENT_LENGTH = 1000;
@@ -70,26 +67,35 @@ public class Comment extends BaseDeleteEntity {
             @NotNull final CommentType type,
             final Comment parent
     ) {
-        validate(post, writer, content);
+        // 파라미터 유효성 및 Comment 타입에 따른 유효성 검증
+        validate(post, writer, content, type, parent);
 
-        addCommentTo(post);
-        addCommentTo(writer);
+        // 필드 변수 초기화
         this.content = content;
         this.type = type;
         this.isEdited = false;
 
-        validateType(parent);
-
-        if (type == CommentType.REPLY) {
-            validatePostOfParentComment(parent);
+        // Post, Member, parent comment에 대한 양방향 매핑
+        this.addTo(post);
+        this.addTo(writer);
+        if (this.isReplyType()) {
             this.leaveReply(parent);
         }
     }
 
-    private void validate(final Post post, final Member writer, final String content) {
-        Validator.notNull(post);
-        Validator.notNull(writer);
-        Validator.hasTextAndLength(content, CONTENT_LENGTH);
+    private void validate(
+            final Post post,
+            final Member writer,
+            final String content,
+            final CommentType type,
+            final Comment parent
+    ) {
+        Assert.notNull(post);
+        Assert.notNull(writer);
+        Assert.notNull(type);
+        Assert.hasTextAndLength(content, CONTENT_LENGTH);
+
+        validateType(parent, type, post);
     }
 
     /**
@@ -97,7 +103,7 @@ public class Comment extends BaseDeleteEntity {
      *
      * @param writer Comment 작성자.
      */
-    private void addCommentTo(final Member writer) {
+    private void addTo(final Member writer) {
         this.writer = writer;
         writer.addComment(this);
     }
@@ -107,7 +113,7 @@ public class Comment extends BaseDeleteEntity {
      *
      * @param post Comment가 소속된 게시물.
      */
-    private void addCommentTo(final Post post) {
+    private void addTo(final Post post) {
         this.post = post;
         post.addComment(this);
     }
@@ -118,52 +124,83 @@ public class Comment extends BaseDeleteEntity {
         parent.replies.add(this);
     }
 
-    private void validateType(final Comment parent) {
-        if (isNotValidType(parent)) {
+    private void validateType(final Comment parent, final CommentType type, final Post post) {
+        if (isNotValidComment(parent, type) && isNotValidReply(parent, type)) {
             throw new BusinessException(ExceptionCode.BAD_REQUEST_COMMENT_TYPE);
         }
-    }
 
-    private void validatePostOfParentComment(final Comment parent) {
-        if (!parent.post.equals(this.post)) {
+        // this가 reply 타입이고, parent comment의 post가 this와 다를 경우 예외 발생
+        if (type == CommentType.REPLY && !parent.post.equals(post)) {
             throw new BusinessException(ExceptionCode.BAD_REQUEST_POST_OF_COMMENT);
         }
     }
 
-    private boolean isNotValidType(final Comment parent) {
-        return !(isValidComment(parent) || isValidReply(parent));
+    private boolean isNotValidReply(final Comment parent, final CommentType type) {
+        return !(type == CommentType.REPLY && parent != null && parent.isCommentType());
     }
 
-    private boolean isValidReply(final Comment parent) {
-        return this.type == CommentType.REPLY && parent != null && parent.type == CommentType.COMMENT;
+    private boolean isNotValidComment(final Comment parent, final CommentType type) {
+        return !(type == CommentType.COMMENT && parent == null);
     }
 
-    private boolean isValidComment(final Comment parent) {
-        return this.type == CommentType.COMMENT && parent == null;
+    public void update(@NotBlank final String content, final Member writer) {
+        Assert.hasText(content);
+
+        validateIsWriter(writer);
+
+        // 수정 내용이 기존 내용과 다르고, 작성자가 맞을 때
+        if (!this.content.equals(content)) {
+            this.content = content;
+            this.isEdited = true;
+        }
     }
 
-    public void update(@NotBlank final String content, @NotNull final Member writer) {
-        validateRight(writer);
-        this.content = content;
-        this.isEdited = true;
+    /**
+     * Post가 삭제되지 않은 상태에서 Comment가 삭제될 때 Comment가 삭제되었음을 알려주기 위한 상태이다. 만약 Post도 삭제되면 Post와 그에 소속된 Comment 모두 DB에서 삭제된다.
+     *
+     * @param member
+     */
+    public void deleteBy(@NotNull final Member member) {
+        Assert.notNull(member);
+
+        if (this.isDeleted()) {
+            return;
+        }
+
+        validateDeleteRight(member);
+        this.delete();
     }
 
-    public void validateRight(final Member writer) {
+    /**
+     * 작성자가 회원탈퇴하면 이후 같은 닉네임의 사용자가 회원가입할 수 있기 때문에 댓글의 작성자를 null로 만들어야 한다. 이때 사용하는 메서드이다.
+     *
+     * @param writer
+     */
+    public void applyWriterWithdrawal(final Member writer) {
+        validateIsWriter(writer);
+        this.writer = null;
+    }
+
+    private void validateDeleteRight(final Member writer) {
         if (writer.hasDeleteRight()) {
             return;
         }
 
-        if (!writer.equals(this.writer)) {
+        validateIsWriter(writer);
+    }
+
+    private void validateIsWriter(Member writer) {
+        if (this.writer == null || !this.writer.equals(writer)) {
             throw new BusinessException(ExceptionCode.INVALID_AUTHORITY);
         }
     }
 
-    public void applyWriterWithdrawal() {
-        this.writer = null;
-    }
-
     public boolean isCommentType() {
         return this.type == CommentType.COMMENT;
+    }
+
+    public boolean isReplyType() {
+        return this.type == CommentType.REPLY;
     }
 
     public List<Comment> getReplies() {

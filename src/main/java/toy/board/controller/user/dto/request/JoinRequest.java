@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 
 @Schema(description = "회원가입 요청 DTO")
 public record JoinRequest(
@@ -25,6 +24,6 @@ public record JoinRequest(
 
         @Schema(description = "비밀번호")
         @NotBlank
-        @Size(min = 2, max = Profile.NICKNAME_LENGTH)
+        @Size(min = 2, max = Member.NICKNAME_LENGTH)
         String nickname) {
 }

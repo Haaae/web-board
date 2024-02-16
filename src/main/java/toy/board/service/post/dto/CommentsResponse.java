@@ -34,7 +34,7 @@ public record CommentsResponse(
                         .filter(Comment::isCommentType)
                         .map(CommentResponse::createCommentTypeFrom)
                         .toList(),
-                post.commentCount()
+                post.countComments()
         );
     }
 
@@ -47,10 +47,7 @@ public record CommentsResponse(
         commentDtos.stream()
                 .filter(CommentResponse::isCommentType)
                 .forEach(c ->
-                        countTotal.addAndGet(
-                                c.replies()
-                                        .count()
-                        )
+                        countTotal.addAndGet(c.replies().count())
                 );
         return countTotal.get();
     }

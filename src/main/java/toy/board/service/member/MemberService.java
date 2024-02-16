@@ -1,14 +1,9 @@
 package toy.board.service.member;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 import toy.board.exception.BusinessException;
 import toy.board.exception.ExceptionCode;
@@ -16,12 +11,13 @@ import toy.board.repository.user.MemberRepository;
 
 @Transactional(readOnly = true)
 @Service
-@RequiredArgsConstructor
-@Slf4j
+@lombok.RequiredArgsConstructor
+@lombok.extern.slf4j.Slf4j
 public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final MemberCheckService memberCheckService;
 
     /**
      * @param username
@@ -29,10 +25,10 @@ public class MemberService {
      * @return member를 찾는 과정에서 member가 없거나 비밀번호가 다르는 등 예외상황에서 항상 exception이 발생하므로 return된 member는 항상 not null이다.
      */
     public Member login(final String username, final String password) {
-        Member findMember = findMemberByUsernameWithFetchJoinLogin(username);
+        Member findMember = memberRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
-        findMember.validateLoginType(LoginType.LOCAL_LOGIN);
-        checkPassword(password, findMember.getPassword());
+        memberCheckService.checkPassword(password, findMember.getPassword());
         return findMember;
     }
 
@@ -42,60 +38,27 @@ public class MemberService {
      */
     @Transactional
     public Member join(final String username, final String password, final String nickname) {
-        checkUsernameDuplication(username);
-        checkNicknameDuplication(nickname);
+        memberCheckService.checkUsernameDuplication(username);
+        memberCheckService.checkNicknameDuplication(nickname);
 
-        Profile profile = new Profile(nickname);
-        Login login = new Login(passwordEncoder.encode(password));
-        Member member = Member.builder(
-                        username,
-                        login,
-                        profile,
-                        LoginType.LOCAL_LOGIN,
-                        UserRole.USER
-                )
-                .build();
-        member.changeLogin(login);
+        Member member = new Member(
+                username,
+                nickname,
+                passwordEncoder.encode(password),
+                UserRole.USER
+        );
 
-        // save. cascade로 인해 member만 저장해도 profile과 login이 저장된다.
         memberRepository.save(member);
         return member;
     }
 
     @Transactional
     public void withdrawal(final Long loginMemberId) {
-        Member findMember = findMemberWithFetchJoinProfile(loginMemberId);
+        Member findMember = memberRepository.findById(loginMemberId)
+                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
 
         findMember.changeAllPostAndCommentWriterToNull();
 
         memberRepository.deleteById(loginMemberId);
-    }
-
-    public void checkUsernameDuplication(final String username) {
-        if (memberRepository.existsByUsername(username)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
-        }
-    }
-
-    private void checkNicknameDuplication(final String nickname) {
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_DUPLICATE);
-        }
-    }
-
-    private void checkPassword(final String enteredPassword, final String password) {
-        if (!passwordEncoder.matches(enteredPassword, password)) {
-            throw new BusinessException(ExceptionCode.BAD_REQUEST_PASSWORD);
-        }
-    }
-
-    public Member findMemberWithFetchJoinProfile(Long memberId) {
-        return memberRepository.findMemberWithFetchJoinProfile(memberId)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
-    }
-
-    private Member findMemberByUsernameWithFetchJoinLogin(String username) {
-        return memberRepository.findMemberByUsernameWithFetchJoinLogin(username)
-                .orElseThrow(() -> new BusinessException(ExceptionCode.NOT_FOUND));
     }
 }

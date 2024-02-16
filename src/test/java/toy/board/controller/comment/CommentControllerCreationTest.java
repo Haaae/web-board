@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +22,6 @@ import toy.board.domain.post.Post;
 import toy.board.domain.post.PostTest;
 
 @Transactional
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
 public class CommentControllerCreationTest {
@@ -75,6 +72,7 @@ public class CommentControllerCreationTest {
                 .andDo(
                         MockMvcResultHandlers.print()
                 );
+
     }
 
     @DisplayName("대댓글 생성: 성공")
@@ -275,6 +273,7 @@ public class CommentControllerCreationTest {
         Long replyId = reply.getId();
 
         session.setAttribute(SessionConst.LOGIN_MEMBER, memberId);
+        
         //when
         CommentCreationRequest request = new CommentCreationRequest(
                 "content",

@@ -31,7 +31,7 @@ public record MyPostResponse(
                 post.getWriterNickname(),
                 post.getHits(),
                 post.getCreatedDate(),
-                post.commentCount()
+                post.countComments()
         );
     }
 }

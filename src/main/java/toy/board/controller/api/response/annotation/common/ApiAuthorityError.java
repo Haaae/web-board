@@ -14,7 +14,7 @@ import toy.board.exception.ErrorResponse;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Documented
 @ApiResponse(
-        responseCode = "400",
+        responseCode = "403",
         description = "권한 부족",
         content = @Content(
                 mediaType = "application/json",

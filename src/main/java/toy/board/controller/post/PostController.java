@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,7 +42,7 @@ import toy.board.service.post.dto.PostResponse;
 @Tag(name = "Post", description = "Post API Document")
 @Controller
 @RequestMapping("/posts")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class PostController {
 
     private final PostService postService;
@@ -81,7 +79,7 @@ public class PostController {
                     direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        Page<Post> page = postRepository.findAllWithFetchJoinWriterAndProfile(pageable);
+        Page<Post> page = postRepository.findAllWithFetchJoinWriter(pageable);
         return ResponseEntity.ok(
                 page.map(PostResponse::of)
         );

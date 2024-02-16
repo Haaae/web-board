@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,7 +37,7 @@ import toy.board.service.member.MemberService;
 @Tag(name = "Member", description = "Member API Document")
 @Controller
 @RequestMapping("/users")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)  // @Autowired는 생성자가 한 개일 때 생략할 수 있음
 public class MemberController {
 
     private final MemberService memberService;
@@ -161,7 +159,7 @@ public class MemberController {
     @Operation(summary = "사용자 존재 여부 확인", description = "이메일로 사용자 존재 여부를 확인합니다.")
     @Parameter(name = "username", description = "존재 여부를 확인할 사용자 이메일")
     @GetMapping("/usernames/{username}/exist")
-    public ResponseEntity<ExistResponse> findUserByUsername(@PathVariable final String username) {
+    public ResponseEntity<ExistResponse> exitUsername(@PathVariable final String username) {
         boolean isExists = memberRepository.existsByUsername(username);
         return ResponseEntity.ok(
                 new ExistResponse(isExists)

@@ -38,7 +38,7 @@ public record PostResponse(
                 post.getHits(),
                 post.getCreatedDate(),
                 post.isEdited(),
-                post.commentCount()
+                post.countComments()
         );
     }
 }

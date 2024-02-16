@@ -1,8 +1,5 @@
 package toy.board.config;
 
-import jakarta.annotation.PostConstruct;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@lombok.RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @EnableTransactionManagement // @Transaction을 사용하기 위함
 public class RedisConfig {
 
@@ -42,7 +39,7 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<?,?> redisTemplate() {
+    public RedisTemplate<?, ?> redisTemplate() {
         RedisTemplate<byte[], byte[]> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());

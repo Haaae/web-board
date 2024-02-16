@@ -1,7 +1,6 @@
 package toy.board.exception;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@Slf4j
+@lombok.extern.slf4j.Slf4j
 @RestControllerAdvice
 public class RestApiControllerAdvice {
 
@@ -50,8 +49,8 @@ public class RestApiControllerAdvice {
 
         return new ResponseEntity<>(
                 new ErrorResponse(
-                        errorCode.getCode()
-                        , message
+                        errorCode.getCode(),
+                        message
                 ),
                 HttpStatus.valueOf(
                         errorCode.getStatus()

@@ -16,13 +16,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 
 @Transactional
@@ -105,13 +102,12 @@ public class PostPageControllerTest {
     }
 
     private Member persistNewMember() {
-        Member member = Member.builder(
+        Member member = new Member(
                 "member",
-                new Login("password"),
-                new Profile("nickname"),
-                LoginType.LOCAL_LOGIN,
+                "nickname",
+                "password",
                 UserRole.USER
-        ).build();
+        );
         em.persist(member);
         return member;
     }

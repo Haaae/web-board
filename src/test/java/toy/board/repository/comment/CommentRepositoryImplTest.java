@@ -6,21 +6,18 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import toy.board.domain.auth.Login;
 import toy.board.domain.post.Comment;
 import toy.board.domain.post.CommentType;
 import toy.board.domain.post.Post;
-import toy.board.domain.user.LoginType;
 import toy.board.domain.user.Member;
-import toy.board.domain.user.Profile;
 import toy.board.domain.user.UserRole;
 
-@SpringBootTest
+@DataJpaTest
 @Transactional
 class CommentRepositoryImplTest {
 
@@ -29,42 +26,14 @@ class CommentRepositoryImplTest {
     @Autowired
     private EntityManager em;
 
-    @DisplayName("findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile() 시 삭제 상태인 Comment는 가져오지 않음")
+    @DisplayName("사용자가 작성한 Comment 중 삭제 상태인 Comment는 가져오지 않음")
     @Test
-    public void 실행테스트_삭제된_댓글_제외() throws Exception {
+    public void 댓글_가져오기_삭제된_댓글_제외() throws Exception {
         //given
-        Long writerId = setup();
-
-        int size = 10;
-        int pageNum = 0;
-        int totalPages = 1;
-        int totalElements = 3;
-        String sort = "createdDate";
-
-        PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
-
-        //when
-        Page<Comment> page = commentRepository
-                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriterAndProfile(writerId, pageable);
-
-        //then
-        assertThat(page.getSize()).isEqualTo(size);
-        assertThat(page.getTotalElements()).isEqualTo(totalElements);
-        assertThat(page.getTotalPages()).isEqualTo(totalPages);
-        for (Comment findComment : page.getContent()) {
-            assertThat(findComment.isCommentType()).isFalse();
-            System.out.println("findComment = " + findComment);
-        }
-    }
-
-    private Long setup() {
         Member member = persistMember();
-
         Post post = persistPost(member);
 
         Comment comment = new Comment(post, member, "title", CommentType.COMMENT, null);
-        comment.delete();
-        Long writer = comment.getWriterId();
         em.persist(comment);
 
         Comment reply1 = new Comment(post, member, "title", CommentType.REPLY, comment);
@@ -74,10 +43,31 @@ class CommentRepositoryImplTest {
         em.persist(reply2);
         em.persist(reply3);
 
+        comment.deleteBy(member);
+
         em.flush();
         em.clear();
 
-        return writer;
+        int size = 10;
+        int pageNum = 0;
+        int totalPages = 1;
+        int totalElementsNotDeleted = 3;
+        String sort = "createdDate";
+
+        PageRequest pageable = PageRequest.of(pageNum, size, Sort.by(sort));
+
+        //when
+        Page<Comment> page = commentRepository
+                .findAllNotDeletedCommentByWriterIdWithFetchJoinPostAndWriter(comment.getWriterId(), pageable);
+
+        //then
+        assertThat(page.getSize()).isEqualTo(size);
+        assertThat(page.getTotalElements()).isEqualTo(totalElementsNotDeleted);
+        assertThat(page.getTotalPages()).isEqualTo(totalPages);
+
+        for (Comment findComment : page.getContent()) {
+            assertThat(findComment.isCommentType()).isFalse();
+        }
     }
 
     private Post persistPost(Member member) {
@@ -91,16 +81,13 @@ class CommentRepositoryImplTest {
     }
 
     private Member persistMember() {
-        Member member = Member.builder(
+        Member member = new Member(
                 "member",
-                new Login("password"),
-                new Profile("nickname"),
-                LoginType.LOCAL_LOGIN,
+                "nickname",
+                "password",
                 UserRole.USER
-        ).build();
+        );
         em.persist(member);
         return member;
     }
-
-
 }

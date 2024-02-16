@@ -1,4 +1,4 @@
-package toy.board.repository.comment.dto;
+package toy.board.service.post.dto;
 
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
@@ -13,7 +13,6 @@ import toy.board.domain.post.Post;
 import toy.board.domain.post.PostTest;
 import toy.board.domain.user.Member;
 import toy.board.repository.post.PostRepository;
-import toy.board.service.post.dto.CommentsResponse;
 
 @SpringBootTest
 @Transactional
@@ -43,7 +42,7 @@ class CommentListDtoTest {
 
         //when
         int totalCommentCount = commentCount * (replyCount + 1);
-        Post findPost = postRepository.findPostWithFetchJoinWriterAndProfile(postId).get();
+        Post findPost = postRepository.findPostWithFetchJoinWriter(postId).get();
         CommentsResponse commentListDto = CommentsResponse.of(findPost);
 
         //then

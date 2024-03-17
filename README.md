@@ -130,9 +130,8 @@ JPA에서 `fetch join` 사용이 용이하지 않을 때는 `default_batch_fetch
 - **해결 방안**
 1. `@OneToMany` 어노테이션의 `CascadeType.REMOVE` 혹은 `orphanRemoval=true` 옵션을 적용해 `Post` 엔티티만 삭제해도 하위 컬렉션의 엔티티가 삭제되도록 할 수 있습니다.
     
-    → `Comment`가 계층형 테이블 구조이기 때문에 논리상 존재하지 않는 `reply 타입 Comment`의 하위 컬렉션에 대해 불필요한 조회 쿼리가 발생합니다. 즉 특정 게시물의 댓글 수가 `N`, 대댓글 수가 `M`일 때 `1+M`의 조회 쿼리가 발생하는 것입니다. 이러한 문제는 `Post` 엔티티 조회 시 하위 `Comment`를 `Fetch Join`하거나 `default_batch_fetch_size` 를 적용하는 것으로 해결할 수 있습니다.
-    
-    하지만 `CascadeType.REMOVE` 혹은 `orphanRemoval=true` 옵션으로 벌크 삭제 시 삭제 쿼리가 삭제하는 엔티티의 개수(`N+M`)만큼 발생하는 문제가 남아있었습니다.
+    → 위의 방법의 게시물 삭제 시, `Comment`가 계층형 테이블 구조이기 때문에 논리상 존재하지 않는 `reply 타입 Comment`의 하위 컬렉션에 대해 불필요한 조회 쿼리가 발생합니다. 즉 특정 게시물의 댓글 수가 `N`, 대댓글 수가 `M`일 때 `1(Post의 Comment 컬렉션 조회)+ M(Post의 각 Reply 타입 Comment의 Replies 컬렉션 조회)`의 조회 쿼리가 발생하는 것입니다.
+    또한 `CascadeType.REMOVE` 혹은 `orphanRemoval=true` 옵션으로 벌크 삭제 시 삭제 쿼리가 삭제하는 엔티티의 개수(`N+M`)만큼 발생하는 문제가 존재했습니다.
     
 2. 불필요한 조회쿼리 및 삭제쿼리를 방지하기 위해 `CommentRepository` 를 통해 직접 `Comment` 엔티티를 우선적으로 삭제하는 방법을 사용할 수 있습니다. 이때 `@Query`를 통해 커스텀 쿼리를 생성해 하나의 삭제 쿼리만 발생하도록 만듭니다. 이 경우 `Post` 엔티티 삭제 시 쿼리의 수는 `1(Post 조회) + 1(Reply 타입 Comment 벌크 삭제) + 1(Comment 타입 Comment 벌크 삭제) + 1(Post 삭제)`로 고정됩니다. 
     

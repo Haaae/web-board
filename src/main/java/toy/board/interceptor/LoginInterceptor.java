@@ -14,12 +14,12 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private static final int URL_FROM_INDEX = "http://".length();
     private static final String URL_SLICE = "/";
-    public static final String URL_JOIN = "/users";
-    public static final String URL_POST_LIST = "/posts";
-    public static final String REGEX_OF_POST_DETAIL_URL = URL_POST_LIST + "/[0-9]+";
+    private static final String URL_JOIN = "/users";
+    private static final String URL_POST_LIST = "/posts";
+    private static final String REGEX_OF_POST_DETAIL_URL = URL_POST_LIST + "/[0-9]+";
     private static final String GET = "GET";
-    public static final String POST = "POST";
-    public static final String OPTIONS = "OPTIONS";
+    private static final String POST = "POST";
+    private static final String OPTIONS = "OPTIONS";
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
